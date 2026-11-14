@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- `dataset_inventory` counts what each subject's snapshot at a labels cutoff holds (onsets, intervals,
+  chains, availability, measurement streams and rejected samples, unused inputs) before fitting.
+
 - Rejected labels say which outcome was observed, checked in the order of the table in
   `docs/TRAINING.md`. `right-censored-no-known-outcome` and `unconfirmed-label-continuity` are gone;
   such cases get the first matching code, such as `outcome-right-censored` (an explicit no-onset

@@ -67,6 +67,12 @@ def _input_error(exc: ValidationError, fallback: str) -> InputError:
     return InputError(str(cause) if isinstance(cause, ValueError) else fallback)
 
 
+def _unit_registry(spec: LandmarkSpec) -> UnitRegistry:
+    # Declared rules travel with the spec; a rule equal to a built-in adds nothing.
+    return UnitRegistry({(r.metric, r.unit): UnitRule(r.canonical_unit, r.scale.as_fraction(), r.offset.as_fraction())
+                         for r in spec.unit_rules if not r.same_as_builtin()})
+
+
 def make_landmark(dataset: CycleDataset, query: Query, spec: LandmarkSpec) -> Landmark:
     dataset = parse_model(CycleDataset, dataset)
     query = parse_model(Query, query)
@@ -76,10 +82,7 @@ def make_landmark(dataset: CycleDataset, query: Query, spec: LandmarkSpec) -> La
     if query.context.mode != "natural-cycle":
         raise InputError("outside-declared-scope")
     selected = snapshot(dataset, query)
-    # Declared rules travel with the spec; a rule equal to a built-in adds nothing.
-    registry = UnitRegistry({(r.metric, r.unit): UnitRule(r.canonical_unit, r.scale.as_fraction(), r.offset.as_fraction())
-                             for r in spec.unit_rules if not r.same_as_builtin()})
-    features = DefaultFeatureBuilder(registry).build(selected, query)
+    features = DefaultFeatureBuilder(_unit_registry(spec)).build(selected, query)
     if features.conflicting_onsets or not features.onsets:
         raise InputError("missing-or-conflicting-onsets")
     anchor = features.onsets[-1]
