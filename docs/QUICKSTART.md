@@ -10,8 +10,8 @@ Both routes resolve Pydantic if it is not installed. An offline environment need
 the appropriate dependency wheels; the repository does not bundle them.
 
 The package import is `quietcycle`; the distribution/CLI name is `quiet-cycle`.
-Install `.[api]` only when using the HTTP adapter. Install `.[dev,api]` to run the
-complete development suite. Scientific arrays and dataframes are not runtime dependencies.
+Install `.[api]` only when using the HTTP adapter. Install `.[dev,api,reference]` to run
+the complete development suite. Scientific arrays and dataframes are not runtime dependencies.
 
 ## Python
 

@@ -401,8 +401,8 @@ calibrated probability mass function. Change model IDs when changing equations. 
 ## Verify this release
 
 ```sh
-python -m pip install -e ".[dev,api]"
-python -m pytest --cov=quietcycle --cov-report=term
+python -m pip install -e ".[dev,api,reference]"
+python -m pytest --fail-on-skip --cov=quietcycle --cov-report=term
 python scripts/generate_contracts.py --check
 python scripts/check_repository.py
 python scripts/benchmark_learning.py
@@ -413,7 +413,9 @@ python -m build
 python scripts/check_artifacts.py
 ```
 
-The commands are a release checklist, not a claim that unavailable tools ran.
+`--fail-on-skip` makes any skipped pytest test fail the run, so a missing reference tool
+(NumPy or Node.js) cannot pass as a skipped test. The commands are a release checklist, not a claim that unavailable
+tools ran.
 [TEST_REPORT.md](docs/TEST_REPORT.md) identifies executed and unexecuted checks. Node is only a
 compatibility-test tool. No frontend is included.
 
