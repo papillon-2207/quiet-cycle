@@ -43,6 +43,9 @@ MUTATIONS = [
     ("unused-uniqueness-unpublished", "learning/contracts.py", "json_schema_extra={\"uniqueItems\": True}", "json_schema_extra={}", "tests/test_unused_inputs.py::test_published_schema_rejects_duplicate_unused_inputs"),
     ("unused-order-unchecked", "learning/contracts.py", "        if list(self.unused_inputs) != sorted(set(self.unused_inputs)):\n", "        if False:\n", "tests/test_unused_inputs.py::test_unused_inputs_must_be_sorted_unique_kind_names"),
     ("prediction-version-unchecked", "learning/contracts.py", "        if (self.schema_version == \"learning-1.1\") != bool(self.unused_inputs):\n", "        if False:\n", "tests/test_unused_inputs.py::test_version_follows_unused_inputs"),
+    ("labels-cutoff-compared-as-text", "learning/landmarks.py", "    labels_cutoff = _labels_cutoff(labels_cutoff)\n    if labels_cutoff <= q.cutoff:", "    raw = labels_cutoff\n    labels_cutoff = _labels_cutoff(labels_cutoff)\n    if labels_cutoff <= q.cutoff or raw <= q.cutoff:", "tests/test_learning.py::test_a_later_instant_written_with_a_negative_offset_is_later"),
+    ("labels-cutoff-checked-per-case-only", "learning/landmarks.py", "    # A malformed cutoff is a configuration error for the whole call, not a per-case rejection.\n    labels_cutoff = _labels_cutoff(labels_cutoff)\n", "", "tests/test_learning.py::test_malformed_labels_cutoff_is_an_input_error"),
+    ("labels-domain-error-escapes", "learning/landmarks.py", "    except ValueError:\n        raise InputError(\"label_date_outside_domain\")", "    except KeyError:\n        raise InputError(\"label_date_outside_domain\")", "tests/test_learning.py::test_labels_day_past_the_date_domain_is_an_input_error"),
     ("training-time-leak", "learning/fitting.py", "if max(c.outcome_known_at for c in left) >= min(c.landmark.query.cutoff for c in right):", "if False:", "tests/test_learning.py::test_temporal_boundary_rejected"),
 ]
 

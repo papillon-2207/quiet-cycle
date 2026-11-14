@@ -12,7 +12,7 @@ from typing import Literal
 
 from pydantic import ValidationError
 
-from ..dates import add_days, day_difference, local_day
+from ..dates import add_days, day_difference, instant, local_day
 from ..errors import InputError
 from ..features import DefaultFeatureBuilder
 from ..ledger import snapshot
@@ -145,15 +145,28 @@ def make_landmark(dataset: CycleDataset, query: Query, spec: LandmarkSpec) -> La
         raise InputError(str(cause) if isinstance(cause, ValueError) else "invalid_landmark") from None
 
 
+def _labels_cutoff(labels_cutoff: str) -> str:
+    try:
+        return instant(labels_cutoff)
+    except ValueError:
+        raise InputError("invalid_labels_cutoff") from None
+
+
 def label_landmark(dataset: CycleDataset, landmark: Landmark, *, labels_cutoff: str,
                    data_kind: Literal["synthetic", "observational"], cohort: str) -> LabelledCase:
     dataset = parse_model(CycleDataset, dataset)
     landmark = parse_model(Landmark, landmark)
     q = landmark.query
-    label_q = Query(subject_id=q.subject_id, as_of=local_day(labels_cutoff, q.utc_offset_minutes),
-                    cutoff=labels_cutoff, utc_offset_minutes=q.utc_offset_minutes, context=q.context)
+    # Normalized instants share one fixed-width UTC spelling, so text order is time order.
+    labels_cutoff = _labels_cutoff(labels_cutoff)
     if labels_cutoff <= q.cutoff:
         raise InputError("label_cutoff_not_later")
+    try:
+        label_day = local_day(labels_cutoff, q.utc_offset_minutes)
+    except ValueError:
+        raise InputError("label_date_outside_domain") from None
+    label_q = Query(subject_id=q.subject_id, as_of=label_day,
+                    cutoff=labels_cutoff, utc_offset_minutes=q.utc_offset_minutes, context=q.context)
     onsets = sorted((e for e in snapshot(dataset, label_q).events if isinstance(e, Onset)), key=lambda o: (o.date, o.id))
     anchor = next((o for o in onsets if o.id == landmark.anchor_id), None)
     if anchor is None or anchor.date != landmark.anchor_date or anchor.certainty != "confirmed" or anchor.exclude_from_history:
@@ -183,6 +196,8 @@ class CaseBuildResult:
 def build_cases(dataset: CycleDataset, queries: tuple[Query, ...], *, spec: LandmarkSpec,
                 labels_cutoff: str, data_kind: Literal["synthetic", "observational"], cohort: str) -> CaseBuildResult:
     """Account for every requested landmark, including censored and invalid ones."""
+    # A malformed cutoff is a configuration error for the whole call, not a per-case rejection.
+    labels_cutoff = _labels_cutoff(labels_cutoff)
     cases: list[LabelledCase] = []
     rejected: list[tuple[str, str, str]] = []
     for query in queries:

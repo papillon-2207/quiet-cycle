@@ -20,7 +20,7 @@ from quietcycle.learning.fitting import raw_length
 from quietcycle.serialization import canonical_json, loads
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "examples"))
-from synthetic_cohort import cohort  # noqa: E402 (local example fixture path above)
+from synthetic_cohort import cohort, subject_fixture  # noqa: E402 (local example fixture path above)
 
 
 @pytest.fixture(scope="module")
@@ -221,6 +221,54 @@ def test_censored_record_is_accounted(experiment):
     result = build_cases(no_end, (q,), spec=req.spec, labels_cutoff="2025-04-01T00:00:00Z", data_kind="synthetic", cohort="test")
     assert not result.cases
     assert result.rejected[0][2] == "right-censored-no-known-outcome"
+
+
+@pytest.mark.parametrize("labels_cutoff", [
+    "2025-01-21T12:00:00Z",       # the landmark cutoff itself, spelled without milliseconds
+    "2025-01-21T20:00:00+09:00",  # 11:00Z, an hour before the landmark cutoff
+])
+def test_labels_cutoff_must_be_a_later_instant(experiment, labels_cutoff):
+    req, _, _, inputs = experiment
+    data, q = inputs[0]
+    assert q.cutoff == "2025-01-21T12:00:00.000Z"
+    landmark = make_landmark(data, q, req.spec)
+    with pytest.raises(InputError, match="label_cutoff_not_later"):
+        label_landmark(data, landmark, labels_cutoff=labels_cutoff, data_kind="synthetic", cohort="test")
+    # Each query has its own cutoff, so build_cases records this per case.
+    built = build_cases(data, (q,), spec=req.spec, labels_cutoff=labels_cutoff, data_kind="synthetic", cohort="test")
+    assert built.rejected == ((q.subject_id, q.as_of, "label_cutoff_not_later"),)
+
+
+def test_a_later_instant_written_with_a_negative_offset_is_later(experiment):
+    # 2025-01-21T11:00:00-05:00 is 16:00Z, after the 12:00Z landmark cutoff, though its text sorts first.
+    req, _, _, inputs = experiment
+    data, q = inputs[0]
+    landmark = make_landmark(data, q, req.spec)
+    outcome_known = next(e for e in data.events if e.id == "o5").available_at
+    assert outcome_known > "2025-01-21T16:00:00.000Z"
+    with pytest.raises(InputError, match="right-censored-no-known-outcome"):
+        label_landmark(data, landmark, labels_cutoff="2025-01-21T11:00:00-05:00", data_kind="synthetic", cohort="test")
+
+
+def test_labels_day_past_the_date_domain_is_an_input_error(experiment):
+    # At +14:00, 2200-12-31T10:00Z is local 2201-01-01, outside the supported civil-date domain.
+    from quietcycle import Query
+    req, _, _, _ = experiment
+    data, q = subject_fixture("late", "2200-11-20", 3)
+    late = Query.model_validate({**q.model_dump(), "cutoff": "2200-12-10T23:00:00+14:00", "utc_offset_minutes": 840})
+    landmark = make_landmark(data, late, req.spec)
+    with pytest.raises(InputError, match="label_date_outside_domain"):
+        label_landmark(data, landmark, labels_cutoff="2200-12-31T10:00:00Z", data_kind="synthetic", cohort="test")
+
+
+def test_malformed_labels_cutoff_is_an_input_error(experiment):
+    req, _, _, inputs = experiment
+    data, q = inputs[0]
+    landmark = make_landmark(data, q, req.spec)
+    with pytest.raises(InputError, match="invalid_labels_cutoff"):
+        label_landmark(data, landmark, labels_cutoff="2025-04-01", data_kind="synthetic", cohort="test")
+    with pytest.raises(InputError, match="invalid_labels_cutoff"):
+        build_cases(data, (q,), spec=req.spec, labels_cutoff="2025-04-01", data_kind="synthetic", cohort="test")
 
 
 def test_revised_anchor_not_relabelled(experiment):
