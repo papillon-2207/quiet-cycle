@@ -37,6 +37,12 @@ MUTATIONS = [
     ("validation-error-chained", "learning/landmarks.py", "else \"invalid_landmark\") from None", "else \"invalid_landmark\") from exc", "tests/test_unit_rules.py::test_feature_precision_overflow_is_a_recorded_rejection"),
     ("long-feature-names-accepted", "learning/contracts.py", "        if any(len(name) > 96 for name in expected_feature_names(self)):\n", "        if False:\n", "tests/test_unit_rules.py::test_derived_feature_names_fit_the_identifier_limit"),
     ("declared-metric-name-unbounded", "learning/contracts.py", "        if any(len(f\"untrained-feature.measurement.{m}.recent\") > 96 for m in self.metrics if m in declared):\n", "        if False:\n", "tests/test_unit_rules.py::test_a_declared_metric_name_fits_its_forecast_issues"),
+    ("unused-inputs-dropped", "learning/prediction.py", "        if not names:\n            return result\n", "        return result\n", "tests/test_unused_inputs.py::test_unused_inputs_are_named_without_values"),
+    ("unused-symptoms-ignored", "learning/landmarks.py", "        elif isinstance(event, Symptom) and event.symptom not in spec.symptoms:\n", "        elif False:\n", "tests/test_unused_inputs.py::test_unused_inputs_are_named_without_values"),
+    ("snapshot-error-escapes", "learning/prediction.py", "        except InputError:\n            # Without a valid snapshot", "        except KeyError:\n            # Without a valid snapshot", "tests/test_unused_inputs.py::test_an_invalid_snapshot_abstains_without_a_list"),
+    ("unused-uniqueness-unpublished", "learning/contracts.py", "json_schema_extra={\"uniqueItems\": True}", "json_schema_extra={}", "tests/test_unused_inputs.py::test_published_schema_rejects_duplicate_unused_inputs"),
+    ("unused-order-unchecked", "learning/contracts.py", "        if list(self.unused_inputs) != sorted(set(self.unused_inputs)):\n", "        if False:\n", "tests/test_unused_inputs.py::test_unused_inputs_must_be_sorted_unique_kind_names"),
+    ("prediction-version-unchecked", "learning/contracts.py", "        if (self.schema_version == \"learning-1.1\") != bool(self.unused_inputs):\n", "        if False:\n", "tests/test_unused_inputs.py::test_version_follows_unused_inputs"),
     ("training-time-leak", "learning/fitting.py", "if max(c.outcome_known_at for c in left) >= min(c.landmark.query.cutoff for c in right):", "if False:", "tests/test_learning.py::test_temporal_boundary_rejected"),
 ]
 

@@ -3,12 +3,13 @@ from __future__ import annotations
 
 from ..dates import add_days, day_difference
 from ..errors import InputError
+from ..ledger import snapshot
 from ..models import CycleDataset, Query, Rational
 from ..serialization import parse_model
 from .contracts import CalibratedInterval, Contribution, CoverageAssumption, FittedModel, Landmark, LearnedPrediction
 from .exact import conformal_radius, round_day
 from .fitting import model_digest, raw_length, subject_hash
-from .landmarks import make_landmark, spec_digest
+from .landmarks import make_landmark, spec_digest, unused_inputs
 
 
 def predict_landmark(model: FittedModel, landmark: Landmark) -> LearnedPrediction:
@@ -70,6 +71,16 @@ class MultiFactorPipeline:
         try:
             landmark = make_landmark(dataset, query, self.model.spec)
         except InputError as exc:
-            return LearnedPrediction(model_sha256=model_digest(self.model), subject_id=query.subject_id,
+            result = LearnedPrediction(model_sha256=model_digest(self.model), subject_id=query.subject_id,
                 as_of=query.as_of, cutoff=query.cutoff, status="abstain", reason=exc.code)
-        return predict_landmark(self.model, landmark)
+        else:
+            result = predict_landmark(self.model, landmark)
+        try:
+            names = unused_inputs(self.model.spec, snapshot(dataset, query).events)
+        except InputError:
+            # Without a valid snapshot there is no list, and the forecast stays as it was.
+            return result
+        if not names:
+            return result
+        return LearnedPrediction.model_validate({**result.model_dump(mode="python"), "schema_version": "learning-1.1",
+                                                 "unused_inputs": names})

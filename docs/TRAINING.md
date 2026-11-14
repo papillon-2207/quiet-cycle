@@ -70,6 +70,21 @@ A sample whose unit has no rule still fails with `unsupported_metric_or_unit`; a
 over the exact-number budget is rejected with `feature_precision_budget`. A spec without unit
 rules serializes exactly as before.
 
+## Inputs a forecast did not use
+
+`MultiFactorPipeline.run` lists, in `unused_inputs`, every visible input kind that the model's spec
+never reads: `measurement.<metric>` for metrics outside `metrics`, `symptom.<name>` for symptoms
+outside `symptoms`, and `bleeding` and `checkin`. Only names are listed, never values or counts.
+A forecast with such a list is a learning-1.1 document; one without it is unchanged learning-1.0.
+Data of a metric the spec reads but outside its feature windows is history, not an unused input.
+`predict_landmark` and `evaluate` receive landmarks, not raw events, so their outputs never carry
+this list; a missing list there does not mean every input was used. If the snapshot itself is
+invalid there is no list either, and the forecast is otherwise unchanged. Unlisted measurements
+are still unit- and value-checked, so a unit without a rule (`unsupported_metric_or_unit`) or an
+impossible value (`fractional_step_count`, `negative_unsigned_measurement`,
+`temperature_below_absolute_zero`) can cause an abstention even though the spec does not read
+that metric.
+
 ## Four partitions, not random daily rows
 
 1. Training fits scaling, missing-feature policy and ridge coefficients.

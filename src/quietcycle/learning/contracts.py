@@ -326,8 +326,13 @@ class Contribution(Model):
     days: Rational
 
 
+# A kind prefix plus any caller-supplied metric or symptom identifier.
+UnusedInput = Annotated[str, StringConstraints(
+    strict=True, pattern=r"^(?:(?:measurement|symptom)\.[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}|bleeding|checkin)$")]
+
+
 class LearnedPrediction(Model):
-    schema_version: Literal["learning-1.0"] = "learning-1.0"
+    schema_version: LearningVersion = "learning-1.0"
     model_sha256: Hash
     subject_id: Identifier
     as_of: CivilDate
@@ -342,9 +347,18 @@ class LearnedPrediction(Model):
     contributions: Annotated[tuple[Contribution, ...], BeforeValidator(_tuple)] = ()
     issues: Names = ()
     clinical_validation: Literal["not-established"] = "not-established"
+    # Visible input kinds the spec never reads (learning-1.1). Set only by MultiFactorPipeline.run,
+    # which sees raw events; predict_landmark and evaluate never have them.
+    # Sorted and unique; a schema can state uniqueness but not the order.
+    unused_inputs: Annotated[tuple[UnusedInput, ...], BeforeValidator(_tuple)] = Field(
+        default=(), exclude_if=_empty, json_schema_extra={"uniqueItems": True})
 
     @model_validator(mode="after")
     def valid(self) -> Self:
+        if (self.schema_version == "learning-1.1") != bool(self.unused_inputs):
+            raise ValueError("contract_version_mismatch")
+        if list(self.unused_inputs) != sorted(set(self.unused_inputs)):
+            raise ValueError("unused_inputs_order")
         if self.status == "abstain":
             if any(v is not None for v in (self.point_date, self.point_cycle_length, self.raw_cycle_length, self.baseline_cycle_length)) or self.intervals or self.contributions:
                 raise ValueError("abstention_has_estimate")

@@ -16,7 +16,7 @@ from ..dates import add_days, day_difference, local_day
 from ..errors import InputError
 from ..features import DefaultFeatureBuilder
 from ..ledger import snapshot
-from ..models import CycleDataset, Onset, Query, Rational, Symptom
+from ..models import Bleeding, Checkin, CycleDataset, Event, Measurement, Onset, Query, Rational, Symptom
 from ..units import UnitRegistry, UnitRule
 from ..serialization import canonical_json, parse_model
 from .contracts import FeatureValue, LabelledCase, Landmark, LandmarkSpec
@@ -25,6 +25,19 @@ from .exact import median
 
 def spec_digest(spec: LandmarkSpec) -> str:
     return sha256(canonical_json(spec).encode()).hexdigest()
+
+
+def unused_inputs(spec: LandmarkSpec, events: tuple[Event, ...]) -> tuple[str, ...]:
+    """Names of visible input kinds that the spec never reads; never values or counts."""
+    names: set[str] = set()
+    for event in events:
+        if isinstance(event, Measurement) and event.metric not in spec.metrics:
+            names.add("measurement." + event.metric)
+        elif isinstance(event, Symptom) and event.symptom not in spec.symptoms:
+            names.add("symptom." + event.symptom)
+        elif isinstance(event, (Bleeding, Checkin)):
+            names.add(event.kind)
+    return tuple(sorted(names))
 
 
 def make_landmark(dataset: CycleDataset, query: Query, spec: LandmarkSpec) -> Landmark:
