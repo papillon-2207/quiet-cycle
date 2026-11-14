@@ -220,7 +220,8 @@ def test_censored_record_is_accounted(experiment):
     no_end = CycleDataset(events=tuple(e for e in data.events if e.id != "o5"))
     result = build_cases(no_end, (q,), spec=req.spec, labels_cutoff="2025-04-01T00:00:00Z", data_kind="synthetic", cohort="test")
     assert not result.cases
-    assert result.rejected[0][2] == "right-censored-no-known-outcome"
+    # No report after the landmark: not observed. Absence of reports is not right-censoring.
+    assert result.rejected[0][2] == "outcome-not-observed"
 
 
 @pytest.mark.parametrize("labels_cutoff", [
@@ -246,7 +247,8 @@ def test_a_later_instant_written_with_a_negative_offset_is_later(experiment):
     landmark = make_landmark(data, q, req.spec)
     outcome_known = next(e for e in data.events if e.id == "o5").available_at
     assert outcome_known > "2025-01-21T16:00:00.000Z"
-    with pytest.raises(InputError, match="right-censored-no-known-outcome"):
+    # Accepted as later; nothing has been reported yet at 16:00Z, so the outcome is not observed.
+    with pytest.raises(InputError, match="outcome-not-observed"):
         label_landmark(data, landmark, labels_cutoff="2025-01-21T11:00:00-05:00", data_kind="synthetic", cohort="test")
 
 

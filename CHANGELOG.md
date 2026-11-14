@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Rejected labels say which outcome was observed, checked in the order of the table in
+  `docs/TRAINING.md`. `right-censored-no-known-outcome` and `unconfirmed-label-continuity` are gone;
+  such cases get the first matching code, such as `outcome-right-censored` (an explicit no-onset
+  report reaches the landmark day), `outcome-not-observed`, `outcome-interval-censored`,
+  `label-excluded-from-history` or a conflict code. Reports that bear on the outcome follow the
+  `make_landmark` rules; a continuity claim that names the wrong onset or skips the next one, or a
+  second onset on the anchor date, is rejected, and some such cases were labelled exact before. Bad `cohort` or `data_kind` fails the call.
+
 - `label_landmark` and `build_cases` compare `labels_cutoff` as an instant, not as text. A cutoff
   equal to or earlier than the landmark cutoff now fails with `label_cutoff_not_later`; depending
   on its spelling it could be recorded as `right-censored-no-known-outcome`, `incomplete_day`,
