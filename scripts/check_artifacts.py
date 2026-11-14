@@ -59,7 +59,9 @@ def main() -> None:
         assert any(m.name.endswith("/docs/CONTRACT.md") for m in members)
         checks.append("sdist-source-tests-docs-and-safe-paths")
     with tempfile.TemporaryDirectory(prefix="quiet-cycle-installed-") as temporary:
-        workspace = Path(temporary)
+        # Canonical form: macOS /var is a symlink, Windows may report 8.3 names, and on Python 3.11
+        # TMPDIR=. gives a relative path that breaks once subprocesses change directory.
+        workspace = Path(temporary).resolve()
         target = workspace / "site"
         env = {**os.environ, "PYTHONPATH": str(target), "PYTHONNOUSERSITE": "1"}
         run([sys.executable, "-m", "pip", "install", "--no-deps", "--no-index", "--target", str(target), str(wheel)], env=env, cwd=workspace)
@@ -185,6 +187,8 @@ print("installed-typed-core")
     print(json.dumps({"passed": len(checks), "checks": checks,
         "skipped": skipped, "dependency_isolation": "no-deps-target-install-reuses-host-dependencies",
         "python": sys.version, "network": "localhost-only"}, indent=2))
+    if skipped:
+        raise SystemExit("Skipped checks are not passes: " + ", ".join(skipped))
 
 if __name__ == "__main__":
     main()

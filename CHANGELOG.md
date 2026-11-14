@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- `scripts/check_artifacts.py` resolves its temporary directory, so it works behind a symlink
+  (macOS `/var`), with Windows short names and with `TMPDIR=.` on Python 3.11, and it exits non-zero
+  when a check is skipped.
+
 ## 0.3.0 — 2026-09-17
 
 - Add causal fixed-landmark construction, explicit later labels and rejected-case accounting.
