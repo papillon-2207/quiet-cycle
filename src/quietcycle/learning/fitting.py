@@ -163,7 +163,7 @@ def fit(request: FitRequest) -> FittedModel:
     # Fixed priority preserves baseline on ties, then simpler families and larger penalties.
     family_order = {"baseline": 0, "history": 1, "symptoms": 2, "wearable": 3, "combined": 4}
     selected = min(candidates, key=lambda c: (c.tune_mse.as_fraction(), family_order[c.name.split("-ridge-")[0]], -c.penalty))
-    core = dict(spec=request.spec, columns=columns, clipping=request.clipping, quantization=request.quantization, selected=selected,
+    core = dict(schema_version=request.schema_version, spec=request.spec, columns=columns, clipping=request.clipping, quantization=request.quantization, selected=selected,
                 candidates=tuple(candidates), calibration_scores=(0,) * len(calibration),
                 train_count=len(train), tune_count=len(tune), calibration_count=len(calibration),
                 train_subject_hashes=tuple(sorted({subject_hash(c.landmark.subject_id) for c in train})),

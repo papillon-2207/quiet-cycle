@@ -5,15 +5,52 @@ subject hashes and small-sample coefficients are not anonymization.
 """
 from __future__ import annotations
 
+from fractions import Fraction
 from typing import Annotated, Literal, Self
 
 from pydantic import BeforeValidator, Field, StrictBool, StrictInt, StringConstraints, model_validator
 
 from ..dates import day_difference, local_day
-from ..models import CivilDate, Identifier, Instant, Model, Query, Rational, _tuple, array_bounds
+from ..models import CivilDate, Identifier, Instant, Model, Query, Rational, Unit, _tuple, array_bounds
+from ..units import DEFAULT_RULES
 
 Hash = Annotated[str, StringConstraints(strict=True, pattern=r"^[a-f0-9]{64}$")]
 Names = Annotated[tuple[Identifier, ...], BeforeValidator(_tuple)]
+
+
+def _zero() -> Rational:
+    return Rational(numerator="0", denominator="1")
+
+
+class UnitRuleSpec(Model):
+    """Exact conversion declared with the spec: canonical value = value * scale + offset."""
+    metric: Identifier
+    unit: Unit
+    canonical_unit: Unit
+    scale: Rational
+    offset: Rational = Field(default_factory=_zero)
+
+    @model_validator(mode="after")
+    def valid(self) -> Self:
+        if self.scale.as_fraction() <= 0:
+            raise ValueError("nonpositive_unit_scale")
+        # Otherwise two samples labelled with the same canonical unit could mean different things.
+        if self.unit == self.canonical_unit and (self.scale.as_fraction(), self.offset.as_fraction()) != (Fraction(1), Fraction(0)):
+            raise ValueError("inconsistent_identity_unit_rule")
+        # Bounded so that feature arithmetic over a few samples stays within exact-number budgets.
+        if any(max(abs(f.numerator).bit_length(), f.denominator.bit_length()) > 64
+               for f in (self.scale.as_fraction(), self.offset.as_fraction())):
+            raise ValueError("unit_rule_precision_budget")
+        return self
+
+    def same_as_builtin(self) -> bool:
+        builtin = DEFAULT_RULES.get((self.metric, self.unit))
+        return builtin is not None and (builtin.canonical_unit, builtin.scale, builtin.offset) == (
+            self.canonical_unit, self.scale.as_fraction(), self.offset.as_fraction())
+
+
+def _empty(value: tuple[object, ...]) -> bool:
+    return value == ()
 
 
 class LandmarkSpec(Model):
@@ -26,9 +63,22 @@ class LandmarkSpec(Model):
     minimum_measurement_days: Annotated[StrictInt, Field(ge=1, le=14)] = 2
     metrics: Names = ("wrist_temperature", "resting_heart_rate", "hrv_rmssd", "sleep_duration")
     symptoms: Names = ("headache", "fatigue", "abdominal_pain", "gastrointestinal")
+    # learning-1.1 only. Omitted when empty, so learning-1.0 specs keep their bytes and digests.
+    unit_rules: Annotated[tuple[UnitRuleSpec, ...], BeforeValidator(_tuple),
+                          Field(max_length=32, json_schema_extra=array_bounds)] = Field(default=(), exclude_if=_empty)
 
     @model_validator(mode="after")
     def valid(self) -> Self:
+        keys = [(r.metric, r.unit) for r in self.unit_rules]
+        if len(set(keys)) != len(keys):
+            raise ValueError("duplicate_unit_rule")
+        if any(key in DEFAULT_RULES and not r.same_as_builtin() for key, r in zip(keys, self.unit_rules)):
+            raise ValueError("unit_rule_override_forbidden")
+        for metric in sorted({r.metric for r in self.unit_rules}):
+            units = {rule.canonical_unit for (name, _), rule in DEFAULT_RULES.items() if name == metric}
+            units |= {r.canonical_unit for r in self.unit_rules if r.metric == metric}
+            if len(units) > 1:
+                raise ValueError("metric_has_two_canonical_units")
         if self.min_history > self.max_history:
             raise ValueError("invalid_history_window")
         if self.recent_days + self.reference_days > self.elapsed_day:
@@ -39,6 +89,13 @@ class LandmarkSpec(Model):
             raise ValueError("feature_budget")
         if len(set(self.metrics)) != len(self.metrics) or len(set(self.symptoms)) != len(self.symptoms):
             raise ValueError("duplicate_feature")
+        # A derived name over the identifier limit would make every landmark of this spec invalid.
+        if any(len(name) > 96 for name in expected_feature_names(self)):
+            raise ValueError("feature_name_too_long")
+        # A declared metric can carry data, so its longest forecast issue must be an identifier too.
+        declared = {r.metric for r in self.unit_rules}
+        if any(len(f"untrained-feature.measurement.{m}.recent") > 96 for m in self.metrics if m in declared):
+            raise ValueError("feature_name_too_long")
         return self
 
 
@@ -115,8 +172,17 @@ class LabelledCase(Model):
 Cases = Annotated[tuple[LabelledCase, ...], BeforeValidator(_tuple), Field(max_length=5000, json_schema_extra=array_bounds)]
 
 
+LearningVersion = Literal["learning-1.0", "learning-1.1"]
+
+
+def _check_version(schema_version: str, spec: LandmarkSpec) -> None:
+    # CONTRACT.md: a contract change needs a new schema version. Unit rules are that change.
+    if (schema_version == "learning-1.1") != bool(spec.unit_rules):
+        raise ValueError("contract_version_mismatch")
+
+
 class FitRequest(Model):
-    schema_version: Literal["learning-1.0"] = "learning-1.0"
+    schema_version: LearningVersion = "learning-1.0"
     spec: LandmarkSpec = Field(default_factory=LandmarkSpec)
     train: Cases
     tune: Cases
@@ -129,6 +195,7 @@ class FitRequest(Model):
 
     @model_validator(mode="after")
     def valid(self) -> Self:
+        _check_version(self.schema_version, self.spec)
         if not 1 <= len(self.ridge_penalties) <= 8 or any(x <= 0 for x in self.ridge_penalties):
             raise ValueError("positive_ridge_penalties_required")
         if tuple(sorted(set(self.ridge_penalties))) != self.ridge_penalties:
@@ -169,7 +236,7 @@ class LinearCandidate(Model):
 
 
 class FittedModel(Model):
-    schema_version: Literal["learning-1.0"] = "learning-1.0"
+    schema_version: LearningVersion = "learning-1.0"
     algorithm: Literal["exact-landmark-ridge-ensemble-v1"] = "exact-landmark-ridge-ensemble-v1"
     spec: LandmarkSpec
     columns: Annotated[tuple[ScaleColumn, ...], BeforeValidator(_tuple), Field(max_length=64, json_schema_extra=array_bounds)]
@@ -194,6 +261,7 @@ class FittedModel(Model):
 
     @model_validator(mode="after")
     def valid(self) -> Self:
+        _check_version(self.schema_version, self.spec)
         if self.selected not in self.candidates:
             raise ValueError("selected_candidate_missing")
         if self.available_at < self.fitted_at:

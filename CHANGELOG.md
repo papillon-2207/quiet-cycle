@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- `LandmarkSpec.unit_rules` declares unit conversions for new measurements. The rules are stored
+  and hashed with the model, so training and every forecast convert the same way. Documents that
+  use them are `learning-1.1`; documents without them are unchanged `learning-1.0`.
+  `make_landmark` reports landmark validation failures as `InputError`. A spec whose derived feature
+  names would exceed 96 characters (metric names over 77, symptom names over 81) is rejected with
+  `feature_name_too_long`; such a spec could not produce a valid landmark. A metric listed in `metrics`
+  that has a unit rule is limited to 59 characters, so that its forecast issue names stay valid.
+
 - Published JSON Schemas state tuple limits as `minItems`/`maxItems`. They used `minLength`/
   `maxLength`, which JSON Schema applies only to strings. Runtime validation is unchanged.
 
