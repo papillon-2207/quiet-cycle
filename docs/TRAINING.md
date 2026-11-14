@@ -110,6 +110,22 @@ with measured, missing and rejected samples (a landmark fails if its own snapsho
 unused input kinds. An invalid snapshot counts under its first error. No-onset reports are not
 checked, so this is not eligibility. Counts only, no identifiers or values.
 
+`landmark_attempts(dataset, spec=..., elapsed_days=(20, 40), labels_cutoff=..., query_time="12:00",
+utc_offset_minutes=...)` replays, for each elapsed day, every landmark query a live scheduler would
+have made at `query_time` local time, with context `natural-cycle`. A subject has an attempt on day
+`d` when, at that query's cutoff, the newest version of some onset is dated `d` minus the elapsed
+day. So an onset revised before the query, or recorded after it, makes no attempt there, two onsets
+on one date make one attempt, and two different versions with the same revision number make an
+attempt on each date they name (a query that sees both fails with `conflicting_revision`). Each attempt records
+whether `make_landmark` succeeds or its rejection code, and an outcome code: one from the table
+above (`exact` for a label), the error code of the labels-time snapshot, or `anchor-not-unique`
+when two onsets share the anchor date. Here `landmark-day-mismatch` means a later onset was already
+visible: the cycle ended before that elapsed day. Queries at or after the labels cutoff are counted
+separately, judged with data known at the labels cutoff, and get no outcome; a query day past
+2200-12-31 is not an attempt. Each day satisfies attempts = eligible + rejections + after the
+labels cutoff (attempts is defined as that sum), and the outcome counts sum to eligible +
+rejections. An elapsed day the spec cannot use is reported with the spec's validation code.
+
 ## Four partitions, not random daily rows
 
 1. Training fits scaling, missing-feature policy and ridge coefficients.

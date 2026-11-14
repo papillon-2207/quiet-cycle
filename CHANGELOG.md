@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- `landmark_attempts` counts, for each elapsed day, the landmark queries a live scheduler would have
+  made, how many were eligible, each rejection code, and the outcome code of each attempt made
+  before the labels cutoff.
+
 - `dataset_inventory` counts what each subject's snapshot at a labels cutoff holds (onsets, intervals,
   chains, availability, measurement streams and rejected samples, unused inputs) before fitting.
 
