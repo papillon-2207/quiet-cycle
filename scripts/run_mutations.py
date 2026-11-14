@@ -1,4 +1,4 @@
-"""Fourteen focused mutations; not an exhaustive mutation-coverage claim."""
+"""Focused mutations, one per protected behavior; not an exhaustive mutation-coverage claim."""
 from __future__ import annotations
 
 import json
@@ -25,6 +25,8 @@ MUTATIONS = [
     ("direct-scope-bypass", "learning/prediction.py", "if q.context.mode != \"natural-cycle\":", "if False:", "tests/test_learning.py::test_direct_landmark_cannot_bypass_scope"),
     ("round-ties-wrong", "learning/exact.py", "shifted = value + Fraction(1, 2)", "shifted = value", "tests/test_learning.py::test_rounding"),
     ("regularize-intercept", "learning/exact.py", "penalty if i == j and i else 0", "penalty if i == j else 0", "tests/test_learning.py::test_ridge_normal_equation_exact"),
+    ("schema-array-string-keywords", "models.py", "            schema[array_name] = schema.pop(name)\n", "            pass\n", "tests/test_interfaces.py::test_array_bounds_use_array_keywords"),
+    ("schema-array-bound-dropped", "models.py", "            schema[array_name] = schema.pop(name)\n", "            schema.pop(name)\n", "tests/test_interfaces.py::test_each_tuple_limit_is_published"),
     ("training-time-leak", "learning/fitting.py", "if max(c.outcome_known_at for c in left) >= min(c.landmark.query.cutoff for c in right):", "if False:", "tests/test_learning.py::test_temporal_boundary_rejected"),
 ]
 
@@ -33,21 +35,27 @@ def main() -> None:
     results = []
     with tempfile.TemporaryDirectory(prefix="quiet-cycle-mutations-") as temporary:
         work = Path(temporary)
-        for name in ("src", "tests", "examples"):
+        for name in ("src", "tests", "examples", "scripts", "contracts"):
             shutil.copytree(ROOT / name, work / name, ignore=shutil.ignore_patterns("__pycache__", "*.egg-info"))
         shutil.copy2(ROOT / "pyproject.toml", work / "pyproject.toml")
         env = {**os.environ, "PYTHONPATH": str(work / "src")}
+        # A test that already fails unmutated would count every mutation against it as killed.
+        baseline = subprocess.run([sys.executable, "-m", "pytest", "-q", *sorted({m[4] for m in MUTATIONS})], cwd=work,
+            env=env, text=True, encoding="utf-8", capture_output=True, timeout=120)
+        if baseline.returncode != 0:
+            print(baseline.stdout, baseline.stderr, file=sys.stderr)
+            raise SystemExit("Mutation targets fail without any mutation")
         for name, filename, old, new, test in MUTATIONS:
             path = work / "src/quietcycle" / filename
             original = path.read_text()
             assert original.count(old) == 1, name
             path.write_text(original.replace(old, new))
-            result = subprocess.run([sys.executable, "-m", "pytest", "-q", test], cwd=work,
-                env=env, text=True, encoding="utf-8", capture_output=True, timeout=30)
-            path.write_text(original)
             # Force fresh bytecode even on filesystems with coarse mtimes.
             for cache in (work / "src").rglob("__pycache__"):
                 shutil.rmtree(cache)
+            result = subprocess.run([sys.executable, "-m", "pytest", "-q", test], cwd=work,
+                env=env, text=True, encoding="utf-8", capture_output=True, timeout=30)
+            path.write_text(original)
             killed = result.returncode == 1 and "FAILED " in result.stdout and "ERROR collecting" not in result.stdout
             results.append({"mutation": name, "test": test, "killed": killed,
                             "exit_code": result.returncode, "summary": result.stdout.splitlines()[-1:]})

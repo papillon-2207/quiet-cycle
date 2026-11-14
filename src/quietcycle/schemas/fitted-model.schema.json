@@ -87,7 +87,7 @@
           "items": {
             "$ref": "#/$defs/Rational"
           },
-          "maxLength": 128,
+          "maxItems": 128,
           "title": "Coefficients",
           "type": "array"
         },
@@ -215,7 +215,7 @@
       "items": {
         "$ref": "#/$defs/LinearCandidate"
       },
-      "maxLength": 33,
+      "maxItems": 33,
       "title": "Candidates",
       "type": "array"
     },
@@ -243,7 +243,7 @@
       "items": {
         "$ref": "#/$defs/ScaleColumn"
       },
-      "maxLength": 64,
+      "maxItems": 64,
       "title": "Columns",
       "type": "array"
     },

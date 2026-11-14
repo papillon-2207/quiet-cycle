@@ -26,6 +26,13 @@ Unit = Annotated[str, StringConstraints(strict=True, min_length=1, max_length=32
 Offset = Annotated[StrictInt, Field(ge=-840, le=840)]
 
 
+def array_bounds(schema: dict[str, Any]) -> None:
+    """Publish tuple length limits as minItems/maxItems; JSON Schema's *Length keywords are for strings."""
+    for name, array_name in (("minLength", "minItems"), ("maxLength", "maxItems")):
+        if name in schema:
+            schema[array_name] = schema.pop(name)
+
+
 def _tuple(value: Any) -> tuple[Any, ...]:
     if not isinstance(value, (list, tuple)):
         raise ValueError("array_required")
@@ -155,7 +162,7 @@ Event: TypeAlias = Annotated[
     Field(discriminator="kind"),
 ]
 EVENT_ADAPTER: TypeAdapter[Event] = TypeAdapter(Event)
-EventTuple = Annotated[tuple[Event, ...], BeforeValidator(_tuple), Field(max_length=50000)]
+EventTuple = Annotated[tuple[Event, ...], BeforeValidator(_tuple), Field(max_length=50000, json_schema_extra=array_bounds)]
 
 
 class CycleDataset(Model):

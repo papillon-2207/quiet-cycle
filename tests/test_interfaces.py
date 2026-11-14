@@ -66,6 +66,79 @@ def test_json_schema_examples_and_openapi():
     assert set(document["paths"]) == {"/health", "/v2/predict"}
 
 
+def _string_keywords_on_arrays(node, where=""):
+    found = []
+    if isinstance(node, dict):
+        if node.get("type") == "array" and {"minLength", "maxLength"} & set(node):
+            found.append(where)
+        for key, value in node.items():
+            found += _string_keywords_on_arrays(value, f"{where}/{key}")
+    elif isinstance(node, list):
+        for i, value in enumerate(node):
+            found += _string_keywords_on_arrays(value, f"{where}/{i}")
+    return found
+
+
+def _contract_models():
+    import importlib.util
+    pytest.importorskip("fastapi")  # generate_contracts imports the optional HTTP adapter
+    spec = importlib.util.spec_from_file_location("generate_contracts", ROOT / "scripts/generate_contracts.py")
+    contracts = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(contracts)
+    return contracts.MODELS
+
+
+def test_array_bounds_use_array_keywords():
+    # JSON Schema applies minLength/maxLength to strings only; on an array they are ignored.
+    for name, model in _contract_models().items():
+        assert _string_keywords_on_arrays(model.model_json_schema(), name) == []
+    for path in [*(ROOT / "src/quietcycle/schemas").glob("*.schema.json"), ROOT / "contracts/openapi.json"]:
+        assert _string_keywords_on_arrays(json.loads(path.read_text()), path.name) == []
+
+
+TUPLE_LIMITS = {
+    ("CycleDataset", "events"): {"maxItems": 50000},
+    ("Landmark", "values"): {"maxItems": 64},
+    ("FitRequest", "train"): {"maxItems": 5000},
+    ("FitRequest", "tune"): {"maxItems": 5000},
+    ("FitRequest", "calibration"): {"maxItems": 5000},
+    ("LinearCandidate", "coefficients"): {"maxItems": 128},
+    ("FittedModel", "columns"): {"maxItems": 64},
+    ("FittedModel", "candidates"): {"maxItems": 33},
+    ("DurationState", "duration_weights"): {"minItems": 1, "maxItems": 120},
+    ("DurationState", "exit_weights"): {"minItems": 1, "maxItems": 120},
+    ("DurationModel", "states"): {"minItems": 1, "maxItems": 8},
+    ("DurationModel", "initial"): {"minItems": 1, "maxItems": 512},
+}
+
+
+def _published_tuple_limits():
+    found = {}
+    for model in _contract_models().values():
+        schema = model.model_json_schema()
+        for name, node in [(model.__name__, schema), *schema.get("$defs", {}).items()]:
+            for field, prop in node.get("properties", {}).items():
+                bounds = {k: prop[k] for k in ("minItems", "maxItems") if k in prop}
+                if bounds:
+                    found[(name, field)] = bounds
+    return found
+
+
+def test_each_tuple_limit_is_published():
+    # Every published bound is listed here, so a new or changed limit must be stated explicitly.
+    assert _published_tuple_limits() == TUPLE_LIMITS
+
+
+def test_published_event_limit_is_enforced(sample):
+    jsonschema = pytest.importorskip("jsonschema")
+    events = json.loads((ROOT / "src/quietcycle/schemas/dataset.schema.json").read_text())["properties"]["events"]
+    # Item validation is covered elsewhere; leaving it out keeps this check fast.
+    bound_only = jsonschema.Draft202012Validator({k: v for k, v in events.items() if k != "items"})
+    event = sample.dataset.model_dump(mode="json")["events"][0]
+    assert bound_only.is_valid([event] * 50000)
+    assert [e.validator for e in bound_only.iter_errors([event] * 50001)] == ["maxItems"]
+
+
 def test_http_strictness_and_sdk_agreement(sample):
     pytest.importorskip("fastapi")
     pytest.importorskip("httpx")

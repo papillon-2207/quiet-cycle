@@ -173,7 +173,7 @@
       "items": {
         "$ref": "#/$defs/FeatureValue"
       },
-      "maxLength": 64,
+      "maxItems": 64,
       "title": "Values",
       "type": "array"
     }

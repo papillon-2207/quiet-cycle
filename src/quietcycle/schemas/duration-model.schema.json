@@ -9,8 +9,8 @@
             "minimum": 0,
             "type": "integer"
           },
-          "maxLength": 120,
-          "minLength": 1,
+          "maxItems": 120,
+          "minItems": 1,
           "title": "Duration Weights",
           "type": "array"
         },
@@ -20,8 +20,8 @@
             "minimum": 0,
             "type": "integer"
           },
-          "maxLength": 120,
-          "minLength": 1,
+          "maxItems": 120,
+          "minItems": 1,
           "title": "Exit Weights",
           "type": "array"
         },
@@ -81,8 +81,8 @@
       "items": {
         "$ref": "#/$defs/InitialState"
       },
-      "maxLength": 512,
-      "minLength": 1,
+      "maxItems": 512,
+      "minItems": 1,
       "title": "Initial",
       "type": "array"
     },
@@ -90,8 +90,8 @@
       "items": {
         "$ref": "#/$defs/DurationState"
       },
-      "maxLength": 8,
-      "minLength": 1,
+      "maxItems": 8,
+      "minItems": 1,
       "title": "States",
       "type": "array"
     }
