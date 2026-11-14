@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from ..errors import InputError
-from ..models import CycleDataset
+from ..models import CycleDataset, Event
 from ..serialization import MAX_BYTES, read_text
 from .records import from_records
 
@@ -55,7 +55,7 @@ class CSVAdapter:
             raise InputError("duplicate_csv_column")
         if not headers or any(name not in COLUMNS for name in headers):
             raise InputError("unknown_csv_column")
-        records = []
+        records: list[Event] = []
         try:
             for row_number, values in enumerate(reader, 2):
                 if not values:
@@ -81,7 +81,7 @@ class CSVAdapter:
                         record[name] = text_value == "true"
                     else:
                         record[name] = text_value
-                kind = record.get("kind")
+                kind: Any = record.get("kind")  # not validated until from_records below
                 applicable = {
                     "onset": {"previous_onset_id"},
                     "symptom": {"impact"},

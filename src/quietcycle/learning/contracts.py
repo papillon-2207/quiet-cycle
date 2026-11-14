@@ -232,13 +232,16 @@ class FittedModel(Model):
         return self
 
 
+CoverageAssumption = Literal["exchangeable-new-subjects-required", "dependent-time-series-no-coverage-guarantee"]
+
+
 class CalibratedInterval(Model):
     nominal_coverage_ppm: Annotated[StrictInt, Field(gt=0, lt=1000000)]
     start: CivilDate | None
     end: CivilDate | None
     radius_days: Annotated[StrictInt, Field(ge=0)] | None
     unbounded: StrictBool
-    assumption: Literal["exchangeable-new-subjects-required", "dependent-time-series-no-coverage-guarantee"]
+    assumption: CoverageAssumption
 
     @model_validator(mode="after")
     def valid(self) -> Self:

@@ -134,6 +134,10 @@ def test_measurement_runs_through_research_pipeline(sample):
     dataset = CycleDataset.model_validate(raw)
     run = pipeline.run(dataset, sample.query)
     assert run.evidence_ids == ("temperature-1",)
+    from quietcycle.ledger import snapshot
+    assert run.snapshot_sha256 == snapshot(dataset, sample.query).sha256
+    assert run.configuration_sha256 == pipeline.configuration_sha256
+    assert run.configuration_sha256 != DurationResearchPipeline(two_states(), rule=rule, horizon=3).configuration_sha256
     assert run.result.steps[0].mass.as_fraction() == Fraction(3, 4)
     assert run.result.residual_mass.as_fraction() == 0
     assert run == pipeline.run(dataset, sample.query)

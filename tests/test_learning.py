@@ -47,6 +47,46 @@ def test_complete_raw_pipeline(experiment):
     assert sum((c.days.as_fraction() for c in output.contributions), output.baseline_cycle_length.as_fraction()) == output.raw_cycle_length.as_fraction()
 
 
+def test_learning_1_0_identity_is_frozen(experiment):
+    # learning-1.0 digests of 0.3.0 output for the default spec, new-subject split and this
+    # fixture. They do not cover every code path.
+    import hashlib
+    request, model, test, inputs = experiment
+    def sha(value):
+        return hashlib.sha256(canonical_json(value).encode()).hexdigest()
+    assert model_digest(model) == "43ae2e61580b90ea3fe8b2806407ea803a53de85c2d127681f5af817c3500a04"
+    assert sha(request) == "597fe20d30814e297f1a4a81be82a824d789c261e85bdea4b943f01886fc97da"
+    assert sha(test[0].landmark) == "7cd87bc40289daa449d441a61724c9d2918b87ba1d609bcf467a1745724ea1df"
+    assert sha(MultiFactorPipeline(model).run(*inputs[0])) == "abbd71fea7d5584b7febbde093a1e1c93951d98c7dbb4eec58b88964c2da93f8"
+    assert sha(evaluate(model, test)) == "0f5f24604ed92138931e281e9cdab6fbc12107bc045ad79336cc10a2c7717174"
+
+
+def test_baseline_tune_error_uses_the_survival_floor(experiment):
+    # No onset through yesterday means the cycle lasts at least elapsed_day days, so a personal
+    # median below the landmark is floored before scoring. The fixture alone never binds the floor.
+    from quietcycle import Rational
+    req, _, _, _ = experiment
+    ten = Rational.from_fraction(Fraction(10))
+    def shortened(case):
+        values = tuple(changed(v, value=ten) if v.name == "history.median" else v for v in case.landmark.values)
+        return changed(case, landmark=changed(case.landmark, baseline_length=ten, values=values))
+    tune = tuple(shortened(c) for c in req.tune)
+    model = fit(changed(req, tune=tune))
+    # Tune lengths 34 27 31 35 26 32 37 28 33 31 28 33, all scored against the floor 20:
+    # (196+49+121+225+36+144+289+64+169+121+64+169) / 12 = 1647/12.
+    assert [c.length for c in tune] == [34, 27, 31, 35, 26, 32, 37, 28, 33, 31, 28, 33]
+    assert model.candidates[0].name == "baseline"
+    assert model.candidates[0].tune_mse.as_fraction() == Fraction(549, 4)
+
+
+def test_forward_personal_intervals_carry_no_coverage_claim(experiment):
+    req, _, test, _ = experiment
+    model = fit(changed(req, split_mode="forward-personal"))
+    result = predict_landmark(model, test[0].landmark)
+    assert result.status == "estimate"
+    assert {i.assumption for i in result.intervals} == {"dependent-time-series-no-coverage-guarantee"}
+
+
 def test_fit_is_order_invariant(experiment):
     request, model, _, _ = experiment
     reordered = changed(request, train=tuple(reversed(request.train)), tune=tuple(reversed(request.tune)), calibration=tuple(reversed(request.calibration)))

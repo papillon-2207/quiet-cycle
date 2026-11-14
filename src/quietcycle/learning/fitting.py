@@ -57,7 +57,7 @@ def vector(landmark: Landmark, columns: tuple[ScaleColumn, ...], clipping: int, 
                 issues.append("untrained-feature." + c.name)
             value = None
         missing = value is None
-        z = Fraction(0) if missing else (value - c.center.as_fraction()) / c.scale.as_fraction()
+        z = Fraction(0) if value is None else (value - c.center.as_fraction()) / c.scale.as_fraction()
         if abs(z) > clipping:
             issues.append("clipped." + c.name)
         z = min(Fraction(clipping), max(-Fraction(clipping), z))
@@ -134,7 +134,7 @@ def fit(request: FitRequest) -> FittedModel:
     train_x = [vector(c.landmark, columns, request.clipping, request.quantization)[0] for c in train]
     tune_x = [vector(c.landmark, columns, request.clipping, request.quantization)[0] for c in tune]
     residuals = [Fraction(c.length) - c.landmark.baseline_length.as_fraction() for c in train]
-    baseline_mse = sum(((Fraction(c.length) - max(request.spec.elapsed_day, c.landmark.baseline_length.as_fraction())) ** 2 for c in tune), Fraction(0)) / len(tune)
+    baseline_mse = sum(((Fraction(c.length) - max(Fraction(request.spec.elapsed_day), c.landmark.baseline_length.as_fraction())) ** 2 for c in tune), Fraction(0)) / len(tune)
     candidates = [LinearCandidate(name="baseline", penalty=0, terms=(), coefficients=(), blend=Rational.from_fraction(Fraction(0)), tune_mse=Rational.from_fraction(baseline_mse))]
     all_terms = sorted(train_x[0])
     # Remove train-constant columns except the intercept. Unknown-at-training features

@@ -6,7 +6,7 @@ Only the latest eligible sample per rule is used; no hidden averaging or interpo
 from __future__ import annotations
 
 from hashlib import sha256
-from typing import Annotated, Literal, Self
+from typing import Annotated, Any, Literal, Self
 
 from pydantic import BeforeValidator, Field, StrictInt, model_validator
 
@@ -73,7 +73,7 @@ class DurationResearchPipeline:
         features = self.builder.build(selected, query)
         if features.snapshot_sha256 != selected.sha256:
             raise InputError("feature_provenance_mismatch")
-        common = {"configuration_sha256": self.configuration_sha256, "snapshot_sha256": selected.sha256}
+        common: dict[str, Any] = {"configuration_sha256": self.configuration_sha256, "snapshot_sha256": selected.sha256}
         if query.context.paused or query.context.mode != "natural-cycle":
             return ResearchRun(status="abstain", reason="outside-declared-scope", **common)
         weights: tuple[int, ...] | None = None

@@ -137,6 +137,53 @@ def test_fhir_unsupported_is_explicit(changes):
         fhir_adapter().from_mapping(fhir_observation(**changes))
 
 
+@pytest.mark.parametrize("coding", [
+    [{"system": "http://loinc.org", "code": ["8867-4"]}],
+    [{"system": {"nested": 1}, "code": "8867-4"}, {"system": "http://loinc.org", "code": "8867-4"}],
+])
+def test_fhir_unhashable_coding_is_rejected(coding):
+    with pytest.raises(InputError, match="invalid_fhir_observation") as caught:
+        fhir_adapter().from_mapping({"resourceType": "Bundle", "type": "collection",
+                                     "entry": [{"resource": fhir_observation(code={"coding": coding})}]})
+    assert caught.value.row == 1
+
+
+@pytest.mark.parametrize("value", ["absent", None])
+def test_fhir_effective_time_is_required(value):
+    item = fhir_observation()
+    if value == "absent":
+        del item["effectiveDateTime"]
+    else:
+        item["effectiveDateTime"] = value
+    with pytest.raises(InputError, match="invalid_fhir_observation"):
+        fhir_adapter().from_mapping(item)
+
+
+def test_fhir_non_mapping_coding_entries_are_skipped():
+    coding = ["not-a-coding", {"system": "http://loinc.org", "code": "8867-4"}]
+    assert fhir_adapter().from_mapping(fhir_observation(code={"coding": coding})).events[0].metric == "heart_rate"
+
+
+def test_fhir_two_mapped_body_sites_are_ambiguous():
+    site = {"coding": [{"system": "urn:site", "code": "a"}, {"system": "urn:site", "code": "b"}]}
+    adapter = FHIRObservationAdapter(subject_map={"Patient/p1": "demo"}, imported_at="2025-07-02T00:00:00Z",
+                                     utc_offset_minutes=0, body_site_map={("urn:site", "a"): "wrist", ("urn:site", "b"): "finger"})
+    with pytest.raises(InputError, match="unmapped_fhir_bodysite"):
+        adapter.from_mapping(fhir_observation(bodySite=site))
+
+
+def test_csv_missing_measurement_keeps_its_null_value():
+    text = to_csv(CycleDataset(events=(measured(state="missing", value=None, missing_reason="not-worn"),)))
+    event = CSVAdapter().loads(text).events[0]
+    assert (event.state, event.value, event.missing_reason) == ("missing", None, "not-worn")
+
+
+def test_fhir_two_mapped_codes_are_ambiguous():
+    coding = [{"system": "http://loinc.org", "code": "8867-4"}, {"system": "http://loinc.org", "code": "8310-5"}]
+    with pytest.raises(InputError, match="unmapped_or_ambiguous_fhir_code"):
+        fhir_adapter().from_mapping(fhir_observation(code={"coding": coding}))
+
+
 def test_fhir_missing_value_not_zero():
     item = fhir_observation()
     del item["valueQuantity"]

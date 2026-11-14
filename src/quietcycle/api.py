@@ -67,7 +67,7 @@ def create_app(*, model: FittedModel | None = None) -> FastAPI:
         return parse_model(PipelineRequest, loads(text))
 
     request_body = {"requestBody": {"required": True, "content": {"application/json": {"schema": schema}}}}
-    responses = {422: {"description": "Invalid input; error values are redacted"},
+    responses: dict[int | str, dict[str, Any]] = {422: {"description": "Invalid input; error values are redacted"},
                  413: {"description": "Input exceeds 16 MiB"}}
 
     @app.post("/v2/predict", response_model=PipelineResult, responses=responses, openapi_extra=request_body)

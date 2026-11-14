@@ -58,8 +58,9 @@ def symptom_counts(events: tuple[Event, ...]) -> tuple[SymptomCounts, ...]:
                 conflicts += 1
             else:
                 counts[reports[0].state] += 1
-        results.append(SymptomCounts(symptom=name, conflicting_days=conflicts,
-                                     recalled_reports=recalled, **counts))
+        results.append(SymptomCounts(symptom=name, present=counts["present"], absent=counts["absent"],
+                                     uncertain=counts["uncertain"], skipped=counts["skipped"],
+                                     conflicting_days=conflicts, recalled_reports=recalled))
     return tuple(results)
 
 
