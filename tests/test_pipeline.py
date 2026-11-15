@@ -151,6 +151,14 @@ def test_symptom_states_preserved_not_converted_to_onset(sample):
     assert (count.present, count.absent, count.uncertain, count.skipped, count.recalled_reports) == (1, 1, 1, 1, 4)
 
 
+def test_symptom_counts_keep_each_state_separate(sample):
+    states = ["present"] + ["absent"] * 2 + ["uncertain"] * 3 + ["skipped"] * 4
+    events = tuple(Symptom(subject_id="demo", id=f"s{i}", date=add_days("2025-06-20", i), recorded_at="2025-07-01T00:00:00Z",
+                           utc_offset_minutes=0, symptom="fatigue", state=state) for i, state in enumerate(states))
+    count = change_sample(sample, events=sample.dataset.events + events).symptoms[0]
+    assert (count.present, count.absent, count.uncertain, count.skipped) == (1, 2, 3, 4)
+
+
 def test_policy_version_and_strictness():
     assert EmpiricalPredictor().model_version != EmpiricalPredictor(Policy(bandwidth=3)).model_version
     with pytest.raises(InputError):

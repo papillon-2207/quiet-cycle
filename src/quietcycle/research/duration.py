@@ -106,9 +106,9 @@ def duration_forecast(model: DurationModel, *, horizon: int = 60,
             edges: list[tuple[tuple[int, int] | None, Fraction]] = []
             if age < len(state.duration_weights):
                 edges.append(((index, age + 1), 1 - exit_probability))
-            for target, weight in enumerate(state.exit_weights):
+            for target_index, weight in enumerate(state.exit_weights):
                 if weight:
-                    edges.append((None if target == n else (target, 1), exit_probability * Fraction(weight, exit_total)))
+                    edges.append((None if target_index == n else (target_index, 1), exit_probability * Fraction(weight, exit_total)))
             transitions[index, age] = tuple(edges)
     steps = []
     for day in range(1, horizon + 1):

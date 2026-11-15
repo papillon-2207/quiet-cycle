@@ -36,7 +36,7 @@ def load_json(path: str | Path) -> CycleDataset:
 
 
 def from_jsonl(text: str) -> CycleDataset:
-    records = []
+    records: list[Event] = []
     # Apply total size limit, not just a per-line limit.
     if len(text.encode("utf-8")) > 16 * 1024 * 1024:
         raise InputError("input_too_large")

@@ -18,6 +18,17 @@ DEFAULT_CODES = {
 }
 
 
+def _mapped(codings: Any, mapping: Mapping[tuple[str, str], str]) -> set[str]:
+    # An unhashable system or code raises TypeError; the caller reports invalid_fhir_observation.
+    found = set()
+    for c in codings:
+        if isinstance(c, Mapping):
+            key: tuple[Any, Any] = (c.get("system"), c.get("code"))
+            if key in mapping:
+                found.add(mapping[key])
+    return found
+
+
 class FHIRObservationAdapter:
     """Map explicit patient references to local pseudonyms; unknown patients are errors.
 
@@ -91,9 +102,7 @@ class FHIRObservationAdapter:
     def _coded_field(item: Mapping[str, Any], name: str, mapping: Mapping[tuple[str, str], str]) -> str | None:
         if name not in item:
             return None
-        coding = item[name].get("coding", [])
-        values = {mapping[(c.get("system"), c.get("code"))] for c in coding
-                  if isinstance(c, Mapping) and (c.get("system"), c.get("code")) in mapping}
+        values = _mapped(item[name].get("coding", []), mapping)
         if len(values) != 1:
             raise InputError("unmapped_fhir_" + name.lower())
         return next(iter(values))
@@ -115,13 +124,11 @@ class FHIRObservationAdapter:
         reference = item.get("subject", {}).get("reference")
         if reference not in self.subject_map:
             raise InputError("unmapped_fhir_subject")
-        coding = item.get("code", {}).get("coding", [])
-        matches = {self.codes[(c.get("system"), c.get("code"))] for c in coding
-                   if isinstance(c, Mapping) and (c.get("system"), c.get("code")) in self.codes}
+        matches = _mapped(item.get("code", {}).get("coding", []), self.codes)
         if len(matches) != 1:
             raise InputError("unmapped_or_ambiguous_fhir_code")
         metric = next(iter(matches))
-        measured = instant(item.get("effectiveDateTime"))
+        measured = instant(item.get("effectiveDateTime", ""))
         reported = instant(item.get("issued", self.imported_at))
         quantity = item.get("valueQuantity")
         missing = item.get("dataAbsentReason")

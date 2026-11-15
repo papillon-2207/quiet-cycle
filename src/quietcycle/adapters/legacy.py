@@ -27,11 +27,12 @@ def from_v1(request: Mapping[str, Any], *, subject_id: str,
     context = request["context"]
     if set(context) != {"mode", "changedSince", "paused"}:
         raise InputError("invalid_legacy_context")
-    records = []
+    records: list[dict[str, Any]] = []
     for old in request["events"]:
         if not isinstance(old, Mapping) or type(old.get("deleted")) is not bool:
             raise InputError("invalid_legacy_event")
-        record = {FIELDS.get(key, key): value for key, value in old.items() if key != "deleted"}
+        record: dict[str, Any] = {FIELDS[key] if key in FIELDS else key: value
+                                  for key, value in old.items() if key != "deleted"}
         if old["deleted"]:
             record["target_kind"] = old["kind"]
             record["kind"] = "delete"

@@ -5,7 +5,7 @@ from ..dates import add_days, day_difference
 from ..errors import InputError
 from ..models import CycleDataset, Query, Rational
 from ..serialization import parse_model
-from .contracts import CalibratedInterval, Contribution, FittedModel, Landmark, LearnedPrediction
+from .contracts import CalibratedInterval, Contribution, CoverageAssumption, FittedModel, Landmark, LearnedPrediction
 from .exact import conformal_radius, round_day
 from .fitting import model_digest, raw_length, subject_hash
 from .landmarks import make_landmark, spec_digest
@@ -40,7 +40,7 @@ def predict_landmark(model: FittedModel, landmark: Landmark) -> LearnedPredictio
     except (ValueError, OverflowError):
         return stop("date-domain-limit")
     intervals: list[CalibratedInterval] = []
-    assumption = "exchangeable-new-subjects-required" if model.split_mode == "new-subject" else "dependent-time-series-no-coverage-guarantee"
+    assumption: CoverageAssumption = "exchangeable-new-subjects-required" if model.split_mode == "new-subject" else "dependent-time-series-no-coverage-guarantee"
     for coverage in (800000, 900000):
         radius = conformal_radius(model.calibration_scores, coverage)
         if radius is None:
