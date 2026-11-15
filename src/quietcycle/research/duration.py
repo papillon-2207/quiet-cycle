@@ -11,10 +11,10 @@ from typing import Annotated, Literal, Self
 from pydantic import BeforeValidator, Field, StrictInt, model_validator
 
 from ..errors import InputError
-from ..models import Identifier, Model, Probability, _tuple
+from ..models import Identifier, Model, Probability, _tuple, array_bounds
 
 Weight = Annotated[StrictInt, Field(ge=0, le=1000000)]
-Weights = Annotated[tuple[Weight, ...], BeforeValidator(_tuple), Field(min_length=1, max_length=120)]
+Weights = Annotated[tuple[Weight, ...], BeforeValidator(_tuple), Field(min_length=1, max_length=120, json_schema_extra=array_bounds)]
 
 
 class DurationState(Model):
@@ -37,8 +37,8 @@ class InitialState(Model):
 
 class DurationModel(Model):
     id: Identifier
-    states: Annotated[tuple[DurationState, ...], BeforeValidator(_tuple), Field(min_length=1, max_length=8)]
-    initial: Annotated[tuple[InitialState, ...], BeforeValidator(_tuple), Field(min_length=1, max_length=512)]
+    states: Annotated[tuple[DurationState, ...], BeforeValidator(_tuple), Field(min_length=1, max_length=8, json_schema_extra=array_bounds)]
+    initial: Annotated[tuple[InitialState, ...], BeforeValidator(_tuple), Field(min_length=1, max_length=512, json_schema_extra=array_bounds)]
 
     @model_validator(mode="after")
     def dimensions(self) -> Self:

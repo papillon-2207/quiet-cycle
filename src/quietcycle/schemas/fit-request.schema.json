@@ -150,7 +150,7 @@
           "items": {
             "$ref": "#/$defs/FeatureValue"
           },
-          "maxLength": 64,
+          "maxItems": 64,
           "title": "Values",
           "type": "array"
         }
@@ -315,7 +315,7 @@
       "items": {
         "$ref": "#/$defs/LabelledCase"
       },
-      "maxLength": 5000,
+      "maxItems": 5000,
       "title": "Calibration",
       "type": "array"
     },
@@ -367,7 +367,7 @@
       "items": {
         "$ref": "#/$defs/LabelledCase"
       },
-      "maxLength": 5000,
+      "maxItems": 5000,
       "title": "Train",
       "type": "array"
     },
@@ -375,7 +375,7 @@
       "items": {
         "$ref": "#/$defs/LabelledCase"
       },
-      "maxLength": 5000,
+      "maxItems": 5000,
       "title": "Tune",
       "type": "array"
     }

@@ -214,7 +214,7 @@
                 }
               ]
             },
-            "maxLength": 50000,
+            "maxItems": 50000,
             "title": "Events",
             "type": "array"
           },

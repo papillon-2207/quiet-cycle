@@ -10,7 +10,7 @@ from typing import Annotated, Literal, Self
 from pydantic import BeforeValidator, Field, StrictBool, StrictInt, StringConstraints, model_validator
 
 from ..dates import day_difference, local_day
-from ..models import CivilDate, Identifier, Instant, Model, Query, Rational, _tuple
+from ..models import CivilDate, Identifier, Instant, Model, Query, Rational, _tuple, array_bounds
 
 Hash = Annotated[str, StringConstraints(strict=True, pattern=r"^[a-f0-9]{64}$")]
 Names = Annotated[tuple[Identifier, ...], BeforeValidator(_tuple)]
@@ -54,7 +54,7 @@ class FeatureValue(Model):
     value: Rational | None
 
 
-Values = Annotated[tuple[FeatureValue, ...], BeforeValidator(_tuple), Field(max_length=64)]
+Values = Annotated[tuple[FeatureValue, ...], BeforeValidator(_tuple), Field(max_length=64, json_schema_extra=array_bounds)]
 
 
 class Landmark(Model):
@@ -112,7 +112,7 @@ class LabelledCase(Model):
         return day_difference(self.outcome_date, self.landmark.anchor_date)
 
 
-Cases = Annotated[tuple[LabelledCase, ...], BeforeValidator(_tuple), Field(max_length=5000)]
+Cases = Annotated[tuple[LabelledCase, ...], BeforeValidator(_tuple), Field(max_length=5000, json_schema_extra=array_bounds)]
 
 
 class FitRequest(Model):
@@ -155,7 +155,7 @@ class LinearCandidate(Model):
     name: Identifier
     penalty: Annotated[StrictInt, Field(ge=0)]
     terms: Names
-    coefficients: Annotated[tuple[Rational, ...], BeforeValidator(_tuple), Field(max_length=128)]
+    coefficients: Annotated[tuple[Rational, ...], BeforeValidator(_tuple), Field(max_length=128, json_schema_extra=array_bounds)]
     blend: Rational
     tune_mse: Rational
 
@@ -172,11 +172,11 @@ class FittedModel(Model):
     schema_version: Literal["learning-1.0"] = "learning-1.0"
     algorithm: Literal["exact-landmark-ridge-ensemble-v1"] = "exact-landmark-ridge-ensemble-v1"
     spec: LandmarkSpec
-    columns: Annotated[tuple[ScaleColumn, ...], BeforeValidator(_tuple), Field(max_length=64)]
+    columns: Annotated[tuple[ScaleColumn, ...], BeforeValidator(_tuple), Field(max_length=64, json_schema_extra=array_bounds)]
     clipping: Annotated[StrictInt, Field(ge=1, le=100)]
     quantization: Annotated[StrictInt, Field(ge=1, le=1000000)]
     selected: LinearCandidate
-    candidates: Annotated[tuple[LinearCandidate, ...], BeforeValidator(_tuple), Field(max_length=33)]
+    candidates: Annotated[tuple[LinearCandidate, ...], BeforeValidator(_tuple), Field(max_length=33, json_schema_extra=array_bounds)]
     calibration_scores: Annotated[tuple[StrictInt, ...], BeforeValidator(_tuple)]
     train_count: Annotated[StrictInt, Field(ge=8)]
     tune_count: Annotated[StrictInt, Field(ge=4)]
