@@ -42,6 +42,34 @@ library cannot prove the truth of caller-supplied values. Prefer the raw event
 builder. Query context (including treatment changes) must itself reflect what was
 known at the query time; do not backfill future clinical knowledge into it.
 
+## Declaring a unit for a new measurement
+
+A metric outside the built-in unit table needs a conversion rule. Declare it in the spec so that
+it is stored and hashed with the model, and every later forecast converts the same way:
+
+```python
+from fractions import Fraction
+from quietcycle import Rational
+from quietcycle.learning import FitRequest, LandmarkSpec, UnitRuleSpec
+
+spec = LandmarkSpec(
+    metrics=("wrist_temperature", "respiratory_rate"),
+    unit_rules=(UnitRuleSpec(metric="respiratory_rate", unit="/min", canonical_unit="/min",
+                             scale=Rational.from_fraction(Fraction(1))),),
+)
+request = FitRequest(schema_version="learning-1.1", spec=spec, train=..., tune=..., calibration=...)
+```
+
+A spec with unit rules is a learning-1.1 document, and learning-1.1 requires unit rules. Rules
+cannot redefine a built-in conversion (an identical copy converts the same way but still makes the
+document learning-1.1), a metric cannot map to two
+canonical units, a rule that keeps the unit must be the identity, and `scale` and `offset` are
+limited to 64-bit numerators and denominators. A metric listed in `metrics` that has a rule is at most 59
+characters long, so that every forecast issue named after its features is a valid identifier.
+A sample whose unit has no rule still fails with `unsupported_metric_or_unit`; a feature value
+over the exact-number budget is rejected with `feature_precision_budget`. A spec without unit
+rules serializes exactly as before.
+
 ## Four partitions, not random daily rows
 
 1. Training fits scaling, missing-feature policy and ridge coefficients.

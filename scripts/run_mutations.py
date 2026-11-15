@@ -27,6 +27,16 @@ MUTATIONS = [
     ("regularize-intercept", "learning/exact.py", "penalty if i == j and i else 0", "penalty if i == j else 0", "tests/test_learning.py::test_ridge_normal_equation_exact"),
     ("schema-array-string-keywords", "models.py", "            schema[array_name] = schema.pop(name)\n", "            pass\n", "tests/test_interfaces.py::test_array_bounds_use_array_keywords"),
     ("schema-array-bound-dropped", "models.py", "            schema[array_name] = schema.pop(name)\n", "            schema.pop(name)\n", "tests/test_interfaces.py::test_each_tuple_limit_is_published"),
+    ("declared-unit-rules-ignored", "learning/landmarks.py", "DefaultFeatureBuilder(registry)", "DefaultFeatureBuilder()", "tests/test_unit_rules.py::test_rows_and_csv_and_both_units_give_the_same_features"),
+    ("builtin-rule-not-skipped", "learning/landmarks.py", "for r in spec.unit_rules if not r.same_as_builtin()})", "for r in spec.unit_rules})", "tests/test_unit_rules.py::test_rule_identical_to_a_builtin_is_accepted_as_a_no_op"),
+    ("two-canonical-units-allowed", "learning/contracts.py", "            if len(units) > 1:\n", "            if False:\n", "tests/test_unit_rules.py::test_invalid_unit_rules"),
+    ("contract-version-unchecked", "learning/contracts.py", "    if (schema_version == \"learning-1.1\") != bool(spec.unit_rules):\n", "    if False:\n", "tests/test_unit_rules.py::test_contract_version_follows_unit_rules"),
+    ("identity-rule-unchecked", "learning/contracts.py", "        if self.unit == self.canonical_unit and", "        if False and", "tests/test_unit_rules.py::test_invalid_unit_rules"),
+    ("unit-offset-dropped", "learning/landmarks.py", "r.scale.as_fraction(), r.offset.as_fraction())\n", "r.scale.as_fraction(), Fraction(0))\n", "tests/test_unit_rules.py::test_scale_and_offset_convert_exactly"),
+    ("landmark-validation-escapes", "learning/landmarks.py", "    except ValidationError as exc:\n", "    except KeyError as exc:\n", "tests/test_unit_rules.py::test_feature_precision_overflow_is_a_recorded_rejection"),
+    ("validation-error-chained", "learning/landmarks.py", "else \"invalid_landmark\") from None", "else \"invalid_landmark\") from exc", "tests/test_unit_rules.py::test_feature_precision_overflow_is_a_recorded_rejection"),
+    ("long-feature-names-accepted", "learning/contracts.py", "        if any(len(name) > 96 for name in expected_feature_names(self)):\n", "        if False:\n", "tests/test_unit_rules.py::test_derived_feature_names_fit_the_identifier_limit"),
+    ("declared-metric-name-unbounded", "learning/contracts.py", "        if any(len(f\"untrained-feature.measurement.{m}.recent\") > 96 for m in self.metrics if m in declared):\n", "        if False:\n", "tests/test_unit_rules.py::test_a_declared_metric_name_fits_its_forecast_issues"),
     ("training-time-leak", "learning/fitting.py", "if max(c.outcome_known_at for c in left) >= min(c.landmark.query.cutoff for c in right):", "if False:", "tests/test_learning.py::test_temporal_boundary_rejected"),
 ]
 

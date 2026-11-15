@@ -10,11 +10,14 @@ from fractions import Fraction
 from hashlib import sha256
 from typing import Literal
 
+from pydantic import ValidationError
+
 from ..dates import add_days, day_difference, local_day
 from ..errors import InputError
 from ..features import DefaultFeatureBuilder
 from ..ledger import snapshot
 from ..models import CycleDataset, Onset, Query, Rational, Symptom
+from ..units import UnitRegistry, UnitRule
 from ..serialization import canonical_json, parse_model
 from .contracts import FeatureValue, LabelledCase, Landmark, LandmarkSpec
 from .exact import median
@@ -33,7 +36,10 @@ def make_landmark(dataset: CycleDataset, query: Query, spec: LandmarkSpec) -> La
     if query.context.mode != "natural-cycle":
         raise InputError("outside-declared-scope")
     selected = snapshot(dataset, query)
-    features = DefaultFeatureBuilder().build(selected, query)
+    # Declared rules travel with the spec; a rule equal to a built-in adds nothing.
+    registry = UnitRegistry({(r.metric, r.unit): UnitRule(r.canonical_unit, r.scale.as_fraction(), r.offset.as_fraction())
+                             for r in spec.unit_rules if not r.same_as_builtin()})
+    features = DefaultFeatureBuilder(registry).build(selected, query)
     if features.conflicting_onsets or not features.onsets:
         raise InputError("missing-or-conflicting-onsets")
     anchor = features.onsets[-1]
@@ -113,11 +119,17 @@ def make_landmark(dataset: CycleDataset, query: Query, spec: LandmarkSpec) -> La
         # A denominator is recorded known days, not every day in the window.
         values[f"symptom.{symptom}.rate"] = Fraction(sum(usable), len(usable)) if usable else None
         values[f"symptom.{symptom}.impact"] = sum(impacts, Fraction(0)) / len(impacts) if impacts else None
-    return Landmark(subject_id=query.subject_id, anchor_id=anchor.id, anchor_date=anchor.date,
-                    query=query, spec_sha256=spec_digest(spec), snapshot_sha256=selected.sha256,
-                    baseline_length=Rational.from_fraction(center),
-                    values=tuple(FeatureValue(name=n, value=None if v is None else Rational.from_fraction(v)) for n, v in sorted(values.items())),
-                    issues=tuple(sorted(set(issues))))
+    try:
+        return Landmark(subject_id=query.subject_id, anchor_id=anchor.id, anchor_date=anchor.date,
+                        query=query, spec_sha256=spec_digest(spec), snapshot_sha256=selected.sha256,
+                        baseline_length=Rational.from_fraction(center),
+                        values=tuple(FeatureValue(name=n, value=None if v is None else Rational.from_fraction(v)) for n, v in sorted(values.items())),
+                        issues=tuple(sorted(set(issues))))
+    except ValidationError as exc:
+        # Never let a Pydantic error, which echoes values, escape; build_cases records the code.
+        errors = exc.errors()
+        cause = errors[0].get("ctx", {}).get("error") if len(errors) == 1 else None
+        raise InputError(str(cause) if isinstance(cause, ValueError) else "invalid_landmark") from None
 
 
 def label_landmark(dataset: CycleDataset, landmark: Landmark, *, labels_cutoff: str,

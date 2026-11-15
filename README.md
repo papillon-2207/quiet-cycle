@@ -373,8 +373,9 @@ quiet-cycle evaluate test-cases.json --model model.json
 quiet-cycle schema fitted-model
 ```
 
-The learning wire format is `learning-1.0`. Existing event/legacy forecast contracts remain
-version 2.0. Eleven JSON Schemas ship with the wheel. HTTP is optional:
+Learning specs, fit requests and models are `learning-1.0`, or `learning-1.1` when the spec declares unit rules (see
+[TRAINING.md](docs/TRAINING.md#declaring-a-unit-for-a-new-measurement)). Existing event/legacy
+forecast contracts remain version 2.0. Eleven JSON Schemas ship with the wheel. HTTP is optional:
 `create_app(model=fitted_model)` adds `/v3/forecast` beside `/v2/predict` and OpenAPI 3.1. There
 is no training endpoint, HTML or authentication. See [HTTP embedding](docs/HTTP.md); do not
 expose it directly to the internet.

@@ -72,6 +72,15 @@
           },
           "title": "Symptoms",
           "type": "array"
+        },
+        "unit_rules": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/UnitRuleSpec"
+          },
+          "maxItems": 32,
+          "title": "Unit Rules",
+          "type": "array"
         }
       },
       "title": "LandmarkSpec",
@@ -174,6 +183,45 @@
       ],
       "title": "ScaleColumn",
       "type": "object"
+    },
+    "UnitRuleSpec": {
+      "additionalProperties": false,
+      "description": "Exact conversion declared with the spec: canonical value = value * scale + offset.",
+      "properties": {
+        "canonical_unit": {
+          "maxLength": 32,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9\\[\\]{}./%_-]+$",
+          "title": "Canonical Unit",
+          "type": "string"
+        },
+        "metric": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$",
+          "title": "Metric",
+          "type": "string"
+        },
+        "offset": {
+          "$ref": "#/$defs/Rational"
+        },
+        "scale": {
+          "$ref": "#/$defs/Rational"
+        },
+        "unit": {
+          "maxLength": 32,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9\\[\\]{}./%_-]+$",
+          "title": "Unit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "metric",
+        "unit",
+        "canonical_unit",
+        "scale"
+      ],
+      "title": "UnitRuleSpec",
+      "type": "object"
     }
   },
   "$id": "urn:uuid:60ad4efa-ca5d-5355-91ce-b86326040ab0",
@@ -267,8 +315,11 @@
       "type": "integer"
     },
     "schema_version": {
-      "const": "learning-1.0",
       "default": "learning-1.0",
+      "enum": [
+        "learning-1.0",
+        "learning-1.1"
+      ],
       "title": "Schema Version",
       "type": "string"
     },

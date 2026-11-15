@@ -105,6 +105,7 @@ TUPLE_LIMITS = {
     ("LinearCandidate", "coefficients"): {"maxItems": 128},
     ("FittedModel", "columns"): {"maxItems": 64},
     ("FittedModel", "candidates"): {"maxItems": 33},
+    ("LandmarkSpec", "unit_rules"): {"maxItems": 32},
     ("DurationState", "duration_weights"): {"minItems": 1, "maxItems": 120},
     ("DurationState", "exit_weights"): {"minItems": 1, "maxItems": 120},
     ("DurationModel", "states"): {"minItems": 1, "maxItems": 8},
