@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- A learned forecast abstains with `feature_name_too_long` instead of raising `ValidationError`
+  when an `untrained-feature.` or `clipped.` issue for a long symptom name would exceed 96
+  characters, and `fit` raises `InputError("feature_name_too_long")` instead of `ValidationError`
+  when a `missing.` term a candidate would use is that long (see `docs/TRAINING.md`). Forecasts and
+  fits that succeed today are unchanged, and so are the errors that a fit raised before reaching
+  that term.
+
 - `from_v1` and `migrate-v1` report an invalid `imported_at` as `invalid_import_time`, the code the
   FHIR adapter uses, instead of raising `ValidationError` with the supplied value
   (`schema_validation_failed` in the CLI). It is now checked even when there are no events, after
