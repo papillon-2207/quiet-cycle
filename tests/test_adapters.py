@@ -255,3 +255,27 @@ def test_legacy_deleted_event_without_kind_is_a_row_error(position, tmp_path, ca
     path.write_text(json.dumps(old), encoding="utf-8")
     assert main(["migrate-v1", str(path), "--subject-id", "demo"]) == 2
     assert json.loads(capsys.readouterr().err)["error"]["code"] == "schema_validation_failed"
+def test_legacy_invalid_imported_at_is_an_input_error(tmp_path, capsys):
+    # from_v1 raised pydantic's ValidationError, which carries the supplied value.
+    from quietcycle.cli import main
+    old = json.loads((ROOT / "examples/legacy-v1.json").read_text())
+    with pytest.raises(InputError) as caught:
+        from_v1(old, subject_id="demo", imported_at="not-an-instant")
+    assert caught.value.code == "invalid_import_time"
+    assert "not-an-instant" not in str(caught.value)
+    path = tmp_path / "legacy.json"
+    path.write_text(json.dumps(old), encoding="utf-8")
+    assert main(["migrate-v1", str(path), "--subject-id", "demo", "--imported-at", "not-an-instant"]) == 2
+    assert json.loads(capsys.readouterr().err)["error"]["code"] == "invalid_import_time"
+    # Without events the time was never checked and the migration succeeded.
+    empty = {**old, "events": []}
+    with pytest.raises(InputError) as caught:
+        from_v1(empty, subject_id="demo", imported_at="not-an-instant")
+    assert caught.value.code == "invalid_import_time"
+    # Errors found earlier keep their codes.
+    with pytest.raises(InputError) as caught:
+        from_v1({**empty, "asOf": "not-a-date"}, subject_id="demo", imported_at="not-an-instant")
+    assert caught.value.code == "schema_validation_failed"
+    with pytest.raises(InputError) as caught:
+        from_v1({**old, "events": ["not-an-event", *old["events"]]}, subject_id="demo", imported_at="not-an-instant")
+    assert caught.value.code == "invalid_legacy_event"
