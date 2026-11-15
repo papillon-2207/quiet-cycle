@@ -18,11 +18,11 @@ actual repository URLs before publication. Do not upload under a guessed owner.
    it at PyPI and GitHub; copying a workflow does not authorize publication.
 7. Archive hashes, dependency versions, test evidence, and the signed release tag.
 
-No automated publish workflow is enabled in this handoff. CI builds and checks
+No automated publish workflow is enabled in this repository. CI builds and checks
 artifacts only. `scripts/build_local.py` invokes the standard setuptools PEP 517
 backend directly for an already provisioned environment; it is not dependency
 isolation and should not replace the clean release build.
 
 The library supports a dependency range for consumers. Research deployments should
-resolve and record an exact environment. `evidence/environment.json` describes this
-handoff's tested environment, not a universal cross-platform lock file.
+resolve and record an exact environment. `evidence/environment.json` describes the environment
+of the run in `docs/TEST_REPORT.md`, not a universal cross-platform lock file.

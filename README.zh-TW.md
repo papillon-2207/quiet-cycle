@@ -7,7 +7,7 @@
 隨附資料與訓練範例全為合成測試；不能把範例權重直接用於患者。
 
 [完整 README 與實作公式](README.md) · [研究依據與邊界](docs/EVIDENCE_REVIEW.md) ·
-[訓練流程](docs/TRAINING.md) · [實测報告](docs/TEST_REPORT.md)
+[訓練流程](docs/TRAINING.md) · [實測報告](docs/TEST_REPORT.md)
 
 ## 執行與嵌入
 

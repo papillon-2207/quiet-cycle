@@ -1,53 +1,92 @@
-# Test report — 0.3.0
+# Test report
 
-Executed on 2026-09-17, Linux x86-64, Python 3.13.5. Synthetic fixtures only;
-no clinical accuracy, contraceptive effectiveness or patient safety was evaluated.
-The prior release reports are retained under `docs/archive/`, not presented as
-current evidence.
+This report covers commit `ae76be4` on `main`: version 0.3.0 plus the changes listed under
+Unreleased in [CHANGELOG.md](../CHANGELOG.md). The checks ran on 2026-11-15 with synthetic
+fixtures only; no clinical accuracy, contraceptive effectiveness or patient safety was evaluated.
 
-## Executed checks
+The 0.3.0 report is kept in [archive/TEST_REPORT-0.3.0.md](archive/TEST_REPORT-0.3.0.md), and the
+evidence it cites is in commit `06d3f80`. The test, coverage, contract, repository, mutation, build,
+installed-wheel and environment files in `evidence/` now come from the Linux Python 3.13 run below.
+The benchmark files are unchanged since 0.3.0, `evidence/actions-pins.json` was checked by hand, and
+`evidence/matrix.json` summarizes every local run and the CI run.
+
+## Linux, Python 3.11 to 3.14
+
+Each version used a fresh copy of the commit and a new virtual environment created with uv.
+`pip install -c constraints-contracts.txt -e ".[dev,api,reference]"` ran with the pip cache
+disabled, so every distribution that pip installed was downloaded from PyPI. The interpreters were
+CPython 3.11.16, 3.12.14, 3.13.16 and 3.14.7 on x86-64, and every check below gave the same result
+on all four. `evidence/matrix.json` lists the versions of the main packages in each run; Python 3.11
+resolved NumPy 2.4.6, the others 2.5.4.
 
 | Check | Result | Evidence |
 | --- | --- | --- |
-| Full pytest | 187 passed, no failures/skips in this run | `evidence/pytest.log`, `pytest.xml` |
-| Combined statement/branch coverage | 85.64%; 2,082 statements and 774 branches | `evidence/coverage.json` |
+| Full pytest with `--fail-on-skip` | 335 passed, none skipped or failed; 1 warning | `evidence/pytest.log`, `pytest.xml` |
+| Combined statement/branch coverage | 88.61%; 2,372 statements and 876 branches | `evidence/coverage.json` |
+| Contract drift | 11 JSON Schemas and 1 default OpenAPI document unchanged | `evidence/contracts.log` |
+| Syntax / exports / documentation links | 59 Python files parse for 3.11; 29 core and 18 learning exports | `evidence/repository-check.json` |
+| Strict mypy | No issues in 31 source files | `evidence/matrix.json` |
+| Ruff | All checks passed | `evidence/matrix.json` |
+| Selected regression mutations | 95/95 caught | `evidence/mutations.json` |
+| Synthetic learning benchmark | Output byte-identical to the committed evidence | `evidence/learning-benchmark.json` |
+| `python -m build` | Wheel and sdist; setuptools 84.2.1 in an isolated environment | `evidence/build.log` |
+| `twine check --strict` | Both files passed | `evidence/matrix.json` |
+| Installed wheel, outside checkout | 24 checks, none skipped, including Node and live learned HTTP | `evidence/artifact-smoke.json` |
+
+`evidence/environment.json` lists the package versions of the 3.13 run. Every check exited with
+status 0. Only the build wrote to stderr: its progress messages and setuptools warnings about
+excluded paths that do not exist. The pytest warning is a `DeprecationWarning` raised inside
+Starlette's test client (`anyio.abc.BlockingPortal`), not in this package.
+
+## GitHub Actions
+
+[Run 43683592648](https://github.com/papillon-2207/quiet-cycle/actions/runs/43683592648) ran on the
+push of the same commit. Each job ran the install, pytest with `--fail-on-skip`, contract drift,
+strict mypy, Ruff, the build and the installed-wheel check, and all of these steps succeeded.
+Pytest reported the same warning and the same coverage total as the local runs.
+
+| Job | Runner image | Python | pytest | Installed wheel |
+| --- | --- | --- | --- | --- |
+| ubuntu-latest, 3.11 | ubuntu-26.04 | 3.11.18 | 335 passed | 24 passed, none skipped |
+| ubuntu-latest, 3.12 | ubuntu-26.04 | 3.12.16 | 335 passed | 24 passed, none skipped |
+| ubuntu-latest, 3.13 | ubuntu-26.04 | 3.13.18 | 335 passed | 24 passed, none skipped |
+| ubuntu-latest, 3.14 | ubuntu-26.04 | 3.14.10 | 335 passed | 24 passed, none skipped |
+| macos-latest, 3.13 | macos-26-arm64 | 3.13.17 | 335 passed | 24 passed, none skipped |
+| windows-latest, 3.13 | windows-2025-vs2026 | 3.13.17 | 335 passed | 24 passed, none skipped |
+
+The workflow pins actions/checkout and actions/setup-python to full commits; on 2026-11-15 these
+were still the commits of tags v4 (v4.4.0) and v5 (v5.6.0), as `evidence/actions-pins.json` records.
+Every job warned that these two actions target Node.js 20, which is deprecated, and were run on
+Node.js 24.
+
+## Inside the suite
+
+| Check | Size | Location |
+| --- | --- | --- |
 | Legacy JS/Python parity | 300 generated requests | `tests/test_reference.py` |
 | Integer kernel / display allocation | 1,400 generated cases | `tests/test_reference.py` |
 | Independent duration countdown oracle | 200 exact models | `tests/test_research.py` |
 | Ridge normal-equation check | 60 generated systems over 3 positive penalties | `tests/test_learning.py` |
 | Independent numerical ridge comparison | One NumPy linear solve, error below 1e-12 | `tests/test_learning.py` |
 | Conformal finite-sample enumeration | All 120 orderings; expected 4/5 coverage | `tests/test_learning.py` |
-| Selected regression mutations | 14/14 caught | `evidence/mutations.json` |
-| Installed wheel, outside checkout | 24 checks, including live learned HTTP | `evidence/artifact-smoke.json` |
-| Contract drift | 11 JSON Schemas and 1 default OpenAPI document | `evidence/contracts.log` |
-| Syntax / exports / documentation links | 52 Python files parse for 3.11; 29 core and 15 learning exports | `evidence/repository-check.json` |
-| Different Python hash seeds | Same serialized learned result for 0, 7 and 123456 | `tests/test_learning.py` |
+| Different Python hash seeds | Same serialized prediction from one fitted model for 0, 7 and 123456 | `tests/test_learning.py` |
 
-The generated cases are loops within tests, not extra test functions or people.
-The normal-equation certificate checks the selected ridge objective, not whether
-it is the right model for human cycles. Coverage is not proof of no defects.
+The generated cases are loops within tests, not extra test functions or human subjects. The
+normal-equation certificate checks the selected ridge objective, not whether it is the right model
+for human cycles. Coverage is not proof of no defects.
 
-## What the added tests exercise
-
-Separate train/tune/calibration/test behavior; late reports and labels; model data
-availability; person overlap; duplicate cycles; fixed-landmark mismatch; positive
-penalties; collinearity; strict numeric types; exact rounding; unbounded calibration
-sets; missing/uncertain symptoms; stream changes; completed-day windows; revised
-anchors; right censoring; explicit scope and pause checks for both raw and direct
-feature APIs; and equivalent SDK, CLI, JSON and HTTP outputs.
-
-The CLI roundtrip executes fit, loads its artifact, predicts and evaluates in fresh
-processes. Installed checks run outside the checkout using the built wheel, execute
-the included synthetic training script and compare learned SDK/CLI/localhost HTTP.
-They also check the baseline examples, Node caller, wheel RECORD hashes and no
-frontend files in the wheel.
+The suite has grown from 187 to 335 tests since 0.3.0: 128 in new files and 20 in existing ones.
+The new files cover declared unit rules, unused inputs, the order of outcome and rejection codes,
+the dataset inventory, landmark attempts and the `--fail-on-skip` option; the inventory and attempt
+counts are derived by hand in the tests. One new test in `tests/test_learning.py` pins literal
+learning-1.0 digests of a fitted model, its fit request, a landmark, a forecast and an evaluation.
 
 ## Three fixed synthetic scenarios
 
 Each uses 36 training, 18 tuning, 24 calibration and 24 test subjects/cases, with
 separated calendar blocks and no rejected fixture cases. The generator specifies
 which measurements correlate with the target; it is not a simulator validated
-against human physiology.
+against human physiology. The results are unchanged since 0.3.0.
 
 | Scenario | Learned test MAE | Baseline MAE, same cases | Interpretation |
 | --- | --- | --- | --- |
@@ -63,21 +102,19 @@ not an empirical superiority claim or a clinical sample-size study.
 
 ## Boundary of installation evidence
 
-The wheel was installed with `pip --no-deps --no-index --target` outside the source
-tree. This isolates project imports but reuses the host's dependency installation.
-The build used the provisioned setuptools PEP 517 backend through
-`scripts/build_local.py`. It is not a clean dependency-resolution build.
+The installed-wheel check installs the wheel with `pip --no-deps --no-index --target` outside the
+source tree. This isolates project imports but reuses the environment's dependencies. The build
+used `python -m build`, which installs setuptools into an isolated environment. The builds are not
+byte-reproducible: local builds of the same commit gave different wheel hashes.
 
 ## Not executed / not established
 
-- mypy, Ruff, Twine and the `build` frontend are unavailable. Package installation
-  attempts failed in this runtime; the logs remain in evidence. Runtime type
-  checks, annotation resolution and syntax parsing do not replace those tools.
-- The GitHub Actions matrix was not run. The existing full commit pins for
-  checkout v4 and setup-python v5 were rechecked through GitHub on 2026-09-17,
-  but verified pins do not constitute successful CI.
-- No Windows/macOS execution or Python 3.11/3.12/3.14 runtime execution occurred.
-  Declared support and 3.11 parsing are narrower evidence than running them.
+- Windows and macOS ran only in GitHub Actions, and only with Python 3.13. The repository check,
+  the benchmark, the mutations and Twine ran only on Linux; the workflow does not run them.
+- Every run used the pins in `constraints-contracts.txt` (Pydantic 2.13.4, FastAPI 0.128.2,
+  HTTPX 0.28.1). The lowest versions the package declares, such as Pydantic 2.12 or NumPy 1.26,
+  were not tested.
+- Nothing was uploaded. The package is not on PyPI, and `twine upload` was not run.
 - No independently authorized human-data fitting, external validation, prospective
   trial, sensor hardware validation, subgroup parity study, comprehensive FHIR
   certification, regulatory assessment or independent security review occurred.
@@ -88,8 +125,8 @@ The build used the provisioned setuptools PEP 517 backend through
 ## Reproduce
 
 ```sh
-python -m pip install -c constraints-contracts.txt -e ".[dev,api]"
-python -m pytest --cov=quietcycle --cov-report=term
+python -m pip install -c constraints-contracts.txt -e ".[dev,api,reference]"
+python -m pytest --fail-on-skip --cov=quietcycle --cov-report=term
 python scripts/generate_contracts.py --check
 python scripts/check_repository.py
 python scripts/benchmark_learning.py
@@ -98,9 +135,10 @@ python -m mypy src/quietcycle
 python -m ruff check src tests examples scripts
 python -m build
 python scripts/check_artifacts.py
+python -m twine check --strict dist/*
 ```
 
-Commands list desired release checks. Only those listed as executed above are
-claimed as executed. `constraints-tested.txt` records the observed dependencies,
-not a universal lock file. Release evidence about ZIP integrity is also supplied
-beside the handoff archive; it does not make an unexecuted clinical test pass.
+The evidence run added `-q -p no:cacheprovider --cov-report=json:evidence/coverage.json
+--junitxml=evidence/pytest.xml` to pytest. `constraints-tested.txt` records the versions observed
+in the 3.13 run, not a universal lock file. `MANIFEST.sha256` lists the SHA-256 of every tracked
+file in the commit that added this report, except itself.

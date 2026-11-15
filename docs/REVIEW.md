@@ -62,9 +62,12 @@ There is no human-trained artifact, no clinically calibrated global parameter se
 and no claim of zero error. Exact arithmetic removes a numerical ambiguity; it
 does not remove biological, measurement or sampling uncertainty.
 
-Tests and packaging checks passed as listed in TEST_REPORT. Static checkers,
-clean dependency resolution, full platform matrix and clinical validation remain
-unexecuted. No hidden fallback presents them as passes.
+Tests and packaging checks passed as listed in the
+[0.3.0 test report](archive/TEST_REPORT-0.3.0.md). Static checkers, clean dependency resolution,
+full platform matrix and clinical validation remained unexecuted for 0.3.0, and no hidden
+fallback presented them as passes. Since then mypy, Ruff, the build frontend, Twine and a CI
+matrix (Ubuntu with Python 3.11 to 3.14, macOS and Windows with 3.13) have run, and
+[TEST_REPORT.md](TEST_REPORT.md) lists what still has not, including clinical validation.
 
 ## Publication gate
 
