@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- `from_v1` and `migrate-v1` report an invalid `imported_at` as `invalid_import_time`, the code the
+  FHIR adapter uses, instead of raising `ValidationError` with the supplied value
+  (`schema_validation_failed` in the CLI). It is now checked even when there are no events, after
+  the request itself, so a migration without events no longer accepts an invalid time.
+
 - `from_v1` and `migrate-v1` report a deleted v1 event without `kind` as `schema_validation_failed`
   with its position, as for an event that is not deleted, instead of raising `KeyError`.
 

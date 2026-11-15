@@ -4,6 +4,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from pydantic import ValidationError
+
 from ..errors import InputError
 from ..models import CycleDataset, PipelineRequest, Provenance
 from ..serialization import parse_model
@@ -37,10 +39,10 @@ def from_v1(request: Mapping[str, Any], *, subject_id: str,
             record["target_kind"] = old.get("kind")  # missing: from_records reports the row
             record["kind"] = "delete"
         record["subject_id"] = subject_id
-        record["provenance"] = Provenance(source="quiet-cycle-v1", imported_at=imported_at)
+        record["provenance"] = _provenance(imported_at)
         records.append(record)
     dataset: CycleDataset = from_records(records)
-    return parse_model(PipelineRequest, {
+    result = parse_model(PipelineRequest, {
         "dataset": dataset,
         "query": {
             "subject_id": subject_id, "as_of": request["asOf"], "cutoff": request["cutoff"],
@@ -48,3 +50,13 @@ def from_v1(request: Mapping[str, Any], *, subject_id: str,
             "context": {"mode": context["mode"], "changed_since": context["changedSince"], "paused": context["paused"]},
         },
     })
+    if not records:
+        _provenance(imported_at)  # checked after the query, so its errors keep their precedence
+    return result
+
+
+def _provenance(imported_at: str | None) -> Provenance:
+    try:
+        return Provenance(source="quiet-cycle-v1", imported_at=imported_at)
+    except ValidationError:
+        raise InputError("invalid_import_time") from None
