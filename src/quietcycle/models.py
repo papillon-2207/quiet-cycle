@@ -16,7 +16,7 @@ from pydantic import (
 from .dates import DATE_PATTERN, INSTANT_PATTERN, civil, instant, local_day
 
 SCHEMA_VERSION = "2.0"
-VERSION = "0.3.0"
+VERSION = "0.4.0"
 
 CivilDate = Annotated[str, StringConstraints(strict=True, pattern=DATE_PATTERN), AfterValidator(civil)]
 Instant = Annotated[str, StringConstraints(strict=True, pattern=INSTANT_PATTERN), AfterValidator(instant)]

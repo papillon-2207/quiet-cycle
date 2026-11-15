@@ -19,10 +19,12 @@ import sys
 import tarfile
 import tempfile
 import time
+import tomllib
 import urllib.request
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
+VERSION = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
 
 
 def run(argv: list[str], *, env: dict[str, str], cwd: Path, input_text: str | None = None) -> str:
@@ -34,8 +36,8 @@ def run(argv: list[str], *, env: dict[str, str], cwd: Path, input_text: str | No
 
 
 def main() -> None:
-    wheel = ROOT / "dist/quiet_cycle-0.3.0-py3-none-any.whl"
-    source = ROOT / "dist/quiet_cycle-0.3.0.tar.gz"
+    wheel = ROOT / f"dist/quiet_cycle-{VERSION}-py3-none-any.whl"
+    source = ROOT / f"dist/quiet_cycle-{VERSION}.tar.gz"
     checks = []
     skipped = []
     with zipfile.ZipFile(wheel) as archive:
@@ -70,14 +72,15 @@ def main() -> None:
         code = '''import json, pathlib, typing, importlib.metadata, quietcycle, sys
 from importlib.resources import files
 assert pathlib.Path(quietcycle.__file__).resolve().is_relative_to(pathlib.Path(sys.argv[1]))
-assert importlib.metadata.version("quiet-cycle") == "0.3.0"
+assert importlib.metadata.version("quiet-cycle") == sys.argv[2]
+assert quietcycle.__version__ == sys.argv[2]
 assert "fastapi" not in sys.modules
 assert files("quietcycle").joinpath("py.typed").is_file()
 assert typing.get_type_hints(quietcycle.CyclePipeline.run)["return"] is quietcycle.PipelineResult
 assert len(list(files("quietcycle.schemas").iterdir())) >= 6
 print("installed-typed-core")
 '''
-        assert run([sys.executable, "-c", code, str(target)], env=env, cwd=workspace).strip() == "installed-typed-core"
+        assert run([sys.executable, "-c", code, str(target), VERSION], env=env, cwd=workspace).strip() == "installed-typed-core"
         checks.extend(["installed-location-and-version", "core-does-not-import-fastapi", "installed-type-hints-and-resources"])
         expected = json.loads((copied / "result.json").read_text())
         actual = json.loads(run([sys.executable, "-m", "quietcycle", "predict", str(copied / "request.json")], env=env, cwd=workspace))
