@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- CI pins `actions/checkout` v7.0.1 (`3d3c42e`) and `actions/setup-python` v7.1.0 (`6d4fd22`), which
+  target Node.js 24. The v4 and v5 pins target the deprecated Node.js 20, so every job warned that
+  they were being forced to run on Node.js 24. The 0.4.0 test report and
+  `evidence/actions-pins.json` still describe the run with the old pins.
+
 ## 0.4.0 (2026-11-15)
 
 - Compatibility: a forecast from `MultiFactorPipeline.run` is `learning-1.1` when the subject's
