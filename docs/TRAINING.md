@@ -98,6 +98,18 @@ impossible value (`fractional_step_count`, `negative_unsigned_measurement`,
 `temperature_below_absolute_zero`) can cause an abstention even though the spec does not read
 that metric.
 
+## Check what a dataset can support
+
+Before fitting, `dataset_inventory(dataset, spec=..., labels_cutoff=..., utc_offset_minutes=...)`
+counts each non-empty subject snapshot at the labels cutoff (one offset sets every labels day; use
+the largest in the data): events, onsets by status, intervals (confirmed, unconfirmed or excluded as
+the learner treats them, or between two onsets on one date, which the learner rejects once both are
+in a snapshot, with a count of such subjects), confirmed chains and each subject's longest, events
+made available by a later import, measurement streams by metric, unit, source, method and body site
+with measured, missing and rejected samples (a landmark fails if its own snapshot holds one), and
+unused input kinds. An invalid snapshot counts under its first error. No-onset reports are not
+checked, so this is not eligibility. Counts only, no identifiers or values.
+
 ## Four partitions, not random daily rows
 
 1. Training fits scaling, missing-feature policy and ridge coefficients.
