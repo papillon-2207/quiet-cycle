@@ -48,4 +48,4 @@ src/quietcycle/units.py                     61      5     34      5    89%   54,
 ------------------------------------------------------------------------------------
 TOTAL                                     2372    202    876    156    89%
 Coverage JSON written to file evidence/coverage.json
-335 passed, 1 warning in 27.88s
+335 passed, 1 warning in 27.04s

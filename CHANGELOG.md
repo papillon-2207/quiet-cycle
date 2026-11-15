@@ -1,6 +1,13 @@
 # Changelog
 
-## Unreleased
+## 0.4.0 (2026-11-15)
+
+- Compatibility: a forecast from `MultiFactorPipeline.run` is `learning-1.1` when the subject's
+  snapshot is valid and its visible events include an input the spec never reads; a bleeding or
+  check-in report is always such an input. Fit requests and models with `unit_rules` are
+  `learning-1.1` too. Readers that accept only `learning-1.0`, such as 0.3.0, reject these
+  documents; all other learning documents are still `learning-1.0`, and the event wire version is
+  still 2.0.
 
 - CI installs the test-only `reference` extra (NumPy), fails when any test is skipped
   (`--fail-on-skip`) and runs every check even after an earlier one fails.

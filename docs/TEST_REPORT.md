@@ -1,7 +1,7 @@
 # Test report
 
-This report covers commit `ae76be4` on `main`: version 0.3.0 plus the changes listed under
-Unreleased in [CHANGELOG.md](../CHANGELOG.md). The checks ran on 2026-11-15 with synthetic
+This report covers commit `88eb038`, which sets the version to 0.4.0; the changes since 0.3.0 are
+listed in [CHANGELOG.md](../CHANGELOG.md). The checks ran on 2026-11-15 with synthetic
 fixtures only; no clinical accuracy, contraceptive effectiveness or patient safety was evaluated.
 
 The 0.3.0 report is kept in [archive/TEST_REPORT-0.3.0.md](archive/TEST_REPORT-0.3.0.md), and the
@@ -40,7 +40,7 @@ Starlette's test client (`anyio.abc.BlockingPortal`), not in this package.
 
 ## GitHub Actions
 
-[Run 43683592648](https://github.com/papillon-2207/quiet-cycle/actions/runs/43683592648) ran on the
+[Run 43715774320](https://github.com/papillon-2207/quiet-cycle/actions/runs/43715774320) ran on the
 push of the same commit. Each job ran the install, pytest with `--fail-on-skip`, contract drift,
 strict mypy, Ruff, the build and the installed-wheel check, and all of these steps succeeded.
 Pytest reported the same warning and the same coverage total as the local runs.

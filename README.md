@@ -7,7 +7,7 @@ Import records, replay what was known at a prediction time, train a small model,
 JSON, and use that artifact in another application. No frontend, account, database, cloud model
 or training service is required.
 
-The library is executable; **clinical accuracy is not established**. This release adds a fitted
+The library is executable; **clinical accuracy is not established**. 0.3.0 added a fitted
 multifactor model to the historical baseline from 0.2.0. It does not ship human-trained weights
 and does not claim to combine every published algorithm or outperform commercial products. The
 supplied cohort is synthetic software-test data. Do not use its weights for patient-facing

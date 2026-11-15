@@ -454,7 +454,7 @@
       "type": "string"
     },
     "engine_version": {
-      "default": "0.3.0",
+      "default": "0.4.0",
       "title": "Engine Version",
       "type": "string"
     },

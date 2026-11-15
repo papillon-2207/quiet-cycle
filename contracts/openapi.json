@@ -863,7 +863,7 @@
             "type": "string"
           },
           "engine_version": {
-            "default": "0.3.0",
+            "default": "0.4.0",
             "title": "Engine Version",
             "type": "string"
           },
@@ -1268,7 +1268,7 @@
   },
   "info": {
     "title": "Quiet Cycle API",
-    "version": "0.3.0"
+    "version": "0.4.0"
   },
   "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
   "openapi": "3.1.0",
