@@ -216,8 +216,11 @@
       "type": "string"
     },
     "schema_version": {
-      "const": "learning-1.0",
       "default": "learning-1.0",
+      "enum": [
+        "learning-1.0",
+        "learning-1.1"
+      ],
       "title": "Schema Version",
       "type": "string"
     },
@@ -233,6 +236,16 @@
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}$",
       "title": "Subject Id",
       "type": "string"
+    },
+    "unused_inputs": {
+      "default": [],
+      "items": {
+        "pattern": "^(?:(?:measurement|symptom)\\.[A-Za-z0-9][A-Za-z0-9_.:-]{0,95}|bleeding|checkin)$",
+        "type": "string"
+      },
+      "title": "Unused Inputs",
+      "type": "array",
+      "uniqueItems": true
     }
   },
   "required": [

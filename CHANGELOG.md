@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- `MultiFactorPipeline.run` names the visible input kinds the model's spec never reads in
+  `LearnedPrediction.unused_inputs` (names only). Such forecasts are `learning-1.1`.
+
 - `LandmarkSpec.unit_rules` declares unit conversions for new measurements. The rules are stored
   and hashed with the model, so training and every forecast convert the same way. Documents that
   use them are `learning-1.1`; documents without them are unchanged `learning-1.0`.
