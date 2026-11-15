@@ -32,10 +32,23 @@ print(len(built.cases), built.rejected)
 example use `examples/train_multifactor.py` with the included synthetic records.
 
 Each feature snapshot uses its original query cutoff. Labels use a separate later
-snapshot. A changed or removed anchor, unknown continuity, a duplicate onset date,
-a later-discovered outcome before the landmark, and right censoring are not usable
-regression labels. Every rejected requested case is returned with a reason. Save
-that report; removing it produces a misleading complete-case benchmark.
+snapshot. Only a confirmed next onset confirming continuity with the anchor is a regression label,
+and a missing report is never read as no onset. Every other case is returned with a reason (keep it:
+dropping it gives a misleading complete-case benchmark). In order, with reports at the labels cutoff:
+
+| Situation | Code |
+| --- | --- |
+| The anchor was changed, removed, made uncertain or excluded, or another onset shares its date | `anchor-revised-after-prediction` |
+| Two onsets on the next onset's date | `conflicting-label` |
+| The next onset is before the landmark day | `retrospective-label-before-landmark` |
+| A no-onset report that could cover a day from the anchor to the next onset breaks the `make_landmark` rules: no confirmed origin, or reaching a later onset | `invalid-no-onset-report`, `conflicting-no-onset-report` |
+| The next onset confirms continuity with another onset, or a later onset confirms it with the anchor | `conflicting-label-continuity` |
+| The outcome was already known at the landmark cutoff | `outcome-already-known-at-landmark` |
+| The next onset is excluded from history | `label-excluded-from-history` |
+| The next onset is confirmed and linked to the anchor | regression label |
+| The next onset is confirmed but continuity is not, or it is uncertain and a confirmed onset follows | `outcome-interval-censored` |
+| No usable next onset, and a no-onset report reaches the landmark day or later | `outcome-right-censored` |
+| Anything else (not right censoring) | `outcome-not-observed` |
 
 Direct construction of `Landmark` / `LabelledCase` supports external ETL, but the
 library cannot prove the truth of caller-supplied values. Prefer the raw event

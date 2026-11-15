@@ -10,13 +10,13 @@ from fractions import Fraction
 from hashlib import sha256
 from typing import Literal
 
-from pydantic import ValidationError
+from pydantic import TypeAdapter, ValidationError
 
 from ..dates import add_days, day_difference, instant, local_day
 from ..errors import InputError
 from ..features import DefaultFeatureBuilder
 from ..ledger import snapshot
-from ..models import Bleeding, Checkin, CycleDataset, Event, Measurement, Onset, Query, Rational, Symptom
+from ..models import Bleeding, Checkin, CycleDataset, Event, Identifier, Measurement, NoOnset, Onset, Query, Rational, Symptom
 from ..units import UnitRegistry, UnitRule
 from ..serialization import canonical_json, parse_model
 from .contracts import FeatureValue, LabelledCase, Landmark, LandmarkSpec
@@ -38,6 +38,33 @@ def unused_inputs(spec: LandmarkSpec, events: tuple[Event, ...]) -> tuple[str, .
         elif isinstance(event, (Bleeding, Checkin)):
             names.add(event.kind)
     return tuple(sorted(names))
+
+
+def _check_reports(onsets: list[Onset], reports: list[NoOnset]) -> None:
+    """A no-onset report must start at a confirmed onset and end before the next one."""
+    by_id = {o.id: o for o in onsets}
+    for report in reports:
+        origin = by_id.get(report.anchor_id)
+        if origin is None or origin.certainty != "confirmed" or report.through < origin.date:
+            raise InputError("invalid-no-onset-report")
+        if any(origin.date < o.date <= report.through for o in onsets):
+            raise InputError("conflicting-no-onset-report")
+
+
+def _check_case_metadata(data_kind: str, cohort: str) -> None:
+    if data_kind not in ("synthetic", "observational"):
+        raise InputError("invalid_data_kind")
+    try:
+        TypeAdapter(Identifier).validate_python(cohort)
+    except ValidationError:
+        raise InputError("invalid_cohort") from None
+
+
+def _input_error(exc: ValidationError, fallback: str) -> InputError:
+    """Never let a Pydantic error, which echoes values, escape; keep a single validator's code."""
+    errors = exc.errors()
+    cause = errors[0].get("ctx", {}).get("error") if len(errors) == 1 else None
+    return InputError(str(cause) if isinstance(cause, ValueError) else fallback)
 
 
 def make_landmark(dataset: CycleDataset, query: Query, spec: LandmarkSpec) -> Landmark:
@@ -62,13 +89,7 @@ def make_landmark(dataset: CycleDataset, query: Query, spec: LandmarkSpec) -> La
         raise InputError("context-changed-within-current-cycle")
     if day_difference(query.as_of, anchor.date) != spec.elapsed_day:
         raise InputError("landmark-day-mismatch")
-    by_id = {o.id: o for o in features.onsets}
-    for report in features.no_onset:
-        origin = by_id.get(report.anchor_id)
-        if origin is None or origin.certainty != "confirmed" or report.through < origin.date:
-            raise InputError("invalid-no-onset-report")
-        if any(origin.date < o.date <= report.through for o in features.onsets):
-            raise InputError("conflicting-no-onset-report")
+    _check_reports(list(features.onsets), list(features.no_onset))
     reports = [r.through for r in features.no_onset if r.anchor_id == anchor.id]
     if not reports or max(reports) != add_days(query.as_of, -1):
         raise InputError("onset-status-unconfirmed")
@@ -139,10 +160,7 @@ def make_landmark(dataset: CycleDataset, query: Query, spec: LandmarkSpec) -> La
                         values=tuple(FeatureValue(name=n, value=None if v is None else Rational.from_fraction(v)) for n, v in sorted(values.items())),
                         issues=tuple(sorted(set(issues))))
     except ValidationError as exc:
-        # Never let a Pydantic error, which echoes values, escape; build_cases records the code.
-        errors = exc.errors()
-        cause = errors[0].get("ctx", {}).get("error") if len(errors) == 1 else None
-        raise InputError(str(cause) if isinstance(cause, ValueError) else "invalid_landmark") from None
+        raise _input_error(exc, "invalid_landmark") from None
 
 
 def _labels_cutoff(labels_cutoff: str) -> str:
@@ -152,39 +170,81 @@ def _labels_cutoff(labels_cutoff: str) -> str:
         raise InputError("invalid_labels_cutoff") from None
 
 
+def _classify_outcome(dataset: CycleDataset, *, query: Query, anchor_id: str, anchor_date: str,
+                      labels_cutoff: str) -> tuple[str, Onset | None, str | None]:
+    """("exact", next onset, when both were known) or (code, None, None), from reports visible at
+    labels_cutoff only. No report is never read as no onset."""
+    # Normalized instants share one fixed-width UTC spelling, so text order is time order.
+    labels_cutoff = _labels_cutoff(labels_cutoff)
+    if labels_cutoff <= query.cutoff:
+        raise InputError("label_cutoff_not_later")
+    try:
+        label_day = local_day(labels_cutoff, query.utc_offset_minutes)
+    except ValueError:
+        raise InputError("label_date_outside_domain") from None
+    label_q = Query(subject_id=query.subject_id, as_of=label_day,
+                    cutoff=labels_cutoff, utc_offset_minutes=query.utc_offset_minutes, context=query.context)
+    events = snapshot(dataset, label_q).events
+    onsets = sorted((e for e in events if isinstance(e, Onset)), key=lambda o: (o.date, o.id))
+    anchor = next((o for o in onsets if o.id == anchor_id), None)
+    if (anchor is None or anchor.date != anchor_date or anchor.certainty != "confirmed" or anchor.exclude_from_history
+            or [o.date for o in onsets].count(anchor_date) != 1):
+        return "anchor-revised-after-prediction", None, None
+    later = [o for o in onsets if o.date > anchor.date]
+    reports = [e for e in events if isinstance(e, NoOnset)]
+    covered = max((r.through for r in reports if r.anchor_id == anchor.id), default=None)
+    if later:
+        end = later[0]
+        if sum(o.date == end.date for o in onsets) != 1:
+            return "conflicting-label", None, None
+        if end.date < query.as_of:
+            return "retrospective-label-before-landmark", None, None
+    # Only a report that could cover a day from the anchor to the next onset bears on this outcome.
+    by_id, horizon = {o.id: o for o in onsets}, later[0].date if later else "9999-12-31"
+    relevant = [r for r in reports if r.through >= anchor.date and (
+        by_id[r.anchor_id].date < horizon if r.anchor_id in by_id else r.through <= horizon)]
+    try:
+        _check_reports(onsets, relevant)
+    except InputError as exc:
+        return exc.code, None, None
+    if later:
+        if (end.continuity == "confirmed" and end.previous_onset_id != anchor.id) or any(
+                o.previous_onset_id == anchor.id and o.continuity == "confirmed" for o in later[1:]):
+            return "conflicting-label-continuity", None, None
+        if max(anchor.available_at, end.available_at) <= query.cutoff:
+            return "outcome-already-known-at-landmark", None, None
+        if end.exclude_from_history:
+            return "label-excluded-from-history", None, None
+        if end.certainty == "confirmed":
+            # A confirmed link to another onset was rejected above, so this link is to the anchor.
+            if end.continuity == "confirmed":
+                return "exact", end, max(anchor.available_at, end.available_at)
+            # A real onset, but an unrecorded one may lie between the last report and it.
+            return "outcome-interval-censored", None, None
+        if any(o.certainty == "confirmed" for o in later[1:]):
+            # The doubtful onset may not be real, but a confirmed one bounds the outcome.
+            return "outcome-interval-censored", None, None
+    # No usable next onset: only an explicit report after the landmark censors the outcome.
+    if covered is not None and covered >= query.as_of:
+        return "outcome-right-censored", None, None
+    return "outcome-not-observed", None, None
+
+
 def label_landmark(dataset: CycleDataset, landmark: Landmark, *, labels_cutoff: str,
                    data_kind: Literal["synthetic", "observational"], cohort: str) -> LabelledCase:
     dataset = parse_model(CycleDataset, dataset)
     landmark = parse_model(Landmark, landmark)
-    q = landmark.query
-    # Normalized instants share one fixed-width UTC spelling, so text order is time order.
-    labels_cutoff = _labels_cutoff(labels_cutoff)
-    if labels_cutoff <= q.cutoff:
-        raise InputError("label_cutoff_not_later")
+    _labels_cutoff(labels_cutoff)  # a bad cutoff is reported before bad case metadata
+    _check_case_metadata(data_kind, cohort)
+    code, end, known_at = _classify_outcome(dataset, query=landmark.query, anchor_id=landmark.anchor_id,
+                                            anchor_date=landmark.anchor_date, labels_cutoff=labels_cutoff)
+    if end is None or known_at is None:
+        raise InputError(code)
     try:
-        label_day = local_day(labels_cutoff, q.utc_offset_minutes)
-    except ValueError:
-        raise InputError("label_date_outside_domain") from None
-    label_q = Query(subject_id=q.subject_id, as_of=label_day,
-                    cutoff=labels_cutoff, utc_offset_minutes=q.utc_offset_minutes, context=q.context)
-    onsets = sorted((e for e in snapshot(dataset, label_q).events if isinstance(e, Onset)), key=lambda o: (o.date, o.id))
-    anchor = next((o for o in onsets if o.id == landmark.anchor_id), None)
-    if anchor is None or anchor.date != landmark.anchor_date or anchor.certainty != "confirmed" or anchor.exclude_from_history:
-        raise InputError("anchor-revised-after-prediction")
-    later = [o for o in onsets if o.date > anchor.date]
-    if not later:
-        raise InputError("right-censored-no-known-outcome")
-    end = later[0]
-    if end.certainty != "confirmed" or end.exclude_from_history or end.previous_onset_id != anchor.id or end.continuity != "confirmed":
-        raise InputError("unconfirmed-label-continuity")
-    if sum(o.date == end.date for o in onsets) != 1:
-        raise InputError("conflicting-label")
-    if end.date < q.as_of:
-        raise InputError("retrospective-label-before-landmark")
-    if max(anchor.available_at, end.available_at) <= q.cutoff:
-        raise InputError("outcome-already-known-at-landmark")
-    return LabelledCase(landmark=landmark, outcome_date=end.date,
-                        outcome_known_at=max(anchor.available_at, end.available_at), data_kind=data_kind, cohort=cohort)
+        return LabelledCase(landmark=landmark, outcome_date=end.date, outcome_known_at=known_at,
+                            data_kind=data_kind, cohort=cohort)
+    except ValidationError as exc:
+        raise _input_error(exc, "invalid_labelled_case") from None
 
 
 @dataclass(frozen=True)
@@ -198,6 +258,7 @@ def build_cases(dataset: CycleDataset, queries: tuple[Query, ...], *, spec: Land
     """Account for every requested landmark, including censored and invalid ones."""
     # A malformed cutoff is a configuration error for the whole call, not a per-case rejection.
     labels_cutoff = _labels_cutoff(labels_cutoff)
+    _check_case_metadata(data_kind, cohort)  # and so are invalid case labels
     cases: list[LabelledCase] = []
     rejected: list[tuple[str, str, str]] = []
     for query in queries:
