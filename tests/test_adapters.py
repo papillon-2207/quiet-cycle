@@ -221,3 +221,22 @@ def test_fhir_sources_and_site_mapping():
     assert a.events[0].body_site == "oral"
     assert a.events[0].id != b.events[0].id
     assert len(a.merge(b).events) == 2
+
+
+@pytest.mark.parametrize("kind", [["onset"], {"kind": "onset"}, {"onset"}])
+def test_csv_kind_that_is_not_text_is_a_row_error(kind):
+    # A default kind of the wrong type reached a dictionary lookup and raised TypeError.
+    lines = (ROOT / "examples/events.csv").read_text(encoding="utf-8").splitlines()
+    headers = lines[0].split(",")
+    without_kind = "\n".join(",".join(v for h, v in zip(headers, line.split(",")) if h != "kind") for line in lines) + "\n"
+    with pytest.raises(InputError) as caught:
+        CSVAdapter(defaults={"kind": kind}).loads(without_kind)
+    assert (caught.value.code, caught.value.row) == ("schema_validation_failed", 2)
+    # With a kind column the default applies only to a row whose kind cell is blank.
+    second = lines[2].split(",")
+    second[headers.index("kind")] = ""
+    blank = "\n".join([*lines[:2], ",".join(second), *lines[3:]]) + "\n"
+    with pytest.raises(InputError) as caught:
+        CSVAdapter(defaults={"kind": kind}).loads(blank)
+    assert (caught.value.code, caught.value.row) == ("schema_validation_failed", 3)
+    assert len(CSVAdapter(defaults={"kind": kind}).loads("\n".join(lines) + "\n").events) == len(lines) - 1

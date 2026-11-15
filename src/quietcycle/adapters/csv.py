@@ -82,11 +82,14 @@ class CSVAdapter:
                     else:
                         record[name] = text_value
                 kind: Any = record.get("kind")  # not validated until from_records below
-                applicable = {
-                    "onset": {"previous_onset_id"},
-                    "symptom": {"impact"},
-                    "measurement": {"value", "method", "body_site", "missing_reason"},
-                }.get(kind, set())
+                try:
+                    applicable = {
+                        "onset": {"previous_onset_id"},
+                        "symptom": {"impact"},
+                        "measurement": {"value", "method", "body_site", "missing_reason"},
+                    }.get(kind, set())
+                except TypeError:  # an unhashable default kind; from_records rejects it with the row
+                    applicable = set()
                 record = {k: v for k, v in record.items() if v is not None or k in applicable}
                 provenance = {k: record.pop(k) for k in tuple(record) if k in PROVENANCE}
                 if provenance:
