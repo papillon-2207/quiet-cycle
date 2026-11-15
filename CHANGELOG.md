@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- `CSVAdapter` reports a default `kind` that is not hashable, such as a list, dict or set, as
+  `schema_validation_failed` with the row number, as it already did for other values of the wrong
+  type, instead of raising `TypeError`.
+
 - `scripts/check_artifacts.py` runs Python and Node.js by absolute paths. When either was found
   through a relative `PATH` entry, the script failed with `FileNotFoundError` once its subprocesses
   ran in the temporary workspace.
