@@ -240,3 +240,18 @@ def test_csv_kind_that_is_not_text_is_a_row_error(kind):
         CSVAdapter(defaults={"kind": kind}).loads(blank)
     assert (caught.value.code, caught.value.row) == ("schema_validation_failed", 3)
     assert len(CSVAdapter(defaults={"kind": kind}).loads("\n".join(lines) + "\n").events) == len(lines) - 1
+@pytest.mark.parametrize("position", [0, 2])
+def test_legacy_deleted_event_without_kind_is_a_row_error(position, tmp_path, capsys):
+    # A deleted v1 event without kind raised KeyError; an undeleted one was already a row error.
+    from quietcycle.cli import main
+    old = json.loads((ROOT / "examples/legacy-v1.json").read_text())
+    event = old["events"][position]
+    del event["kind"]
+    event["deleted"] = True
+    with pytest.raises(InputError) as caught:
+        from_v1(old, subject_id="demo")
+    assert (caught.value.code, caught.value.row) == ("schema_validation_failed", position + 1)
+    path = tmp_path / "legacy.json"
+    path.write_text(json.dumps(old), encoding="utf-8")
+    assert main(["migrate-v1", str(path), "--subject-id", "demo"]) == 2
+    assert json.loads(capsys.readouterr().err)["error"]["code"] == "schema_validation_failed"
