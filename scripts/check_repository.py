@@ -21,7 +21,7 @@ def main() -> None:
         for path in (ROOT / directory).rglob("*.py"):
             ast.parse(path.read_text(encoding="utf-8"), filename=str(path), feature_version=(3, 11))
             count += 1
-    metadata = tomllib.loads((ROOT / "pyproject.toml").read_text())
+    metadata = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     assert metadata["project"]["version"] == quietcycle.__version__
     assert all(hasattr(quietcycle, name) for name in public_names)
     for name in public_names:
@@ -38,7 +38,7 @@ def main() -> None:
     typing.get_type_hints(create_app)
     missing = []
     for path in [*ROOT.glob("*.md"), *(ROOT / "docs").glob("*.md")]:
-        for target in re.findall(r"\]\(([^\s)]+)\)", path.read_text()):
+        for target in re.findall(r"\]\(([^\s)]+)\)", path.read_text(encoding="utf-8")):
             target = target.split("#", 1)[0]
             if target and "://" not in target and not target.startswith("mailto:"):
                 if not (path.parent / target).exists():

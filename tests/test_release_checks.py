@@ -59,3 +59,19 @@ def test_every_skipped_check_is_named(tmp_path):
 
 def test_an_existing_failure_status_is_kept(tmp_path):
     assert run_suite(tmp_path, "skip-then-exit-3", "--fail-on-skip").returncode == 3
+
+
+def test_repository_check_does_not_depend_on_the_locale_encoding(tmp_path):
+    # Windows defaults to cp1252, which cannot decode the UTF-8 READMEs; an ASCII locale reproduces
+    # that on Linux. Á is UTF-8 c3 81, and cp1252 has no 81, so the text fails under both. The check
+    # runs on a minimal copy, so the test also works from the sdist.
+    for name in ("scripts", "src", "tests", "examples", "docs"):
+        (tmp_path / name).mkdir()
+    shutil.copy2(ROOT / "scripts" / "check_repository.py", tmp_path / "scripts")
+    pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    (tmp_path / "pyproject.toml").write_text("# Quiet Cycle（測試，Á）\n" + pyproject, encoding="utf-8")
+    (tmp_path / "README.md").write_text("# 測試 Á\n\n[專案設定](pyproject.toml)\n", encoding="utf-8")
+    env = {**os.environ, "LC_ALL": "C", "LANG": "C", "PYTHONCOERCECLOCALE": "0", "PYTHONUTF8": "0"}
+    result = subprocess.run([sys.executable, str(tmp_path / "scripts" / "check_repository.py")],
+                            cwd=tmp_path, text=True, capture_output=True, timeout=60, env=env)
+    assert result.returncode == 0, result.stderr[-500:]
