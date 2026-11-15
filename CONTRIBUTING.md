@@ -14,7 +14,7 @@ score on synthetic data is not evidence of clinical accuracy. Preserve abstentio
 in evaluation denominators and keep training, calibration, and test data separate.
 
 Run `python -m pytest`, schema drift checks, type checking, lint, and installed-wheel
-smoke tests. See `docs/TEST_REPORT.md` for what the handoff environment actually ran.
+smoke tests. See `docs/TEST_REPORT.md` for what was actually run.
 A failed check is not a reason to weaken validation or edit a golden file without
 explaining the semantic change.
 

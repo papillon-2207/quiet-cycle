@@ -1,11 +1,16 @@
-# Exact versions present during this Linux handoff. Not a cross-platform lock.
+# Versions present in the Linux Python 3.13 run of docs/TEST_REPORT.md. Not a cross-platform lock.
 pydantic==2.13.4
 pydantic_core==2.46.4
 fastapi==0.128.2
-uvicorn==0.48.0
+uvicorn==0.54.0
 httpx==0.28.1
-pytest==9.0.2
-pytest-cov==7.0.0
-numpy==2.3.5
+pytest==9.2.0
+pytest-cov==7.1.0
+numpy==2.5.4
 jsonschema==4.26.0
-setuptools==82.0.1
+# setuptools was installed by python -m build in its isolated build environment.
+setuptools==84.2.1
+mypy==1.20.2
+ruff==0.17.5
+build==1.6.1
+twine==6.2.0

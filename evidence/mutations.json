@@ -1,6 +1,6 @@
 {
-  "selected_mutations": 14,
-  "killed": 14,
+  "selected_mutations": 95,
+  "killed": 95,
   "scope": "targeted-regressions-not-exhaustive-mutation-coverage",
   "results": [
     {
@@ -9,7 +9,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.08s"
+        "1 failed in 0.04s"
       ]
     },
     {
@@ -18,7 +18,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.07s"
+        "1 failed in 0.04s"
       ]
     },
     {
@@ -27,7 +27,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "2 failed, 5 passed in 0.09s"
+        "2 failed, 5 passed in 0.05s"
       ]
     },
     {
@@ -36,7 +36,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.07s"
+        "1 failed in 0.05s"
       ]
     },
     {
@@ -45,7 +45,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed, 4 passed in 0.07s"
+        "1 failed, 4 passed in 0.03s"
       ]
     },
     {
@@ -54,7 +54,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.07s"
+        "1 failed in 0.04s"
       ]
     },
     {
@@ -63,7 +63,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.08s"
+        "1 failed in 0.05s"
       ]
     },
     {
@@ -72,7 +72,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.07s"
+        "1 failed in 0.03s"
       ]
     },
     {
@@ -81,7 +81,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "2 failed, 3 passed in 0.13s"
+        "2 failed, 3 passed in 0.11s"
       ]
     },
     {
@@ -90,7 +90,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.73s"
+        "1 failed in 0.84s"
       ]
     },
     {
@@ -99,7 +99,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "2 failed, 2 passed in 0.74s"
+        "2 failed, 2 passed in 1.16s"
       ]
     },
     {
@@ -108,7 +108,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "4 failed, 1 passed in 0.11s"
+        "4 failed, 1 passed in 0.15s"
       ]
     },
     {
@@ -117,7 +117,736 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "3 failed in 0.11s"
+        "3 failed in 0.13s"
+      ]
+    },
+    {
+      "mutation": "schema-array-string-keywords",
+      "test": "tests/test_interfaces.py::test_array_bounds_use_array_keywords",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.26s"
+      ]
+    },
+    {
+      "mutation": "schema-array-bound-dropped",
+      "test": "tests/test_interfaces.py::test_each_tuple_limit_is_published",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.30s"
+      ]
+    },
+    {
+      "mutation": "declared-unit-rules-ignored",
+      "test": "tests/test_unit_rules.py::test_rows_and_csv_and_both_units_give_the_same_features",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.11s"
+      ]
+    },
+    {
+      "mutation": "builtin-rule-not-skipped",
+      "test": "tests/test_unit_rules.py::test_rule_identical_to_a_builtin_is_accepted_as_a_no_op",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.10s"
+      ]
+    },
+    {
+      "mutation": "two-canonical-units-allowed",
+      "test": "tests/test_unit_rules.py::test_invalid_unit_rules",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "3 failed, 10 passed in 0.12s"
+      ]
+    },
+    {
+      "mutation": "contract-version-unchecked",
+      "test": "tests/test_unit_rules.py::test_contract_version_follows_unit_rules",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.35s"
+      ]
+    },
+    {
+      "mutation": "identity-rule-unchecked",
+      "test": "tests/test_unit_rules.py::test_invalid_unit_rules",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "2 failed, 11 passed in 0.11s"
+      ]
+    },
+    {
+      "mutation": "unit-offset-dropped",
+      "test": "tests/test_unit_rules.py::test_scale_and_offset_convert_exactly",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.09s"
+      ]
+    },
+    {
+      "mutation": "landmark-validation-escapes",
+      "test": "tests/test_unit_rules.py::test_feature_precision_overflow_is_a_recorded_rejection",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.10s"
+      ]
+    },
+    {
+      "mutation": "validation-error-chained",
+      "test": "tests/test_unit_rules.py::test_feature_precision_overflow_is_a_recorded_rejection",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.09s"
+      ]
+    },
+    {
+      "mutation": "long-feature-names-accepted",
+      "test": "tests/test_unit_rules.py::test_derived_feature_names_fit_the_identifier_limit",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "declared-metric-name-unbounded",
+      "test": "tests/test_unit_rules.py::test_a_declared_metric_name_fits_its_forecast_issues",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "unused-inputs-dropped",
+      "test": "tests/test_unused_inputs.py::test_unused_inputs_are_named_without_values",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.59s"
+      ]
+    },
+    {
+      "mutation": "unused-symptoms-ignored",
+      "test": "tests/test_unused_inputs.py::test_unused_inputs_are_named_without_values",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.59s"
+      ]
+    },
+    {
+      "mutation": "snapshot-error-escapes",
+      "test": "tests/test_unused_inputs.py::test_an_invalid_snapshot_abstains_without_a_list",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.56s"
+      ]
+    },
+    {
+      "mutation": "unused-uniqueness-unpublished",
+      "test": "tests/test_unused_inputs.py::test_published_schema_rejects_duplicate_unused_inputs",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.62s"
+      ]
+    },
+    {
+      "mutation": "unused-order-unchecked",
+      "test": "tests/test_unused_inputs.py::test_unused_inputs_must_be_sorted_unique_kind_names",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "2 failed, 1 passed in 0.61s"
+      ]
+    },
+    {
+      "mutation": "prediction-version-unchecked",
+      "test": "tests/test_unused_inputs.py::test_version_follows_unused_inputs",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "2 failed in 0.46s"
+      ]
+    },
+    {
+      "mutation": "labels-cutoff-compared-as-text",
+      "test": "tests/test_learning.py::test_a_later_instant_written_with_a_negative_offset_is_later",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 1.08s"
+      ]
+    },
+    {
+      "mutation": "labels-cutoff-checked-per-case-only",
+      "test": "tests/test_learning.py::test_malformed_labels_cutoff_is_an_input_error",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 1.08s"
+      ]
+    },
+    {
+      "mutation": "labels-domain-error-escapes",
+      "test": "tests/test_learning.py::test_labels_day_past_the_date_domain_is_an_input_error",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 1.10s"
+      ]
+    },
+    {
+      "mutation": "report-past-onset-accepted",
+      "test": "tests/test_outcomes.py::test_each_outcome_row",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "6 failed, 30 passed in 0.26s"
+      ]
+    },
+    {
+      "mutation": "skipped-link-accepted",
+      "test": "tests/test_outcomes.py::test_each_outcome_row",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "2 failed, 34 passed in 0.20s"
+      ]
+    },
+    {
+      "mutation": "excluded-onset-labelled",
+      "test": "tests/test_outcomes.py::test_each_outcome_row",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed, 35 passed in 0.21s"
+      ]
+    },
+    {
+      "mutation": "unlinked-onset-not-interval",
+      "test": "tests/test_outcomes.py::test_each_outcome_row",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed, 35 passed in 0.21s"
+      ]
+    },
+    {
+      "mutation": "censoring-boundary-shifted",
+      "test": "tests/test_outcomes.py::test_each_outcome_row",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed, 35 passed in 0.21s"
+      ]
+    },
+    {
+      "mutation": "report-boundary-exclusive",
+      "test": "tests/test_outcomes.py::test_each_outcome_row",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "2 failed, 34 passed in 0.20s"
+      ]
+    },
+    {
+      "mutation": "label-reports-unchecked",
+      "test": "tests/test_outcomes.py::test_each_outcome_row",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "9 failed, 27 passed in 0.26s"
+      ]
+    },
+    {
+      "mutation": "uncertain-next-not-bounded",
+      "test": "tests/test_outcomes.py::test_each_outcome_row",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "2 failed, 34 passed in 0.20s"
+      ]
+    },
+    {
+      "mutation": "skip-ignores-continuity",
+      "test": "tests/test_outcomes.py::test_each_outcome_row",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed, 35 passed in 0.20s"
+      ]
+    },
+    {
+      "mutation": "known-checked-after-exclusion",
+      "test": "tests/test_outcomes.py::test_rows_for_an_outcome_known_at_the_landmark",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed, 2 passed in 0.09s"
+      ]
+    },
+    {
+      "mutation": "case-metadata-per-case",
+      "test": "tests/test_outcomes.py::test_invalid_case_metadata_fails_the_whole_call",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "2 failed in 0.09s"
+      ]
+    },
+    {
+      "mutation": "later-cycle-reports-checked",
+      "test": "tests/test_outcomes.py::test_each_outcome_row",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "3 failed, 33 passed in 0.21s"
+      ]
+    },
+    {
+      "mutation": "unknown-origin-report-ignored",
+      "test": "tests/test_outcomes.py::test_each_outcome_row",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "3 failed, 33 passed in 0.21s"
+      ]
+    },
+    {
+      "mutation": "uncertain-origin-accepted",
+      "test": "tests/test_outcomes.py::test_landmark_report_rules",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed, 2 passed in 0.09s"
+      ]
+    },
+    {
+      "mutation": "report-before-origin-accepted",
+      "test": "tests/test_outcomes.py::test_landmark_report_rules",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed, 2 passed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "same-day-report-invalid",
+      "test": "tests/test_outcomes.py::test_a_report_through_its_own_onset_day_is_valid",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.09s"
+      ]
+    },
+    {
+      "mutation": "metadata-before-cutoff",
+      "test": "tests/test_outcomes.py::test_an_invalid_labels_cutoff_is_reported_before_case_metadata",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "window-floor-dropped",
+      "test": "tests/test_outcomes.py::test_each_outcome_row",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed, 35 passed in 0.20s"
+      ]
+    },
+    {
+      "mutation": "anchor-date-duplicate-ignored",
+      "test": "tests/test_outcomes.py::test_each_outcome_row",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed, 35 passed in 0.20s"
+      ]
+    },
+    {
+      "mutation": "anchor-exclusion-ignored",
+      "test": "tests/test_outcomes.py::test_each_outcome_row",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed, 35 passed in 0.19s"
+      ]
+    },
+    {
+      "mutation": "label-validation-escapes",
+      "test": "tests/test_outcomes.py::test_label_validation_failures_are_input_errors",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.09s"
+      ]
+    },
+    {
+      "mutation": "label-error-chained",
+      "test": "tests/test_outcomes.py::test_label_validation_failures_are_input_errors",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "inventory-reads-measurement-units",
+      "test": "tests/test_inventory.py::test_inventory_counts_every_item_by_hand",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.09s"
+      ]
+    },
+    {
+      "mutation": "inventory-ignores-offset",
+      "test": "tests/test_inventory.py::test_inventory_offset_sets_the_local_day",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.09s"
+      ]
+    },
+    {
+      "mutation": "inventory-hides-exclusion",
+      "test": "tests/test_inventory.py::test_inventory_counts_every_item_by_hand",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "inventory-drops-bad-subjects",
+      "test": "tests/test_inventory.py::test_inventory_counts_every_item_by_hand",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.09s"
+      ]
+    },
+    {
+      "mutation": "inventory-counts-unknown-subjects",
+      "test": "tests/test_inventory.py::test_a_subject_known_only_after_the_cutoff_is_not_counted",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.09s"
+      ]
+    },
+    {
+      "mutation": "inventory-run-not-reset",
+      "test": "tests/test_inventory.py::test_runs_break_at_unconfirmed_and_excluded_intervals",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "inventory-longest-is-last",
+      "test": "tests/test_inventory.py::test_runs_break_at_unconfirmed_and_excluded_intervals",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "inventory-excluded-interval-confirmed",
+      "test": "tests/test_inventory.py::test_runs_break_at_unconfirmed_and_excluded_intervals",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "inventory-any-import-time",
+      "test": "tests/test_inventory.py::test_an_import_time_before_recording_does_not_set_availability",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "inventory-stream-ignores-method",
+      "test": "tests/test_inventory.py::test_streams_are_split_by_method_and_body_site",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.06s"
+      ]
+    },
+    {
+      "mutation": "inventory-domain-error-as-offset",
+      "test": "tests/test_inventory.py::test_inventory_rejects_invalid_arguments",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed, 2 passed in 0.06s"
+      ]
+    },
+    {
+      "mutation": "inventory-same-date-confirmed",
+      "test": "tests/test_inventory.py::test_two_onsets_on_one_date_break_the_chain",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "inventory-exclusion-after-continuity",
+      "test": "tests/test_inventory.py::test_runs_break_at_unconfirmed_and_excluded_intervals",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "inventory-rejections-uncounted",
+      "test": "tests/test_inventory.py::test_streams_count_samples_the_learner_would_reject",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "inventory-registry-ignores-spec",
+      "test": "tests/test_inventory.py::test_streams_count_samples_the_learner_would_reject",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "inventory-unused-from-all-events",
+      "test": "tests/test_inventory.py::test_unused_inputs_come_from_the_snapshot",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "inventory-onset-exclusion-after-certainty",
+      "test": "tests/test_inventory.py::test_onset_precedence_and_subjects_without_onsets",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.06s"
+      ]
+    },
+    {
+      "mutation": "inventory-exclusion-before-same-date",
+      "test": "tests/test_inventory.py::test_a_same_date_pair_is_same_date_even_when_excluded",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "inventory-missing-samples-unchecked",
+      "test": "tests/test_inventory.py::test_streams_count_samples_the_learner_would_reject",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "attempts-use-hindsight",
+      "test": "tests/test_attempts.py::test_attempts_follow_what_was_known_at_each_query",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.06s"
+      ]
+    },
+    {
+      "mutation": "late-attempts-use-later-data",
+      "test": "tests/test_attempts.py::test_each_attempt_is_counted_once_with_its_own_code",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.06s"
+      ]
+    },
+    {
+      "mutation": "superseded-version-attempted",
+      "test": "tests/test_attempts.py::test_attempts_follow_what_was_known_at_each_query",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.06s"
+      ]
+    },
+    {
+      "mutation": "late-attempts-dropped",
+      "test": "tests/test_attempts.py::test_each_elapsed_day_counts_attempts_codes_and_outcomes",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.07s"
+      ]
+    },
+    {
+      "mutation": "ambiguous-anchor-classified",
+      "test": "tests/test_attempts.py::test_each_attempt_is_counted_once_with_its_own_code",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "outcome-error-escapes",
+      "test": "tests/test_attempts.py::test_each_attempt_is_counted_once_with_its_own_code",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.10s"
+      ]
+    },
+    {
+      "mutation": "query-time-ignored",
+      "test": "tests/test_attempts.py::test_query_time_and_offset_set_each_query_cutoff",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.09s"
+      ]
+    },
+    {
+      "mutation": "query-offset-ignored",
+      "test": "tests/test_attempts.py::test_query_time_and_offset_set_each_query_cutoff",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.09s"
+      ]
+    },
+    {
+      "mutation": "elapsed-order-unchecked",
+      "test": "tests/test_attempts.py::test_invalid_arguments_fail_before_any_attempt",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "2 failed, 7 passed in 0.11s"
+      ]
+    },
+    {
+      "mutation": "day-spec-not-revalidated",
+      "test": "tests/test_attempts.py::test_each_elapsed_day_counts_attempts_codes_and_outcomes",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.09s"
+      ]
+    },
+    {
+      "mutation": "recorded-at-query-invisible",
+      "test": "tests/test_attempts.py::test_boundaries_of_what_a_query_can_see",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "query-at-labels-cutoff-not-late",
+      "test": "tests/test_attempts.py::test_boundaries_of_what_a_query_can_see",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.12s"
+      ]
+    },
+    {
+      "mutation": "offset-minutes-dropped",
+      "test": "tests/test_attempts.py::test_query_time_and_offset_set_each_query_cutoff",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.09s"
+      ]
+    },
+    {
+      "mutation": "conflicting-version-first-wins",
+      "test": "tests/test_attempts.py::test_conflicting_versions_make_an_attempt_on_each_date_they_name",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "conflicting-version-last-only",
+      "test": "tests/test_attempts.py::test_conflicting_versions_make_an_attempt_on_each_date_they_name",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "query-day-past-domain-counted",
+      "test": "tests/test_attempts.py::test_boundaries_of_what_a_query_can_see",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "labels-day-unchecked",
+      "test": "tests/test_attempts.py::test_invalid_arguments_fail_before_any_attempt",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "2 failed, 7 passed in 0.09s"
+      ]
+    },
+    {
+      "mutation": "overflowing-query-dropped",
+      "test": "tests/test_attempts.py::test_boundaries_of_what_a_query_can_see",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "negative-offset-sign-lost",
+      "test": "tests/test_attempts.py::test_boundaries_of_what_a_query_can_see",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.08s"
       ]
     },
     {
@@ -126,7 +855,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.82s"
+        "1 failed in 1.12s"
       ]
     }
   ]
