@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- `scripts/check_artifacts.py` runs Python and Node.js by absolute paths. When either was found
+  through a relative `PATH` entry, the script failed with `FileNotFoundError` once its subprocesses
+  ran in the temporary workspace.
+
 - `scripts/check_artifacts.py` and `scripts/check_repository.py` exit with an error when assertions
   are disabled (`python -O` or `PYTHONOPTIMIZE`). Their checks are mostly `assert` statements, so
   they used to report passes without running them. `check_artifacts.py` also runs its

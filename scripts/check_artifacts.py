@@ -25,6 +25,9 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSION = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
+# Subprocesses run in the temporary workspace, so a path relative to the caller's directory, as
+# from a relative PATH entry, would not resolve there.
+PYTHON = os.path.abspath(sys.executable)
 
 
 def run(argv: list[str], *, env: dict[str, str], cwd: Path, input_text: str | None = None) -> str:
@@ -71,7 +74,7 @@ def main() -> None:
         # The -c snippet below also asserts; python -E ignores PYTHONOPTIMIZE here but not there.
         env = {**{k: v for k, v in os.environ.items() if k != "PYTHONOPTIMIZE"},
                "PYTHONPATH": str(target), "PYTHONNOUSERSITE": "1"}
-        run([sys.executable, "-m", "pip", "install", "--no-deps", "--no-index", "--target", str(target), str(wheel)], env=env, cwd=workspace)
+        run([PYTHON, "-m", "pip", "install", "--no-deps", "--no-index", "--target", str(target), str(wheel)], env=env, cwd=workspace)
         copied = workspace / "examples"
         shutil.copytree(ROOT / "examples", copied)
         code = '''import json, pathlib, typing, importlib.metadata, quietcycle, sys
@@ -85,47 +88,49 @@ assert typing.get_type_hints(quietcycle.CyclePipeline.run)["return"] is quietcyc
 assert len(list(files("quietcycle.schemas").iterdir())) >= 6
 print("installed-typed-core")
 '''
-        assert run([sys.executable, "-c", code, str(target), VERSION], env=env, cwd=workspace).strip() == "installed-typed-core"
+        assert run([PYTHON, "-c", code, str(target), VERSION], env=env, cwd=workspace).strip() == "installed-typed-core"
         checks.extend(["installed-location-and-version", "core-does-not-import-fastapi", "installed-type-hints-and-resources"])
         expected = json.loads((copied / "result.json").read_text())
-        actual = json.loads(run([sys.executable, "-m", "quietcycle", "predict", str(copied / "request.json")], env=env, cwd=workspace))
+        actual = json.loads(run([PYTHON, "-m", "quietcycle", "predict", str(copied / "request.json")], env=env, cwd=workspace))
         assert actual == expected
         checks.append("installed-cli-equals-golden")
         for name in ("basic.py", "from_rows.py", "custom_predictor.py", "research_pipeline.py", "fhir_import.py"):
-            output = run([sys.executable, str(copied / name)], env=env, cwd=workspace)
+            output = run([PYTHON, str(copied / name)], env=env, cwd=workspace)
             assert output.strip()
             if name == "basic.py":
                 assert json.loads(output) == expected
             if name == "research_pipeline.py":
                 assert json.loads(output)["result"]["steps"][0]["mass"] == {"numerator": "3", "denominator": "4"}
             checks.append("installed-example-" + name)
-        if shutil.which("node"):
-            node_env = {**env, "PYTHON": sys.executable}
-            actual = json.loads(run([shutil.which("node"), str(copied / "node_client.mjs")], env=node_env, cwd=workspace))
+        node = shutil.which("node")
+        if node:
+            node_env = {**env, "PYTHON": PYTHON}
+            node = os.path.abspath(node)  # as for PYTHON
+            actual = json.loads(run([node, str(copied / "node_client.mjs")], env=node_env, cwd=workspace))
             assert actual == expected
             checks.append("node-to-installed-python-json")
         else:
             skipped.append("node-client-tool-unavailable")
         learned_dir = workspace / "learned"
-        run([sys.executable, str(copied / "train_multifactor.py"), "--output", str(learned_dir)], env=env, cwd=workspace)
+        run([PYTHON, str(copied / "train_multifactor.py"), "--output", str(learned_dir)], env=env, cwd=workspace)
         learned_expected = json.loads((learned_dir / "prediction.json").read_text())
-        learned_actual = json.loads(run([sys.executable, "-m", "quietcycle", "forecast", str(learned_dir / "request.json"),
+        learned_actual = json.loads(run([PYTHON, "-m", "quietcycle", "forecast", str(learned_dir / "request.json"),
             "--model", str(learned_dir / "model.json")], env=env, cwd=workspace))
         assert learned_actual == learned_expected
         checks.append("installed-learned-training-to-cli-equals-sdk")
-        evaluated = json.loads(run([sys.executable, "-m", "quietcycle", "evaluate", str(learned_dir / "test-cases.json"),
+        evaluated = json.loads(run([PYTHON, "-m", "quietcycle", "evaluate", str(learned_dir / "test-cases.json"),
             "--model", str(learned_dir / "model.json")], env=env, cwd=workspace))
         assert evaluated == json.loads((learned_dir / "evaluation.json").read_text())
         checks.append("installed-learned-evaluation-equals-sdk")
         for schema_name in ("landmark", "labelled-case", "fit-request", "fitted-model", "learned-prediction"):
-            document = json.loads(run([sys.executable, "-m", "quietcycle", "schema", schema_name], env=env, cwd=workspace))
+            document = json.loads(run([PYTHON, "-m", "quietcycle", "schema", schema_name], env=env, cwd=workspace))
             assert document["$schema"] == "https://json-schema.org/draft/2020-12/schema"
         checks.append("installed-learning-wire-schemas")
         with socket.socket() as sock:
             sock.bind(("127.0.0.1", 0))
             port = sock.getsockname()[1]
         log = (workspace / "uvicorn.log").open("w")
-        server = subprocess.Popen([sys.executable, "-m", "uvicorn", "quietcycle.api:create_app", "--factory",
+        server = subprocess.Popen([PYTHON, "-m", "uvicorn", "quietcycle.api:create_app", "--factory",
             "--host", "127.0.0.1", "--port", str(port), "--no-access-log"], cwd=workspace, env=env, stdout=log, stderr=log)
         try:
             url = f"http://127.0.0.1:{port}"
@@ -162,7 +167,7 @@ print("installed-typed-core")
             sock.bind(("127.0.0.1", 0))
             learned_port = sock.getsockname()[1]
         learned_log = (workspace / "learned-http.log").open("w")
-        learned_server = subprocess.Popen([sys.executable, "-m", "uvicorn", "bound_app:app", "--app-dir", str(workspace),
+        learned_server = subprocess.Popen([PYTHON, "-m", "uvicorn", "bound_app:app", "--app-dir", str(workspace),
             "--host", "127.0.0.1", "--port", str(learned_port), "--no-access-log"], env=env, cwd=workspace, stdout=learned_log, stderr=learned_log)
         try:
             learned_url = f"http://127.0.0.1:{learned_port}"
