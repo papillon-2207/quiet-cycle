@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- `label_landmark` and `build_cases` compare `labels_cutoff` as an instant, not as text. A cutoff
+  equal to or earlier than the landmark cutoff now fails with `label_cutoff_not_later`; depending
+  on its spelling it could be recorded as `right-censored-no-known-outcome`, `incomplete_day`,
+  `anchor-revised-after-prediction` or `event_after_query_date`. A later cutoff written with a
+  negative offset is no longer rejected. A cutoff that is not a valid instant in 1900-01-01 to
+  2200-12-31 raises `invalid_labels_cutoff`, which `build_cases` raises once even when there are
+  no queries. A valid cutoff whose local day at a query's offset is after 2200-12-31 gives
+  `label_date_outside_domain`, which `build_cases` records for that case.
+
 - `MultiFactorPipeline.run` names the visible input kinds the model's spec never reads in
   `LearnedPrediction.unused_inputs` (names only). Such forecasts are `learning-1.1`.
 
