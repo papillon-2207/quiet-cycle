@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- CI installs the test-only `reference` extra (NumPy), fails when any test is skipped
+  (`--fail-on-skip`) and runs every check even after an earlier one fails.
+
 - `landmark_attempts` counts, for each elapsed day, the landmark queries a live scheduler would have
   made, how many were eligible, each rejection code, and the outcome code of each attempt made
   before the labels cutoff.
