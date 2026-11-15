@@ -83,6 +83,13 @@ A sample whose unit has no rule still fails with `unsupported_metric_or_unit`; a
 over the exact-number budget is rejected with `feature_precision_budget`. A spec without unit
 rules serializes exactly as before.
 
+Symptom names are not limited the same way, because models with names of 64 to 81 characters can
+already exist. A forecast whose `untrained-feature.` or `clipped.` issue would exceed 96 characters
+abstains with `feature_name_too_long`, and `fit` raises `InputError("feature_name_too_long")` when a
+`missing.` term that a candidate would use is that long. That happens from 74 characters when the
+symptom's impact is recorded for some training subjects and not for others, and from 76 characters
+when the symptom is reported, with or without an impact, for some and not for others.
+
 ## Inputs a forecast did not use
 
 `MultiFactorPipeline.run` lists, in `unused_inputs`, every visible input kind that the model's spec

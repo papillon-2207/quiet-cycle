@@ -158,8 +158,13 @@ def fit(request: FitRequest) -> FittedModel:
             # Exact least-squares blend is fitted before the known-survival floor.
             # Candidate selection scores the actual floored continuous prediction.
             mse = sum(((Fraction(c.length) - max(Fraction(request.spec.elapsed_day), c.landmark.baseline_length.as_fraction() + blend * g)) ** 2 for c, g in zip(tune, corrections)), Fraction(0)) / len(tune)
+            exact = tuple(Rational.from_fraction(b) for b in coefficients), Rational.from_fraction(blend), Rational.from_fraction(mse)
+            # Only terms that vary in training are kept, so a long missing. name fails only when used.
+            # Checked where LinearCandidate rejected it, so earlier errors keep their precedence.
+            if any(len(t) > 96 for t in terms):
+                raise InputError("feature_name_too_long")
             candidates.append(LinearCandidate(name=f"{family}-ridge-{penalty}", penalty=penalty, terms=terms,
-                coefficients=tuple(Rational.from_fraction(b) for b in coefficients), blend=Rational.from_fraction(blend), tune_mse=Rational.from_fraction(mse)))
+                coefficients=exact[0], blend=exact[1], tune_mse=exact[2]))
     # Fixed priority preserves baseline on ties, then simpler families and larger penalties.
     family_order = {"baseline": 0, "history": 1, "symptoms": 2, "wearable": 3, "combined": 4}
     selected = min(candidates, key=lambda c: (c.tune_mse.as_fraction(), family_order[c.name.split("-ridge-")[0]], -c.penalty))

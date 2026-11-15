@@ -53,11 +53,15 @@ def predict_landmark(model: FittedModel, landmark: Landmark) -> LearnedPredictio
             except (ValueError, OverflowError):
                 return stop("date-domain-limit")
             intervals.append(CalibratedInterval(nominal_coverage_ppm=coverage, start=lower, end=upper, radius_days=radius, unbounded=False, assumption=assumption))
+    names = tuple(sorted(set(landmark.issues + issues)))
+    # A spec may name a symptom whose untrained-feature. or clipped. issue exceeds the name limit.
+    if any(len(name) > 96 for name in names):
+        return stop("feature_name_too_long")
     return LearnedPrediction(model_sha256=digest, subject_id=q.subject_id, as_of=q.as_of, cutoff=q.cutoff,
         status="estimate", reason="fitted-landmark-model", point_date=point_date, point_cycle_length=point,
         raw_cycle_length=Rational.from_fraction(raw), baseline_cycle_length=landmark.baseline_length,
         intervals=tuple(intervals), contributions=tuple(Contribution(term=t, days=Rational.from_fraction(v)) for t, v in sorted(parts.items())),
-        issues=tuple(sorted(set(landmark.issues + issues))))
+        issues=names)
 
 
 class MultiFactorPipeline:
