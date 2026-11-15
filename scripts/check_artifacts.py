@@ -36,6 +36,9 @@ def run(argv: list[str], *, env: dict[str, str], cwd: Path, input_text: str | No
 
 
 def main() -> None:
+    if not __debug__:
+        # Most checks below are asserts; without them the script would report passes it never ran.
+        raise SystemExit("check_artifacts.py: assertions are disabled (-O or PYTHONOPTIMIZE)")
     wheel = ROOT / f"dist/quiet_cycle-{VERSION}-py3-none-any.whl"
     source = ROOT / f"dist/quiet_cycle-{VERSION}.tar.gz"
     checks = []
@@ -65,7 +68,9 @@ def main() -> None:
         # TMPDIR=. gives a relative path that breaks once subprocesses change directory.
         workspace = Path(temporary).resolve()
         target = workspace / "site"
-        env = {**os.environ, "PYTHONPATH": str(target), "PYTHONNOUSERSITE": "1"}
+        # The -c snippet below also asserts; python -E ignores PYTHONOPTIMIZE here but not there.
+        env = {**{k: v for k, v in os.environ.items() if k != "PYTHONOPTIMIZE"},
+               "PYTHONPATH": str(target), "PYTHONNOUSERSITE": "1"}
         run([sys.executable, "-m", "pip", "install", "--no-deps", "--no-index", "--target", str(target), str(wheel)], env=env, cwd=workspace)
         copied = workspace / "examples"
         shutil.copytree(ROOT / "examples", copied)

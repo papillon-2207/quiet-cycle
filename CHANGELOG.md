@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- `scripts/check_artifacts.py` and `scripts/check_repository.py` exit with an error when assertions
+  are disabled (`python -O` or `PYTHONOPTIMIZE`). Their checks are mostly `assert` statements, so
+  they used to report passes without running them. `check_artifacts.py` also runs its
+  subprocesses without `PYTHONOPTIMIZE`, which `python -E` would otherwise ignore only in itself.
+
 - `scripts/check_repository.py` reads Markdown and `pyproject.toml` as UTF-8, so it no longer fails
   under a locale whose default encoding is not UTF-8, such as cp1252 on Windows. CI now runs it.
 
