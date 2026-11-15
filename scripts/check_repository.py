@@ -16,6 +16,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> None:
+    if not __debug__:
+        # Its checks are asserts; without them the script would report a pass it never checked.
+        raise SystemExit("check_repository.py: assertions are disabled (-O or PYTHONOPTIMIZE)")
     count = 0
     for directory in ("src", "tests", "examples", "scripts"):
         for path in (ROOT / directory).rglob("*.py"):

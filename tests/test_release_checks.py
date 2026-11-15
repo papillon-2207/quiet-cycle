@@ -75,3 +75,12 @@ def test_repository_check_does_not_depend_on_the_locale_encoding(tmp_path):
     result = subprocess.run([sys.executable, str(tmp_path / "scripts" / "check_repository.py")],
                             cwd=tmp_path, text=True, capture_output=True, timeout=60, env=env)
     assert result.returncode == 0, result.stderr[-500:]
+@pytest.mark.parametrize("script", ["check_artifacts.py", "check_repository.py"])
+def test_release_scripts_refuse_to_run_without_assertions(tmp_path, script):
+    # Their checks are assert statements, which -O and PYTHONOPTIMIZE remove; they then reported passes.
+    env = {**os.environ, "PYTHONOPTIMIZE": "1"}
+    result = subprocess.run([sys.executable, str(ROOT / "scripts" / script)],
+                            cwd=tmp_path, text=True, capture_output=True, timeout=60, env=env)
+    assert result.returncode != 0
+    assert f"{script}: assertions are disabled" in result.stderr
+    assert result.stdout == ""
