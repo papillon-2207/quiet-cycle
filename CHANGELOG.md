@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- `scripts/check_repository.py` reads Markdown and `pyproject.toml` as UTF-8, so it no longer fails
+  under a locale whose default encoding is not UTF-8, such as cp1252 on Windows. CI now runs it.
+
 - CI pins `actions/checkout` v7.0.1 (`3d3c42e`) and `actions/setup-python` v7.1.0 (`6d4fd22`), which
   target Node.js 24. The v4 and v5 pins target the deprecated Node.js 20, so every job warned that
   they were being forced to run on Node.js 24. The 0.4.0 test report and
