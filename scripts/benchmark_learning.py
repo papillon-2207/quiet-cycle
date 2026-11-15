@@ -5,11 +5,12 @@ import json
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "examples"))
-from synthetic_cohort import cohort
 from quietcycle.learning import evaluate, fit, model_digest
 from quietcycle.serialization import canonical_json
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "examples"))
+from synthetic_cohort import cohort  # noqa: E402 (local example fixture path above)
 
 reports = {}
 for regime in ("signal", "noise", "drift"):

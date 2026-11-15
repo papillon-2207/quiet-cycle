@@ -402,7 +402,8 @@ def test_learning_schema_contracts(experiment):
 
 
 def test_model_notebook_no_hidden_clock_or_random(experiment, tmp_path):
-    import os, subprocess
+    import os
+    import subprocess
     _, model, test, _ = experiment
     path = tmp_path/"model.json"
     path.write_text(canonical_json(model))
