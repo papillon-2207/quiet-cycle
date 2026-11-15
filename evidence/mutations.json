@@ -9,7 +9,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.04s"
+        "1 failed in 0.03s"
       ]
     },
     {
@@ -18,7 +18,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.04s"
+        "1 failed in 0.05s"
       ]
     },
     {
@@ -36,7 +36,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.05s"
+        "1 failed in 0.04s"
       ]
     },
     {
@@ -45,7 +45,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed, 4 passed in 0.03s"
+        "1 failed, 4 passed in 0.02s"
       ]
     },
     {
@@ -63,7 +63,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.05s"
+        "1 failed in 0.04s"
       ]
     },
     {
@@ -81,7 +81,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "2 failed, 3 passed in 0.11s"
+        "2 failed, 3 passed in 0.12s"
       ]
     },
     {
@@ -90,7 +90,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.84s"
+        "1 failed in 1.06s"
       ]
     },
     {
@@ -99,7 +99,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "2 failed, 2 passed in 1.16s"
+        "2 failed, 2 passed in 1.11s"
       ]
     },
     {
@@ -108,7 +108,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "4 failed, 1 passed in 0.15s"
+        "4 failed, 1 passed in 0.13s"
       ]
     },
     {
@@ -126,7 +126,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.26s"
+        "1 failed in 0.25s"
       ]
     },
     {
@@ -135,7 +135,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.30s"
+        "1 failed in 0.28s"
       ]
     },
     {
@@ -144,7 +144,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.11s"
+        "1 failed in 0.10s"
       ]
     },
     {
@@ -162,7 +162,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "3 failed, 10 passed in 0.12s"
+        "3 failed, 10 passed in 0.11s"
       ]
     },
     {
@@ -171,7 +171,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.35s"
+        "1 failed in 0.34s"
       ]
     },
     {
@@ -180,7 +180,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "2 failed, 11 passed in 0.11s"
+        "2 failed, 11 passed in 0.10s"
       ]
     },
     {
@@ -207,7 +207,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.09s"
+        "1 failed in 0.10s"
       ]
     },
     {
@@ -234,7 +234,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.59s"
+        "1 failed in 0.60s"
       ]
     },
     {
@@ -252,7 +252,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.56s"
+        "1 failed in 0.57s"
       ]
     },
     {
@@ -261,7 +261,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.62s"
+        "1 failed in 0.61s"
       ]
     },
     {
@@ -279,7 +279,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "2 failed in 0.46s"
+        "2 failed in 0.59s"
       ]
     },
     {
@@ -288,7 +288,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 1.08s"
+        "1 failed in 1.06s"
       ]
     },
     {
@@ -297,7 +297,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 1.08s"
+        "1 failed in 1.07s"
       ]
     },
     {
@@ -315,7 +315,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "6 failed, 30 passed in 0.26s"
+        "6 failed, 30 passed in 0.24s"
       ]
     },
     {
@@ -324,7 +324,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "2 failed, 34 passed in 0.20s"
+        "2 failed, 34 passed in 0.21s"
       ]
     },
     {
@@ -333,7 +333,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed, 35 passed in 0.21s"
+        "1 failed, 35 passed in 0.20s"
       ]
     },
     {
@@ -342,7 +342,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed, 35 passed in 0.21s"
+        "1 failed, 35 passed in 0.20s"
       ]
     },
     {
@@ -351,7 +351,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed, 35 passed in 0.21s"
+        "1 failed, 35 passed in 0.20s"
       ]
     },
     {
@@ -369,7 +369,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "9 failed, 27 passed in 0.26s"
+        "9 failed, 27 passed in 0.27s"
       ]
     },
     {
@@ -378,7 +378,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "2 failed, 34 passed in 0.20s"
+        "2 failed, 34 passed in 0.21s"
       ]
     },
     {
@@ -387,7 +387,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed, 35 passed in 0.20s"
+        "1 failed, 35 passed in 0.19s"
       ]
     },
     {
@@ -414,7 +414,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "3 failed, 33 passed in 0.21s"
+        "3 failed, 33 passed in 0.22s"
       ]
     },
     {
@@ -432,7 +432,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed, 2 passed in 0.09s"
+        "1 failed, 2 passed in 0.08s"
       ]
     },
     {
@@ -486,7 +486,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed, 35 passed in 0.19s"
+        "1 failed, 35 passed in 0.20s"
       ]
     },
     {
@@ -522,7 +522,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.09s"
+        "1 failed in 0.08s"
       ]
     },
     {
@@ -540,7 +540,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.09s"
+        "1 failed in 0.08s"
       ]
     },
     {
@@ -549,7 +549,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.09s"
+        "1 failed in 0.08s"
       ]
     },
     {
@@ -594,7 +594,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.06s"
+        "1 failed in 0.08s"
       ]
     },
     {
@@ -603,7 +603,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed, 2 passed in 0.06s"
+        "1 failed, 2 passed in 0.08s"
       ]
     },
     {
@@ -612,7 +612,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.08s"
+        "1 failed in 0.15s"
       ]
     },
     {
@@ -657,7 +657,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.06s"
+        "1 failed in 0.07s"
       ]
     },
     {
@@ -666,7 +666,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.08s"
+        "1 failed in 0.07s"
       ]
     },
     {
@@ -684,7 +684,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.06s"
+        "1 failed in 0.07s"
       ]
     },
     {
@@ -693,7 +693,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.06s"
+        "1 failed in 0.08s"
       ]
     },
     {
@@ -702,7 +702,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.06s"
+        "1 failed in 0.07s"
       ]
     },
     {
@@ -711,7 +711,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.07s"
+        "1 failed in 0.08s"
       ]
     },
     {
@@ -729,7 +729,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.10s"
+        "1 failed in 0.09s"
       ]
     },
     {
@@ -738,7 +738,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.09s"
+        "1 failed in 0.08s"
       ]
     },
     {
@@ -765,7 +765,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.09s"
+        "1 failed in 0.08s"
       ]
     },
     {
@@ -774,7 +774,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.08s"
+        "1 failed in 0.07s"
       ]
     },
     {
@@ -783,7 +783,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.12s"
+        "1 failed in 0.08s"
       ]
     },
     {
@@ -810,7 +810,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.08s"
+        "1 failed in 0.07s"
       ]
     },
     {
@@ -819,7 +819,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.08s"
+        "1 failed in 0.09s"
       ]
     },
     {
@@ -855,7 +855,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 1.12s"
+        "1 failed in 1.23s"
       ]
     }
   ]

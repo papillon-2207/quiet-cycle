@@ -1,5 +1,5 @@
 {
-  "commit": "ae76be435726e3f16e7bc268b510c4e2c3e5f421",
+  "commit": "88eb038623ff005185ee06e38258b6ea5b32600e",
   "linux_local": {
     "method": "Each version: a fresh git archive of the commit, a new uv virtual environment, pip install -c constraints-contracts.txt -e .[dev,api,reference], then every check in docs/TEST_REPORT.md, as an unprivileged user in a UTS namespace named localhost.",
     "runs": [
@@ -29,7 +29,7 @@
         ],
         "install_downloaded_files": 62,
         "install_cache_hits": 0,
-        "pytest": "335 passed, 1 warning in 33.17s",
+        "pytest": "335 passed, 1 warning in 32.01s",
         "coverage_total": [
           "TOTAL",
           "2372",
@@ -56,7 +56,7 @@
         "mutations": "95 of 95 killed",
         "mypy": "Success: no issues found in 31 source files",
         "ruff": "All checks passed!",
-        "build": "Successfully built quiet_cycle-0.3.0.tar.gz and quiet_cycle-0.3.0-py3-none-any.whl",
+        "build": "Successfully built quiet_cycle-0.4.0.tar.gz and quiet_cycle-0.4.0-py3-none-any.whl",
         "installed_artifacts": {
           "passed": 24,
           "skipped": []
@@ -92,7 +92,7 @@
         ],
         "install_downloaded_files": 59,
         "install_cache_hits": 0,
-        "pytest": "335 passed, 1 warning in 30.13s",
+        "pytest": "335 passed, 1 warning in 28.98s",
         "coverage_total": [
           "TOTAL",
           "2372",
@@ -119,7 +119,7 @@
         "mutations": "95 of 95 killed",
         "mypy": "Success: no issues found in 31 source files",
         "ruff": "All checks passed!",
-        "build": "Successfully built quiet_cycle-0.3.0.tar.gz and quiet_cycle-0.3.0-py3-none-any.whl",
+        "build": "Successfully built quiet_cycle-0.4.0.tar.gz and quiet_cycle-0.4.0-py3-none-any.whl",
         "installed_artifacts": {
           "passed": 24,
           "skipped": []
@@ -155,7 +155,7 @@
         ],
         "install_downloaded_files": 59,
         "install_cache_hits": 0,
-        "pytest": "335 passed, 1 warning in 27.88s",
+        "pytest": "335 passed, 1 warning in 27.04s",
         "coverage_total": [
           "TOTAL",
           "2372",
@@ -182,7 +182,7 @@
         "mutations": "95 of 95 killed",
         "mypy": "Success: no issues found in 31 source files",
         "ruff": "All checks passed!",
-        "build": "Successfully built quiet_cycle-0.3.0.tar.gz and quiet_cycle-0.3.0-py3-none-any.whl",
+        "build": "Successfully built quiet_cycle-0.4.0.tar.gz and quiet_cycle-0.4.0-py3-none-any.whl",
         "installed_artifacts": {
           "passed": 24,
           "skipped": []
@@ -218,7 +218,7 @@
         ],
         "install_downloaded_files": 59,
         "install_cache_hits": 0,
-        "pytest": "335 passed, 1 warning in 21.97s",
+        "pytest": "335 passed, 1 warning in 22.22s",
         "coverage_total": [
           "TOTAL",
           "2372",
@@ -245,7 +245,7 @@
         "mutations": "95 of 95 killed",
         "mypy": "Success: no issues found in 31 source files",
         "ruff": "All checks passed!",
-        "build": "Successfully built quiet_cycle-0.3.0.tar.gz and quiet_cycle-0.3.0-py3-none-any.whl",
+        "build": "Successfully built quiet_cycle-0.4.0.tar.gz and quiet_cycle-0.4.0-py3-none-any.whl",
         "installed_artifacts": {
           "passed": 24,
           "skipped": []
@@ -258,11 +258,11 @@
     ]
   },
   "github_actions": {
-    "run_id": 43683592648,
-    "url": "https://github.com/papillon-2207/quiet-cycle/actions/runs/43683592648",
+    "run_id": 43715774320,
+    "url": "https://github.com/papillon-2207/quiet-cycle/actions/runs/43715774320",
     "event": "push",
     "workflow": "package",
-    "head_sha": "ae76be435726e3f16e7bc268b510c4e2c3e5f421",
+    "head_sha": "88eb038623ff005185ee06e38258b6ea5b32600e",
     "conclusion": "success",
     "jobs": [
       {
@@ -279,7 +279,7 @@
         },
         "image": "macos-26-arm64",
         "python": "3.13.17",
-        "pytest": "335 passed, 1 warning in 14.91s",
+        "pytest": "335 passed, 1 warning in 19.99s",
         "installed_artifacts_passed": 24,
         "installed_artifacts_skipped": [],
         "coverage_total": [
@@ -308,7 +308,7 @@
         },
         "image": "ubuntu-26.04",
         "python": "3.11.18",
-        "pytest": "335 passed, 1 warning in 14.69s",
+        "pytest": "335 passed, 1 warning in 21.78s",
         "installed_artifacts_passed": 24,
         "installed_artifacts_skipped": [],
         "coverage_total": [
@@ -337,7 +337,7 @@
         },
         "image": "ubuntu-26.04",
         "python": "3.12.16",
-        "pytest": "335 passed, 1 warning in 26.71s",
+        "pytest": "335 passed, 1 warning in 17.05s",
         "installed_artifacts_passed": 24,
         "installed_artifacts_skipped": [],
         "coverage_total": [
@@ -366,7 +366,7 @@
         },
         "image": "ubuntu-26.04",
         "python": "3.13.18",
-        "pytest": "335 passed, 1 warning in 14.78s",
+        "pytest": "335 passed, 1 warning in 18.22s",
         "installed_artifacts_passed": 24,
         "installed_artifacts_skipped": [],
         "coverage_total": [
@@ -395,7 +395,7 @@
         },
         "image": "ubuntu-26.04",
         "python": "3.14.10",
-        "pytest": "335 passed, 1 warning in 13.14s",
+        "pytest": "335 passed, 1 warning in 15.32s",
         "installed_artifacts_passed": 24,
         "installed_artifacts_skipped": [],
         "coverage_total": [
@@ -424,7 +424,7 @@
         },
         "image": "windows-2025-vs2026",
         "python": "3.13.17",
-        "pytest": "335 passed, 1 warning in 29.78s",
+        "pytest": "335 passed, 1 warning in 22.97s",
         "installed_artifacts_passed": 24,
         "installed_artifacts_skipped": [],
         "coverage_total": [
