@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- `from_v1` and `migrate-v1` report a deleted v1 event without `kind` as `schema_validation_failed`
+  with its position, as for an event that is not deleted, instead of raising `KeyError`.
+
 - `CSVAdapter` reports a default `kind` that is not hashable, such as a list, dict or set, as
   `schema_validation_failed` with the row number, as it already did for other values of the wrong
   type, instead of raising `TypeError`.

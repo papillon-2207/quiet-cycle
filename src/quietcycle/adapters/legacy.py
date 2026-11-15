@@ -34,7 +34,7 @@ def from_v1(request: Mapping[str, Any], *, subject_id: str,
         record: dict[str, Any] = {FIELDS[key] if key in FIELDS else key: value
                                   for key, value in old.items() if key != "deleted"}
         if old["deleted"]:
-            record["target_kind"] = old["kind"]
+            record["target_kind"] = old.get("kind")  # missing: from_records reports the row
             record["kind"] = "delete"
         record["subject_id"] = subject_id
         record["provenance"] = Provenance(source="quiet-cycle-v1", imported_at=imported_at)
