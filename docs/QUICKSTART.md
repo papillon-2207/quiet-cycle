@@ -5,7 +5,7 @@
 ## Install an artifact or checkout
 
 From the repository root: `python -m pip install .`.
-For the included wheel: `python -m pip install dist/quiet_cycle-0.4.0-py3-none-any.whl`.
+For the included wheel: `python -m pip install dist/quiet_cycle-0.4.1-py3-none-any.whl`.
 Both routes resolve Pydantic if it is not installed. An offline environment needs
 the appropriate dependency wheels; the repository does not bundle them.
 
