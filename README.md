@@ -221,7 +221,9 @@ linear-system solution, not prediction accuracy. See
 Candidate families: history, history+symptoms, history+wearables, and combined with
 interactions. Default penalties are 1, 10 and 100; a pure personal-baseline candidate is always
 included. These are a small predeclared search space, not an exhaustive model search or a
-published state-of-the-art claim.
+published state-of-the-art claim. A penalty has at most 81 digits, so that every candidate name
+fits the 96-character identifier limit; `fit` raises `InputError("ridge_penalty_too_large")` for a
+longer one, unless an exact-arithmetic budget error comes first.
 
 ### 5. Held-out blending and candidate selection
 
