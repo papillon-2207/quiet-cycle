@@ -89,6 +89,9 @@ abstains with `feature_name_too_long`, and `fit` raises `InputError("feature_nam
 `missing.` term that a candidate would use is that long. That happens from 74 characters when the
 symptom's impact is recorded for some training subjects and not for others, and from 76 characters
 when the symptom is reported, with or without an impact, for some and not for others.
+A symptom of 77 characters or more that is reported with two different states on one day of the
+recent window makes its `conflicting-symptom.` issue too long, so the landmark fails with
+`invalid_landmark`: `build_cases` records a rejection and a forecast abstains with that code.
 
 ## Inputs a forecast did not use
 
@@ -196,6 +199,14 @@ selection and publication authorization separately in the host's audit trail.
 raw length minus the personal baseline; they are not causal explanations.
 An interval with null bounds and `unbounded=true` means insufficient calibration
 rank, not that every future date has equal probability.
+
+An abstention gives one reason. A paused query, or one outside `natural-cycle` mode, abstains with
+`paused` or `outside-declared-scope` before its snapshot is checked, so data errors in that
+snapshot are not reported then. Otherwise an invalid snapshot gives one error: the first event,
+in dataset order, that is dated after the query, reports an incomplete day, or repeats an earlier
+event's id and revision with different content; failing that, the first event id, in sorted
+order, whose versions change kind or go back in time. Other errors show only once that one is
+fixed.
 
 `evaluate()` preserves attempted, estimated, abstained, maximum error, MAE, MSE,
 ±1/±3-day counts, coverage, unbounded counts and finite interval width. Report it

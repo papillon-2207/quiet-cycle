@@ -188,7 +188,10 @@ $q=1000$ bound outliers and exact-arithmetic cost; clipped values are flagged. T
 positive infinity. Two predeclared interactions are temperature-change × heart-rate-change and
 fatigue-rate × sleep-change. They use the standardized values. An absent input has zero
 interaction; missing indicators remain available. Train-constant columns are removed except
-intercept. See [`learning.fitting.fit_columns` and `vector`](src/quietcycle/learning/fitting.py).
+intercept. That includes the missing indicator of a feature that was never missing in training:
+when such a feature is missing at forecast time, it enters as $z=0$, the training median, and the
+forecast carries no issue for it; only the landmark's `null` value shows it. See
+[`learning.fitting.fit_columns` and `vector`](src/quietcycle/learning/fitting.py).
 
 ### 4. Exact regularized residual models
 
