@@ -1,5 +1,5 @@
 {
-  "commit": "88eb038623ff005185ee06e38258b6ea5b32600e",
+  "commit": "a570802f6198bd94f1d915f466a781fd19930728",
   "linux_local": {
     "method": "Each version: a fresh git archive of the commit, a new uv virtual environment, pip install -c constraints-contracts.txt -e .[dev,api,reference], then every check in docs/TEST_REPORT.md, as an unprivileged user in a UTS namespace named localhost.",
     "runs": [
@@ -15,11 +15,11 @@
           "anyio": "4.16.0",
           "pytest": "9.2.0",
           "pytest-cov": "7.1.0",
-          "coverage": "7.17.3",
+          "coverage": "7.17.4",
           "numpy": "2.4.6",
           "jsonschema": "4.26.0",
           "mypy": "1.20.2",
-          "ruff": "0.17.5",
+          "ruff": "0.17.6",
           "build": "1.6.1",
           "twine": "6.2.0",
           "pip": "26.3"
@@ -29,34 +29,34 @@
         ],
         "install_downloaded_files": 62,
         "install_cache_hits": 0,
-        "pytest": "335 passed, 1 warning in 32.01s",
+        "pytest": "377 passed, 1 warning in 66.71s (0:01:06)",
         "coverage_total": [
           "TOTAL",
-          "2372",
-          "202",
-          "876",
-          "156",
-          "89%"
+          "2401",
+          "180",
+          "886",
+          "150",
+          "90%"
         ],
         "pytest_junit": {
           "errors": 0,
           "failures": 0,
           "skipped": 0,
-          "tests": 335
+          "tests": 377
         },
         "contracts": "12 contracts checked",
         "repository_check": {
-          "python_311_parse_files": 59,
+          "python_311_parse_files": 60,
           "public_exports": 29,
           "learning_public_exports": 18,
           "missing_markdown_targets": [],
           "frontend": false
         },
         "benchmark_evidence_unchanged": true,
-        "mutations": "95 of 95 killed",
+        "mutations": "114 of 114 killed",
         "mypy": "Success: no issues found in 31 source files",
         "ruff": "All checks passed!",
-        "build": "Successfully built quiet_cycle-0.4.0.tar.gz and quiet_cycle-0.4.0-py3-none-any.whl",
+        "build": "Successfully built quiet_cycle-0.4.1.tar.gz and quiet_cycle-0.4.1-py3-none-any.whl",
         "installed_artifacts": {
           "passed": 24,
           "skipped": []
@@ -78,11 +78,11 @@
           "anyio": "4.16.0",
           "pytest": "9.2.0",
           "pytest-cov": "7.1.0",
-          "coverage": "7.17.3",
-          "numpy": "2.5.4",
+          "coverage": "7.17.4",
+          "numpy": "2.5.5",
           "jsonschema": "4.26.0",
           "mypy": "1.20.2",
-          "ruff": "0.17.5",
+          "ruff": "0.17.6",
           "build": "1.6.1",
           "twine": "6.2.0",
           "pip": "26.3"
@@ -92,34 +92,34 @@
         ],
         "install_downloaded_files": 59,
         "install_cache_hits": 0,
-        "pytest": "335 passed, 1 warning in 28.98s",
+        "pytest": "377 passed, 1 warning in 58.83s",
         "coverage_total": [
           "TOTAL",
-          "2372",
-          "202",
-          "876",
-          "156",
-          "89%"
+          "2401",
+          "180",
+          "886",
+          "150",
+          "90%"
         ],
         "pytest_junit": {
           "errors": 0,
           "failures": 0,
           "skipped": 0,
-          "tests": 335
+          "tests": 377
         },
         "contracts": "12 contracts checked",
         "repository_check": {
-          "python_311_parse_files": 59,
+          "python_311_parse_files": 60,
           "public_exports": 29,
           "learning_public_exports": 18,
           "missing_markdown_targets": [],
           "frontend": false
         },
         "benchmark_evidence_unchanged": true,
-        "mutations": "95 of 95 killed",
+        "mutations": "114 of 114 killed",
         "mypy": "Success: no issues found in 31 source files",
         "ruff": "All checks passed!",
-        "build": "Successfully built quiet_cycle-0.4.0.tar.gz and quiet_cycle-0.4.0-py3-none-any.whl",
+        "build": "Successfully built quiet_cycle-0.4.1.tar.gz and quiet_cycle-0.4.1-py3-none-any.whl",
         "installed_artifacts": {
           "passed": 24,
           "skipped": []
@@ -141,11 +141,11 @@
           "anyio": "4.16.0",
           "pytest": "9.2.0",
           "pytest-cov": "7.1.0",
-          "coverage": "7.17.3",
-          "numpy": "2.5.4",
+          "coverage": "7.17.4",
+          "numpy": "2.5.5",
           "jsonschema": "4.26.0",
           "mypy": "1.20.2",
-          "ruff": "0.17.5",
+          "ruff": "0.17.6",
           "build": "1.6.1",
           "twine": "6.2.0",
           "pip": "26.3"
@@ -155,34 +155,34 @@
         ],
         "install_downloaded_files": 59,
         "install_cache_hits": 0,
-        "pytest": "335 passed, 1 warning in 27.04s",
+        "pytest": "377 passed, 1 warning in 53.17s",
         "coverage_total": [
           "TOTAL",
-          "2372",
-          "202",
-          "876",
-          "156",
-          "89%"
+          "2401",
+          "180",
+          "886",
+          "150",
+          "90%"
         ],
         "pytest_junit": {
           "errors": 0,
           "failures": 0,
           "skipped": 0,
-          "tests": 335
+          "tests": 377
         },
         "contracts": "12 contracts checked",
         "repository_check": {
-          "python_311_parse_files": 59,
+          "python_311_parse_files": 60,
           "public_exports": 29,
           "learning_public_exports": 18,
           "missing_markdown_targets": [],
           "frontend": false
         },
         "benchmark_evidence_unchanged": true,
-        "mutations": "95 of 95 killed",
+        "mutations": "114 of 114 killed",
         "mypy": "Success: no issues found in 31 source files",
         "ruff": "All checks passed!",
-        "build": "Successfully built quiet_cycle-0.4.0.tar.gz and quiet_cycle-0.4.0-py3-none-any.whl",
+        "build": "Successfully built quiet_cycle-0.4.1.tar.gz and quiet_cycle-0.4.1-py3-none-any.whl",
         "installed_artifacts": {
           "passed": 24,
           "skipped": []
@@ -204,11 +204,11 @@
           "anyio": "4.16.0",
           "pytest": "9.2.0",
           "pytest-cov": "7.1.0",
-          "coverage": "7.17.3",
-          "numpy": "2.5.4",
+          "coverage": "7.17.4",
+          "numpy": "2.5.5",
           "jsonschema": "4.26.0",
           "mypy": "1.20.2",
-          "ruff": "0.17.5",
+          "ruff": "0.17.6",
           "build": "1.6.1",
           "twine": "6.2.0",
           "pip": "26.3"
@@ -218,34 +218,34 @@
         ],
         "install_downloaded_files": 59,
         "install_cache_hits": 0,
-        "pytest": "335 passed, 1 warning in 22.22s",
+        "pytest": "377 passed, 1 warning in 35.17s",
         "coverage_total": [
           "TOTAL",
-          "2372",
-          "202",
-          "876",
-          "156",
-          "89%"
+          "2401",
+          "180",
+          "886",
+          "150",
+          "90%"
         ],
         "pytest_junit": {
           "errors": 0,
           "failures": 0,
           "skipped": 0,
-          "tests": 335
+          "tests": 377
         },
         "contracts": "12 contracts checked",
         "repository_check": {
-          "python_311_parse_files": 59,
+          "python_311_parse_files": 60,
           "public_exports": 29,
           "learning_public_exports": 18,
           "missing_markdown_targets": [],
           "frontend": false
         },
         "benchmark_evidence_unchanged": true,
-        "mutations": "95 of 95 killed",
+        "mutations": "114 of 114 killed",
         "mypy": "Success: no issues found in 31 source files",
         "ruff": "All checks passed!",
-        "build": "Successfully built quiet_cycle-0.4.0.tar.gz and quiet_cycle-0.4.0-py3-none-any.whl",
+        "build": "Successfully built quiet_cycle-0.4.1.tar.gz and quiet_cycle-0.4.1-py3-none-any.whl",
         "installed_artifacts": {
           "passed": 24,
           "skipped": []
@@ -258,11 +258,11 @@
     ]
   },
   "github_actions": {
-    "run_id": 43715774320,
-    "url": "https://github.com/papillon-2207/quiet-cycle/actions/runs/43715774320",
+    "run_id": 44995609311,
+    "url": "https://github.com/papillon-2207/quiet-cycle/actions/runs/44995609311",
     "event": "push",
     "workflow": "package",
-    "head_sha": "88eb038623ff005185ee06e38258b6ea5b32600e",
+    "head_sha": "a570802f6198bd94f1d915f466a781fd19930728",
     "conclusion": "success",
     "jobs": [
       {
@@ -272,27 +272,29 @@
           "Run python -m pip install -c constraints-contracts.txt -e \".[dev,api,reference]\"": "success",
           "Run python -m pytest --fail-on-skip --cov=quietcycle --cov-report=term": "success",
           "Run python scripts/generate_contracts.py --check": "success",
+          "Run python scripts/check_repository.py": "success",
           "Run python -m mypy src/quietcycle": "success",
           "Run python -m ruff check src tests examples scripts": "success",
           "Run python -m build": "success",
-          "Run python scripts/check_artifacts.py": "success"
+          "Run python scripts/check_artifacts.py": "success",
+          "Run python -m twine check --strict dist/*": "success",
+          "Run python scripts/benchmark_learning.py": "success",
+          "Run python scripts/run_mutations.py": "skipped"
         },
         "image": "macos-26-arm64",
         "python": "3.13.17",
-        "pytest": "335 passed, 1 warning in 19.99s",
+        "pytest": "377 passed, 1 warning in 26.66s",
         "installed_artifacts_passed": 24,
         "installed_artifacts_skipped": [],
         "coverage_total": [
           "TOTAL",
-          "2372",
-          "202",
-          "876",
-          "156",
-          "89%"
+          "2401",
+          "180",
+          "886",
+          "150",
+          "90%"
         ],
-        "warnings": [
-          "##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/"
-        ]
+        "warnings": []
       },
       {
         "name": "test (ubuntu-latest, 3.11)",
@@ -301,27 +303,29 @@
           "Run python -m pip install -c constraints-contracts.txt -e \".[dev,api,reference]\"": "success",
           "Run python -m pytest --fail-on-skip --cov=quietcycle --cov-report=term": "success",
           "Run python scripts/generate_contracts.py --check": "success",
+          "Run python scripts/check_repository.py": "success",
           "Run python -m mypy src/quietcycle": "success",
           "Run python -m ruff check src tests examples scripts": "success",
           "Run python -m build": "success",
-          "Run python scripts/check_artifacts.py": "success"
+          "Run python scripts/check_artifacts.py": "success",
+          "Run python -m twine check --strict dist/*": "success",
+          "Run python scripts/benchmark_learning.py": "success",
+          "Run python scripts/run_mutations.py": "success"
         },
         "image": "ubuntu-26.04",
         "python": "3.11.18",
-        "pytest": "335 passed, 1 warning in 21.78s",
+        "pytest": "377 passed, 1 warning in 60.50s (0:01:00)",
         "installed_artifacts_passed": 24,
         "installed_artifacts_skipped": [],
         "coverage_total": [
           "TOTAL",
-          "2372",
-          "202",
-          "876",
-          "156",
-          "89%"
+          "2401",
+          "180",
+          "886",
+          "150",
+          "90%"
         ],
-        "warnings": [
-          "##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/"
-        ]
+        "warnings": []
       },
       {
         "name": "test (ubuntu-latest, 3.12)",
@@ -330,27 +334,29 @@
           "Run python -m pip install -c constraints-contracts.txt -e \".[dev,api,reference]\"": "success",
           "Run python -m pytest --fail-on-skip --cov=quietcycle --cov-report=term": "success",
           "Run python scripts/generate_contracts.py --check": "success",
+          "Run python scripts/check_repository.py": "success",
           "Run python -m mypy src/quietcycle": "success",
           "Run python -m ruff check src tests examples scripts": "success",
           "Run python -m build": "success",
-          "Run python scripts/check_artifacts.py": "success"
+          "Run python scripts/check_artifacts.py": "success",
+          "Run python -m twine check --strict dist/*": "success",
+          "Run python scripts/benchmark_learning.py": "success",
+          "Run python scripts/run_mutations.py": "success"
         },
         "image": "ubuntu-26.04",
         "python": "3.12.16",
-        "pytest": "335 passed, 1 warning in 17.05s",
+        "pytest": "377 passed, 1 warning in 58.34s",
         "installed_artifacts_passed": 24,
         "installed_artifacts_skipped": [],
         "coverage_total": [
           "TOTAL",
-          "2372",
-          "202",
-          "876",
-          "156",
-          "89%"
+          "2401",
+          "180",
+          "886",
+          "150",
+          "90%"
         ],
-        "warnings": [
-          "##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/"
-        ]
+        "warnings": []
       },
       {
         "name": "test (ubuntu-latest, 3.13)",
@@ -359,27 +365,29 @@
           "Run python -m pip install -c constraints-contracts.txt -e \".[dev,api,reference]\"": "success",
           "Run python -m pytest --fail-on-skip --cov=quietcycle --cov-report=term": "success",
           "Run python scripts/generate_contracts.py --check": "success",
+          "Run python scripts/check_repository.py": "success",
           "Run python -m mypy src/quietcycle": "success",
           "Run python -m ruff check src tests examples scripts": "success",
           "Run python -m build": "success",
-          "Run python scripts/check_artifacts.py": "success"
+          "Run python scripts/check_artifacts.py": "success",
+          "Run python -m twine check --strict dist/*": "success",
+          "Run python scripts/benchmark_learning.py": "success",
+          "Run python scripts/run_mutations.py": "success"
         },
         "image": "ubuntu-26.04",
         "python": "3.13.18",
-        "pytest": "335 passed, 1 warning in 18.22s",
+        "pytest": "377 passed, 1 warning in 56.60s",
         "installed_artifacts_passed": 24,
         "installed_artifacts_skipped": [],
         "coverage_total": [
           "TOTAL",
-          "2372",
-          "202",
-          "876",
-          "156",
-          "89%"
+          "2401",
+          "180",
+          "886",
+          "150",
+          "90%"
         ],
-        "warnings": [
-          "##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/"
-        ]
+        "warnings": []
       },
       {
         "name": "test (ubuntu-latest, 3.14)",
@@ -388,27 +396,29 @@
           "Run python -m pip install -c constraints-contracts.txt -e \".[dev,api,reference]\"": "success",
           "Run python -m pytest --fail-on-skip --cov=quietcycle --cov-report=term": "success",
           "Run python scripts/generate_contracts.py --check": "success",
+          "Run python scripts/check_repository.py": "success",
           "Run python -m mypy src/quietcycle": "success",
           "Run python -m ruff check src tests examples scripts": "success",
           "Run python -m build": "success",
-          "Run python scripts/check_artifacts.py": "success"
+          "Run python scripts/check_artifacts.py": "success",
+          "Run python -m twine check --strict dist/*": "success",
+          "Run python scripts/benchmark_learning.py": "success",
+          "Run python scripts/run_mutations.py": "success"
         },
         "image": "ubuntu-26.04",
         "python": "3.14.10",
-        "pytest": "335 passed, 1 warning in 15.32s",
+        "pytest": "377 passed, 1 warning in 27.80s",
         "installed_artifacts_passed": 24,
         "installed_artifacts_skipped": [],
         "coverage_total": [
           "TOTAL",
-          "2372",
-          "202",
-          "876",
-          "156",
-          "89%"
+          "2401",
+          "180",
+          "886",
+          "150",
+          "90%"
         ],
-        "warnings": [
-          "##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/"
-        ]
+        "warnings": []
       },
       {
         "name": "test (windows-latest, 3.13)",
@@ -417,27 +427,29 @@
           "Run python -m pip install -c constraints-contracts.txt -e \".[dev,api,reference]\"": "success",
           "Run python -m pytest --fail-on-skip --cov=quietcycle --cov-report=term": "success",
           "Run python scripts/generate_contracts.py --check": "success",
+          "Run python scripts/check_repository.py": "success",
           "Run python -m mypy src/quietcycle": "success",
           "Run python -m ruff check src tests examples scripts": "success",
           "Run python -m build": "success",
-          "Run python scripts/check_artifacts.py": "success"
+          "Run python scripts/check_artifacts.py": "success",
+          "Run python -m twine check --strict dist/*": "success",
+          "Run python scripts/benchmark_learning.py": "success",
+          "Run python scripts/run_mutations.py": "skipped"
         },
         "image": "windows-2025-vs2026",
         "python": "3.13.17",
-        "pytest": "335 passed, 1 warning in 22.97s",
+        "pytest": "377 passed, 1 warning in 46.28s",
         "installed_artifacts_passed": 24,
         "installed_artifacts_skipped": [],
         "coverage_total": [
           "TOTAL",
-          "2372",
-          "202",
-          "876",
-          "156",
-          "89%"
+          "2401",
+          "180",
+          "886",
+          "150",
+          "90%"
         ],
-        "warnings": [
-          "##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/"
-        ]
+        "warnings": []
       }
     ]
   }

@@ -1,4 +1,4 @@
-# 接續 Quiet Cycle 0.4.0
+# 接續 Quiet Cycle 0.4.1
 
 先讀 README.md 的實作公式、docs/TRAINING.md、docs/EVIDENCE_REVIEW.md、
 docs/TEST_REPORT.md、docs/REVIEW.md，再查看 learning/ 程式。不要建立前端。

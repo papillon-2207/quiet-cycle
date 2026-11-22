@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.1 (2026-11-22)
 
 - `outcome-already-known-at-landmark` asks whether a snapshot at the landmark cutoff held the anchor
   and the next onset with their current dates. It compared the cutoff with the `available_at` of
