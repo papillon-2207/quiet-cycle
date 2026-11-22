@@ -16,9 +16,9 @@ Do not expose it directly to the internet. Custom plugins execute with the host
 process's privileges. Do not load untrusted Python code or deserialize pickle files.
 No remote resources are followed by the FHIR adapter.
 
-For this unpublished handoff, report suspected problems privately to the repository
-owner. Before making a public repository, configure a private security-reporting
-channel and replace this paragraph with its actual route. No mailbox is invented here.
+Report a suspected vulnerability privately: on the repository's Security tab, choose
+"Report a vulnerability" (<https://github.com/papillon-2207/quiet-cycle/security/advisories/new>).
+Do not open a public issue for it.
 
 AI-assisted implementation is not independent review. The test report distinguishes
 executed checks from configured or unavailable checks. No professional security,
