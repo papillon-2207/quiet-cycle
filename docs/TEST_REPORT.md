@@ -1,13 +1,14 @@
 # Test report
 
-This report covers commit `88eb038`, which sets the version to 0.4.0; the changes since 0.3.0 are
-listed in [CHANGELOG.md](../CHANGELOG.md). The checks ran on 2026-11-15 with synthetic
+This report covers commit `a570802`, which sets the version to 0.4.1; the changes since 0.4.0 are
+listed in [CHANGELOG.md](../CHANGELOG.md). The checks ran on 2026-11-22 with synthetic
 fixtures only; no clinical accuracy, contraceptive effectiveness or patient safety was evaluated.
 
-The 0.3.0 report is kept in [archive/TEST_REPORT-0.3.0.md](archive/TEST_REPORT-0.3.0.md), and the
-evidence it cites is in commit `06d3f80`. The test, coverage, contract, repository, mutation, build,
-installed-wheel and environment files in `evidence/` now come from the Linux Python 3.13 run below.
-The benchmark files are unchanged since 0.3.0, `evidence/actions-pins.json` was checked by hand, and
+The 0.4.0 report, for commit `88eb038`, is in commit `2e01dd5`. The 0.3.0 report is kept in
+[archive/TEST_REPORT-0.3.0.md](archive/TEST_REPORT-0.3.0.md), and the evidence it cites is in commit
+`06d3f80`. The test, coverage, contract, repository, mutation, build, installed-wheel and
+environment files in `evidence/` now come from the Linux Python 3.13 run below. The benchmark files
+are unchanged since 0.3.0, `evidence/actions-pins.json` was checked by hand, and
 `evidence/matrix.json` summarizes every local run and the CI run.
 
 ## Linux, Python 3.11 to 3.14
@@ -17,17 +18,17 @@ Each version used a fresh copy of the commit and a new virtual environment creat
 disabled, so every distribution that pip installed was downloaded from PyPI. The interpreters were
 CPython 3.11.16, 3.12.14, 3.13.16 and 3.14.7 on x86-64, and every check below gave the same result
 on all four. `evidence/matrix.json` lists the versions of the main packages in each run; Python 3.11
-resolved NumPy 2.4.6, the others 2.5.4.
+resolved NumPy 2.4.6, the others 2.5.5.
 
 | Check | Result | Evidence |
 | --- | --- | --- |
-| Full pytest with `--fail-on-skip` | 335 passed, none skipped or failed; 1 warning | `evidence/pytest.log`, `pytest.xml` |
-| Combined statement/branch coverage | 88.61%; 2,372 statements and 876 branches | `evidence/coverage.json` |
+| Full pytest with `--fail-on-skip` | 377 passed, none skipped or failed; 1 warning | `evidence/pytest.log`, `pytest.xml` |
+| Combined statement/branch coverage | 89.78%; 2,401 statements and 886 branches | `evidence/coverage.json` |
 | Contract drift | 11 JSON Schemas and 1 default OpenAPI document unchanged | `evidence/contracts.log` |
-| Syntax / exports / documentation links | 59 Python files parse for 3.11; 29 core and 18 learning exports | `evidence/repository-check.json` |
+| Syntax / exports / documentation links | 60 Python files parse for 3.11; 29 core and 18 learning exports | `evidence/repository-check.json` |
 | Strict mypy | No issues in 31 source files | `evidence/matrix.json` |
 | Ruff | All checks passed | `evidence/matrix.json` |
-| Selected regression mutations | 95/95 caught | `evidence/mutations.json` |
+| Selected regression mutations | 114/114 caught | `evidence/mutations.json` |
 | Synthetic learning benchmark | Output byte-identical to the committed evidence | `evidence/learning-benchmark.json` |
 | `python -m build` | Wheel and sdist; setuptools 84.2.1 in an isolated environment | `evidence/build.log` |
 | `twine check --strict` | Both files passed | `evidence/matrix.json` |
@@ -40,24 +41,25 @@ Starlette's test client (`anyio.abc.BlockingPortal`), not in this package.
 
 ## GitHub Actions
 
-[Run 43715774320](https://github.com/papillon-2207/quiet-cycle/actions/runs/43715774320) ran on the
-push of the same commit. Each job ran the install, pytest with `--fail-on-skip`, contract drift,
-strict mypy, Ruff, the build and the installed-wheel check, and all of these steps succeeded.
-Pytest reported the same warning and the same coverage total as the local runs.
+[Run 44995609311](https://github.com/papillon-2207/quiet-cycle/actions/runs/44995609311) ran on the
+push of the same commit. Each job ran the install, pytest with `--fail-on-skip`, contract drift, the
+repository check, strict mypy, Ruff, the build, the installed-wheel check, `twine check --strict`
+and the benchmark with a check that `evidence/` did not change; the Linux jobs also ran the
+mutations (114 of 114 caught). All of these steps succeeded. Pytest reported the same warning and
+the same coverage total as the local runs.
 
 | Job | Runner image | Python | pytest | Installed wheel |
 | --- | --- | --- | --- | --- |
-| ubuntu-latest, 3.11 | ubuntu-26.04 | 3.11.18 | 335 passed | 24 passed, none skipped |
-| ubuntu-latest, 3.12 | ubuntu-26.04 | 3.12.16 | 335 passed | 24 passed, none skipped |
-| ubuntu-latest, 3.13 | ubuntu-26.04 | 3.13.18 | 335 passed | 24 passed, none skipped |
-| ubuntu-latest, 3.14 | ubuntu-26.04 | 3.14.10 | 335 passed | 24 passed, none skipped |
-| macos-latest, 3.13 | macos-26-arm64 | 3.13.17 | 335 passed | 24 passed, none skipped |
-| windows-latest, 3.13 | windows-2025-vs2026 | 3.13.17 | 335 passed | 24 passed, none skipped |
+| ubuntu-latest, 3.11 | ubuntu-26.04 | 3.11.18 | 377 passed | 24 passed, none skipped |
+| ubuntu-latest, 3.12 | ubuntu-26.04 | 3.12.16 | 377 passed | 24 passed, none skipped |
+| ubuntu-latest, 3.13 | ubuntu-26.04 | 3.13.18 | 377 passed | 24 passed, none skipped |
+| ubuntu-latest, 3.14 | ubuntu-26.04 | 3.14.10 | 377 passed | 24 passed, none skipped |
+| macos-latest, 3.13 | macos-26-arm64 | 3.13.17 | 377 passed | 24 passed, none skipped |
+| windows-latest, 3.13 | windows-2025-vs2026 | 3.13.17 | 377 passed | 24 passed, none skipped |
 
-The workflow pins actions/checkout and actions/setup-python to full commits; on 2026-11-15 these
-were still the commits of tags v4 (v4.4.0) and v5 (v5.6.0), as `evidence/actions-pins.json` records.
-Every job warned that these two actions target Node.js 20, which is deprecated, and were run on
-Node.js 24.
+The workflow pins actions/checkout and actions/setup-python to full commits; on 2026-11-22 these
+were still the commits of tags v7 (v7.0.1) and v7 (v7.1.0), as `evidence/actions-pins.json` records.
+Both run on Node.js 24, and no job had a warning annotation.
 
 ## Inside the suite
 
@@ -75,11 +77,11 @@ The generated cases are loops within tests, not extra test functions or human su
 normal-equation certificate checks the selected ridge objective, not whether it is the right model
 for human cycles. Coverage is not proof of no defects.
 
-The suite has grown from 187 to 335 tests since 0.3.0: 128 in new files and 20 in existing ones.
-The new files cover declared unit rules, unused inputs, the order of outcome and rejection codes,
-the dataset inventory, landmark attempts and the `--fail-on-skip` option; the inventory and attempt
-counts are derived by hand in the tests. One new test in `tests/test_learning.py` pins literal
-learning-1.0 digests of a fitted model, its fit request, a landmark, a forecast and an evaluation.
+The suite has grown from 335 to 377 tests since 0.4.0: 12 in a new file for names over the
+96-character limit, and 30 in existing ones for the CLI import options, adapter error codes, labels
+read in each event's own offset, outcomes known at the landmark, and the release scripts' encodings
+and refusal to run without assertions. The learning-1.0 digests pinned in `tests/test_learning.py`
+are unchanged.
 
 ## Three fixed synthetic scenarios
 
@@ -109,8 +111,8 @@ byte-reproducible: local builds of the same commit gave different wheel hashes.
 
 ## Not executed / not established
 
-- Windows and macOS ran only in GitHub Actions, and only with Python 3.13. The repository check,
-  the benchmark, the mutations and Twine ran only on Linux; the workflow does not run them.
+- Windows and macOS ran only in GitHub Actions, and only with Python 3.13. The mutations ran only
+  on Linux; the workflow skips them on Windows and macOS.
 - Every run used the pins in `constraints-contracts.txt` (Pydantic 2.13.4, FastAPI 0.128.2,
   HTTPX 0.28.1). The lowest versions the package declares, such as Pydantic 2.12 or NumPy 1.26,
   were not tested.

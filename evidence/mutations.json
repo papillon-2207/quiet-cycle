@@ -1,6 +1,6 @@
 {
-  "selected_mutations": 95,
-  "killed": 95,
+  "selected_mutations": 114,
+  "killed": 114,
   "scope": "targeted-regressions-not-exhaustive-mutation-coverage",
   "results": [
     {
@@ -9,7 +9,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.03s"
+        "1 failed in 0.04s"
       ]
     },
     {
@@ -18,7 +18,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.05s"
+        "1 failed in 0.04s"
       ]
     },
     {
@@ -27,7 +27,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "2 failed, 5 passed in 0.05s"
+        "2 failed, 5 passed in 0.06s"
       ]
     },
     {
@@ -36,7 +36,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.04s"
+        "1 failed in 0.06s"
       ]
     },
     {
@@ -45,7 +45,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed, 4 passed in 0.02s"
+        "1 failed, 4 passed in 0.03s"
       ]
     },
     {
@@ -63,7 +63,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.04s"
+        "1 failed in 0.05s"
       ]
     },
     {
@@ -81,7 +81,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "2 failed, 3 passed in 0.12s"
+        "2 failed, 3 passed in 0.11s"
       ]
     },
     {
@@ -90,7 +90,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 1.06s"
+        "1 failed in 1.08s"
       ]
     },
     {
@@ -108,7 +108,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "4 failed, 1 passed in 0.13s"
+        "4 failed, 1 passed in 0.14s"
       ]
     },
     {
@@ -117,7 +117,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "3 failed in 0.13s"
+        "3 failed in 0.12s"
       ]
     },
     {
@@ -126,7 +126,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.25s"
+        "1 failed in 0.30s"
       ]
     },
     {
@@ -135,7 +135,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.28s"
+        "1 failed in 0.29s"
       ]
     },
     {
@@ -144,7 +144,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.10s"
+        "1 failed in 0.11s"
       ]
     },
     {
@@ -162,7 +162,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "3 failed, 10 passed in 0.11s"
+        "3 failed, 10 passed in 0.13s"
       ]
     },
     {
@@ -171,7 +171,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.34s"
+        "1 failed in 0.35s"
       ]
     },
     {
@@ -207,7 +207,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.10s"
+        "1 failed in 0.09s"
       ]
     },
     {
@@ -234,7 +234,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.60s"
+        "1 failed in 0.64s"
       ]
     },
     {
@@ -243,7 +243,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.59s"
+        "1 failed in 0.61s"
       ]
     },
     {
@@ -252,7 +252,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.57s"
+        "1 failed in 0.60s"
       ]
     },
     {
@@ -261,7 +261,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.61s"
+        "1 failed in 0.65s"
       ]
     },
     {
@@ -270,7 +270,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "2 failed, 1 passed in 0.61s"
+        "2 failed, 1 passed in 0.50s"
       ]
     },
     {
@@ -279,7 +279,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "2 failed in 0.59s"
+        "2 failed in 0.62s"
       ]
     },
     {
@@ -288,7 +288,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 1.06s"
+        "1 failed in 1.11s"
       ]
     },
     {
@@ -297,16 +297,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 1.07s"
-      ]
-    },
-    {
-      "mutation": "labels-domain-error-escapes",
-      "test": "tests/test_learning.py::test_labels_day_past_the_date_domain_is_an_input_error",
-      "killed": true,
-      "exit_code": 1,
-      "summary": [
-        "1 failed in 1.10s"
+        "1 failed in 1.11s"
       ]
     },
     {
@@ -315,7 +306,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "6 failed, 30 passed in 0.24s"
+        "6 failed, 30 passed in 0.28s"
       ]
     },
     {
@@ -324,7 +315,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "2 failed, 34 passed in 0.21s"
+        "2 failed, 34 passed in 0.23s"
       ]
     },
     {
@@ -333,7 +324,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed, 35 passed in 0.20s"
+        "1 failed, 35 passed in 0.22s"
       ]
     },
     {
@@ -342,7 +333,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed, 35 passed in 0.20s"
+        "1 failed, 35 passed in 0.21s"
       ]
     },
     {
@@ -360,7 +351,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "2 failed, 34 passed in 0.20s"
+        "2 failed, 34 passed in 0.23s"
       ]
     },
     {
@@ -369,7 +360,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "9 failed, 27 passed in 0.27s"
+        "9 failed, 27 passed in 0.28s"
       ]
     },
     {
@@ -387,7 +378,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed, 35 passed in 0.19s"
+        "1 failed, 35 passed in 0.20s"
       ]
     },
     {
@@ -405,7 +396,61 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "2 failed in 0.09s"
+        "2 failed in 0.10s"
+      ]
+    },
+    {
+      "mutation": "csv-unhashable-kind-escapes",
+      "test": "tests/test_adapters.py::test_csv_kind_that_is_not_text_is_a_row_error",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "3 failed in 0.08s"
+      ]
+    },
+    {
+      "mutation": "legacy-deleted-kind-required",
+      "test": "tests/test_adapters.py::test_legacy_deleted_event_without_kind_is_a_row_error",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "2 failed in 0.07s"
+      ]
+    },
+    {
+      "mutation": "legacy-import-time-escapes",
+      "test": "tests/test_adapters.py::test_legacy_invalid_imported_at_is_an_input_error",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.05s"
+      ]
+    },
+    {
+      "mutation": "legacy-empty-import-time-unchecked",
+      "test": "tests/test_adapters.py::test_legacy_invalid_imported_at_is_an_input_error",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.07s"
+      ]
+    },
+    {
+      "mutation": "long-issue-names-predicted",
+      "test": "tests/test_feature_name_limits.py::test_an_untrained_symptom_whose_issue_name_is_too_long_abstains",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 1.09s"
+      ]
+    },
+    {
+      "mutation": "long-term-names-fitted",
+      "test": "tests/test_feature_name_limits.py::test_fit_rejects_a_missing_indicator_name_that_is_too_long",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "3 failed, 4 passed in 5.91s"
       ]
     },
     {
@@ -414,7 +459,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "3 failed, 33 passed in 0.22s"
+        "3 failed, 33 passed in 0.23s"
       ]
     },
     {
@@ -423,7 +468,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "3 failed, 33 passed in 0.21s"
+        "3 failed, 33 passed in 0.23s"
       ]
     },
     {
@@ -432,7 +477,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed, 2 passed in 0.08s"
+        "1 failed, 2 passed in 0.13s"
       ]
     },
     {
@@ -441,7 +486,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed, 2 passed in 0.08s"
+        "1 failed, 2 passed in 0.09s"
       ]
     },
     {
@@ -504,7 +549,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.08s"
+        "1 failed in 0.16s"
       ]
     },
     {
@@ -522,7 +567,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.08s"
+        "1 failed in 0.12s"
       ]
     },
     {
@@ -549,7 +594,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.08s"
+        "1 failed in 0.09s"
       ]
     },
     {
@@ -576,7 +621,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.08s"
+        "1 failed in 0.09s"
       ]
     },
     {
@@ -603,7 +648,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed, 2 passed in 0.08s"
+        "1 failed, 2 passed in 0.10s"
       ]
     },
     {
@@ -612,7 +657,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.15s"
+        "1 failed in 0.08s"
       ]
     },
     {
@@ -630,7 +675,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.08s"
+        "1 failed in 0.09s"
       ]
     },
     {
@@ -657,7 +702,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.07s"
+        "1 failed in 0.08s"
       ]
     },
     {
@@ -666,7 +711,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.07s"
+        "1 failed in 0.08s"
       ]
     },
     {
@@ -684,7 +729,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.07s"
+        "1 failed in 0.08s"
       ]
     },
     {
@@ -747,7 +792,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.09s"
+        "1 failed in 0.07s"
       ]
     },
     {
@@ -765,7 +810,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.08s"
+        "1 failed in 0.16s"
       ]
     },
     {
@@ -783,7 +828,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.08s"
+        "1 failed in 0.10s"
       ]
     },
     {
@@ -801,7 +846,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.08s"
+        "1 failed in 0.06s"
       ]
     },
     {
@@ -819,7 +864,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 0.09s"
+        "1 failed in 0.08s"
       ]
     },
     {
@@ -828,7 +873,7 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "2 failed, 7 passed in 0.09s"
+        "2 failed, 7 passed in 0.10s"
       ]
     },
     {
@@ -855,7 +900,133 @@
       "killed": true,
       "exit_code": 1,
       "summary": [
-        "1 failed in 1.23s"
+        "1 failed in 1.26s"
+      ]
+    },
+    {
+      "mutation": "cli-format-option-ignored",
+      "test": "tests/test_interfaces.py::test_cli_rejects_an_option_its_format_would_ignore",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "7 failed in 0.19s"
+      ]
+    },
+    {
+      "mutation": "cli-fhir-source-default-lost",
+      "test": "tests/test_interfaces.py::test_cli_fhir_import_matches_the_adapter",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.05s"
+      ]
+    },
+    {
+      "mutation": "ridge-name-limit-unchecked",
+      "test": "tests/test_feature_name_limits.py::test_fit_rejects_a_ridge_penalty_too_long_for_a_candidate_name",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed, 1 passed in 2.03s"
+      ]
+    },
+    {
+      "mutation": "label-day-in-utc",
+      "test": "tests/test_outcomes.py::test_a_label_keeps_the_offset_of_its_onset",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "2 failed, 1 passed in 0.11s"
+      ]
+    },
+    {
+      "mutation": "label-day-start-excluded",
+      "test": "tests/test_outcomes.py::test_a_case_known_before_its_outcome_date_began_anywhere_is_invalid",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.09s"
+      ]
+    },
+    {
+      "mutation": "labels-day-at-query-offset",
+      "test": "tests/test_outcomes.py::test_labels_read_each_event_on_its_own_date",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.12s"
+      ]
+    },
+    {
+      "mutation": "labels-day-short-of-the-largest-offset",
+      "test": "tests/test_outcomes.py::test_labels_read_an_event_recorded_at_the_largest_offset",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.09s"
+      ]
+    },
+    {
+      "mutation": "labels-domain-fallback-to-query",
+      "test": "tests/test_outcomes.py::test_labels_read_near_the_end_of_the_date_domain",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "2 failed, 1 passed in 0.12s"
+      ]
+    },
+    {
+      "mutation": "labels-domain-error-escapes",
+      "test": "tests/test_learning.py::test_labels_day_past_the_date_domain_is_the_utc_day",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 1.09s"
+      ]
+    },
+    {
+      "mutation": "known-outcome-newest-version",
+      "test": "tests/test_attempts.py::test_a_later_revision_does_not_hide_an_outcome_known_at_a_query",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.09s"
+      ]
+    },
+    {
+      "mutation": "known-outcome-any-date",
+      "test": "tests/test_outcomes.py::test_an_outcome_known_at_the_cutoff_is_the_version_its_snapshot_held",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.09s"
+      ]
+    },
+    {
+      "mutation": "known-outcome-any-subject",
+      "test": "tests/test_outcomes.py::test_an_outcome_known_at_the_cutoff_is_the_version_its_snapshot_held",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.13s"
+      ]
+    },
+    {
+      "mutation": "known-outcome-first-version",
+      "test": "tests/test_outcomes.py::test_an_outcome_known_at_the_cutoff_is_the_version_its_snapshot_held",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.10s"
+      ]
+    },
+    {
+      "mutation": "known-outcome-anchor-newest",
+      "test": "tests/test_outcomes.py::test_an_outcome_known_at_the_cutoff_is_the_version_its_snapshot_held",
+      "killed": true,
+      "exit_code": 1,
+      "summary": [
+        "1 failed in 0.09s"
       ]
     }
   ]
