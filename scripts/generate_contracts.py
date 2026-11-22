@@ -33,7 +33,7 @@ def main() -> None:
     for path, value in documents.items():
         text = json.dumps(value, ensure_ascii=True, indent=2, sort_keys=True) + "\n"
         if args.check:
-            if not path.exists() or path.read_text() != text:
+            if not path.exists() or path.read_text(encoding="utf-8") != text:
                 raise SystemExit(f"Contract drift: {path.relative_to(ROOT)}")
         else:
             path.parent.mkdir(parents=True, exist_ok=True)

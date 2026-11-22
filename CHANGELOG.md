@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- `scripts/check_artifacts.py`, `run_mutations.py`, `generate_contracts.py` and
+  `benchmark_learning.py` name UTF-8 for every text file they read or write, and a test checks
+  this. They used the locale's encoding, such as cp1252 on Windows. `check_artifacts.py` writes a
+  module containing its temporary path, which Python reads as UTF-8, so a non-ASCII path, such as
+  a user name with an accent, made it fail. Their output does not change.
+
 - `fit` raises `InputError("ridge_penalty_too_large")` instead of `ValidationError`
   (`schema_validation_failed` in the CLI) when a ridge penalty has 82 digits or more, which makes
   its candidate name longer than 96 characters. The `ValidationError` carried the name, and so the

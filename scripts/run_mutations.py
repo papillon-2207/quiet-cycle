@@ -135,15 +135,15 @@ def main() -> None:
             raise SystemExit("Mutation targets fail without any mutation")
         for name, filename, old, new, test in MUTATIONS:
             path = work / "src/quietcycle" / filename
-            original = path.read_text()
+            original = path.read_text(encoding="utf-8")
             assert original.count(old) == 1, name
-            path.write_text(original.replace(old, new))
+            path.write_text(original.replace(old, new), encoding="utf-8")
             # Force fresh bytecode even on filesystems with coarse mtimes.
             for cache in (work / "src").rglob("__pycache__"):
                 shutil.rmtree(cache)
             result = subprocess.run([sys.executable, "-m", "pytest", "-q", test], cwd=work,
                 env=env, text=True, encoding="utf-8", capture_output=True, timeout=30)
-            path.write_text(original)
+            path.write_text(original, encoding="utf-8")
             killed = result.returncode == 1 and "FAILED " in result.stdout and "ERROR collecting" not in result.stdout
             results.append({"mutation": name, "test": test, "killed": killed,
                             "exit_code": result.returncode, "summary": result.stdout.splitlines()[-1:]})

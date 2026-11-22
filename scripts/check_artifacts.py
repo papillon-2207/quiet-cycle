@@ -90,7 +90,7 @@ print("installed-typed-core")
 '''
         assert run([PYTHON, "-c", code, str(target), VERSION], env=env, cwd=workspace).strip() == "installed-typed-core"
         checks.extend(["installed-location-and-version", "core-does-not-import-fastapi", "installed-type-hints-and-resources"])
-        expected = json.loads((copied / "result.json").read_text())
+        expected = json.loads((copied / "result.json").read_text(encoding="utf-8"))
         actual = json.loads(run([PYTHON, "-m", "quietcycle", "predict", str(copied / "request.json")], env=env, cwd=workspace))
         assert actual == expected
         checks.append("installed-cli-equals-golden")
@@ -113,14 +113,14 @@ print("installed-typed-core")
             skipped.append("node-client-tool-unavailable")
         learned_dir = workspace / "learned"
         run([PYTHON, str(copied / "train_multifactor.py"), "--output", str(learned_dir)], env=env, cwd=workspace)
-        learned_expected = json.loads((learned_dir / "prediction.json").read_text())
+        learned_expected = json.loads((learned_dir / "prediction.json").read_text(encoding="utf-8"))
         learned_actual = json.loads(run([PYTHON, "-m", "quietcycle", "forecast", str(learned_dir / "request.json"),
             "--model", str(learned_dir / "model.json")], env=env, cwd=workspace))
         assert learned_actual == learned_expected
         checks.append("installed-learned-training-to-cli-equals-sdk")
         evaluated = json.loads(run([PYTHON, "-m", "quietcycle", "evaluate", str(learned_dir / "test-cases.json"),
             "--model", str(learned_dir / "model.json")], env=env, cwd=workspace))
-        assert evaluated == json.loads((learned_dir / "evaluation.json").read_text())
+        assert evaluated == json.loads((learned_dir / "evaluation.json").read_text(encoding="utf-8"))
         checks.append("installed-learned-evaluation-equals-sdk")
         for schema_name in ("landmark", "labelled-case", "fit-request", "fitted-model", "learned-prediction"):
             document = json.loads(run([PYTHON, "-m", "quietcycle", "schema", schema_name], env=env, cwd=workspace))
@@ -129,7 +129,7 @@ print("installed-typed-core")
         with socket.socket() as sock:
             sock.bind(("127.0.0.1", 0))
             port = sock.getsockname()[1]
-        log = (workspace / "uvicorn.log").open("w")
+        log = (workspace / "uvicorn.log").open("wb")
         server = subprocess.Popen([PYTHON, "-m", "uvicorn", "quietcycle.api:create_app", "--factory",
             "--host", "127.0.0.1", "--port", str(port), "--no-access-log"], cwd=workspace, env=env, stdout=log, stderr=log)
         try:
@@ -150,7 +150,7 @@ print("installed-typed-core")
                 assert response.headers["Cache-Control"] == "no-store"
                 assert json.load(response) == expected
             with urllib.request.urlopen(url + "/openapi.json", timeout=5) as response:
-                assert json.load(response) == json.loads((ROOT / "contracts/openapi.json").read_text())
+                assert json.load(response) == json.loads((ROOT / "contracts/openapi.json").read_text(encoding="utf-8"))
             checks.extend(["live-local-http-equals-sdk-and-cli", "live-http-no-store", "live-openapi-equals-committed"])
         finally:
             server.terminate()
@@ -162,11 +162,11 @@ print("installed-typed-core")
             log.close()
         app_file = workspace / "bound_app.py"
         app_file.write_text("from pathlib import Path\nfrom quietcycle.api import create_app\nfrom quietcycle.learning import FittedModel\nfrom quietcycle.serialization import loads\n" +
-            "model=FittedModel.model_validate(loads(Path(" + repr(str(learned_dir / "model.json")) + ").read_text()))\napp=create_app(model=model)\n")
+            "model=FittedModel.model_validate(loads(Path(" + repr(str(learned_dir / "model.json")) + ").read_text(encoding='utf-8')))\napp=create_app(model=model)\n", encoding="utf-8")
         with socket.socket() as sock:
             sock.bind(("127.0.0.1", 0))
             learned_port = sock.getsockname()[1]
-        learned_log = (workspace / "learned-http.log").open("w")
+        learned_log = (workspace / "learned-http.log").open("wb")
         learned_server = subprocess.Popen([PYTHON, "-m", "uvicorn", "bound_app:app", "--app-dir", str(workspace),
             "--host", "127.0.0.1", "--port", str(learned_port), "--no-access-log"], env=env, cwd=workspace, stdout=learned_log, stderr=learned_log)
         try:

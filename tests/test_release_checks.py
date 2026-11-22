@@ -1,6 +1,7 @@
 """--fail-on-skip: a skipped check must fail a release run instead of passing quietly."""
 from __future__ import annotations
 
+import ast
 import os
 import shutil
 import subprocess
@@ -84,3 +85,25 @@ def test_release_scripts_refuse_to_run_without_assertions(tmp_path, script):
     assert result.returncode != 0
     assert f"{script}: assertions are disabled" in result.stderr
     assert result.stdout == ""
+
+
+def test_scripts_name_the_encoding_of_every_text_file_they_open():
+    # Without it a script reads and writes in the locale's encoding, such as cp1252 on Windows.
+    unnamed = []
+    for path in sorted((ROOT / "scripts").glob("*.py")):
+        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
+            if not isinstance(node, ast.Call):
+                continue
+            name = node.func.attr if isinstance(node.func, ast.Attribute) else getattr(node.func, "id", None)
+            receiver = getattr(getattr(node.func, "value", None), "id", None)
+            if name not in ("open", "read_text", "write_text") or receiver == "tarfile":
+                continue
+            mode = next((k.value for k in node.keywords if k.arg == "mode"), None)
+            if mode is None and name == "open":
+                position = 1 if isinstance(node.func, ast.Name) else 0  # open(path, mode), Path.open(mode)
+                mode = node.args[position] if len(node.args) > position else None
+            binary = isinstance(mode, ast.Constant) and isinstance(mode.value, str) and "b" in mode.value
+            if binary or any(k.arg == "encoding" for k in node.keywords):
+                continue
+            unnamed.append(f"{path.name}:{node.lineno}")
+    assert unnamed == []
