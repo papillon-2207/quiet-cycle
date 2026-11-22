@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Every CI job runs `twine check --strict` and the synthetic learning benchmark, and fails if the
+  benchmark changes `evidence/`. The Linux jobs also run the selected mutations. These used to run
+  only in the local release checks.
+
 - `scripts/check_artifacts.py`, `run_mutations.py`, `generate_contracts.py` and
   `benchmark_learning.py` name UTF-8 for every text file they read or write, and a test checks
   this. They used the locale's encoding, such as cp1252 on Windows. `check_artifacts.py` writes a

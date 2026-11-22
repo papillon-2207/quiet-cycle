@@ -40,3 +40,14 @@ jobs:
         run: python -m build
       - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: python scripts/check_artifacts.py
+      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: python -m twine check --strict dist/*
+      # bash, so that a failing benchmark fails the step on Windows too.
+      - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        shell: bash
+        run: |
+          python scripts/benchmark_learning.py
+          git diff --exit-code -- evidence
+      # The mutations measure what the tests catch, not the platform; Linux covers 3.11 to 3.14.
+      - if: ${{ !cancelled() && steps.install.outcome == 'success' && runner.os == 'Linux' }}
+        run: python scripts/run_mutations.py
