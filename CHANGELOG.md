@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- `outcome-already-known-at-landmark` asks whether a snapshot at the landmark cutoff held the anchor
+  and the next onset with their current dates. It compared the cutoff with the `available_at` of
+  their newest versions, so an onset already visible at the landmark cutoff and revised later, with
+  the same date, fell through to a later row, such as `exact`, `label-excluded-from-history` or
+  `outcome-interval-censored`, in `landmark_attempts` or in `label_landmark` given a landmark built
+  from other data. `build_cases` never reaches this case: a next onset visible at its query makes
+  the landmark fail.
+
 - Labels read each event on the date of its own offset (`docs/CONTRACT.md`), not the query's. A next
   onset recorded on its own date in a different offset, after travel or a summer-time change, was
   rejected as `label_available_before_event`; and any event dated after the labels day at the
