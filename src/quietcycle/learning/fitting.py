@@ -163,7 +163,10 @@ def fit(request: FitRequest) -> FittedModel:
             # Checked where LinearCandidate rejected it, so earlier errors keep their precedence.
             if any(len(t) > 96 for t in terms):
                 raise InputError("feature_name_too_long")
-            candidates.append(LinearCandidate(name=f"{family}-ridge-{penalty}", penalty=penalty, terms=terms,
+            name = f"{family}-ridge-{penalty}"
+            if len(name) > 96:  # from 82 digits (83 for history); unlike a ValidationError, this does not carry the penalty
+                raise InputError("ridge_penalty_too_large")
+            candidates.append(LinearCandidate(name=name, penalty=penalty, terms=terms,
                 coefficients=exact[0], blend=exact[1], tune_mse=exact[2]))
     # Fixed priority preserves baseline on ties, then simpler families and larger penalties.
     family_order = {"baseline": 0, "history": 1, "symptoms": 2, "wearable": 3, "combined": 4}

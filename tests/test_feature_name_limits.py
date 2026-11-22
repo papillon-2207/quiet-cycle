@@ -1,4 +1,4 @@
-"""Issue and term names built from long symptom names must not exceed the 96-character limit."""
+"""Names built from long symptom names or ridge penalties must not exceed the 96-character limit."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -126,3 +126,23 @@ def test_fit_rejects_a_missing_indicator_name_that_is_too_long(monkeypatch, size
         with pytest.raises(InputError) as caught:
             fit(request)
         assert caught.value.code == "feature_name_too_long"
+
+
+@pytest.mark.parametrize("digits, fits", [(81, True), (82, False)])
+def test_fit_rejects_a_ridge_penalty_too_long_for_a_candidate_name(digits, fits):
+    # "history-ridge-<82 digits>" is 96 characters, but "symptoms-ridge-<82 digits>" is 97.
+    request, _, _, _ = sc.cohort(train_n=24, tune_n=12, calibration_n=12, test_n=6)
+    penalty = 10 ** (digits - 1)
+    request = type(request).model_validate({**dict(request), "ridge_penalties": (1, penalty)})
+    if fits:
+        assert fit(request).candidates[-1].name == f"combined-ridge-{penalty}"
+    else:
+        with pytest.raises(InputError) as caught:
+            fit(request)
+        assert caught.value.code == "ridge_penalty_too_large"
+        assert caught.value.__cause__ is None and caught.value.__context__ is None
+        assert str(penalty) not in str(caught.value)
+        # An error that fit raised before reaching the candidate keeps its precedence.
+        with pytest.raises(InputError) as caught:
+            fit(type(request).model_validate({**dict(request), "train": request.train + request.train[:1]}))
+        assert caught.value.code == "duplicate-cycle-across-or-within-partitions"

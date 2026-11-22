@@ -115,6 +115,7 @@ MUTATIONS = [
     ("training-time-leak", "learning/fitting.py", "if max(c.outcome_known_at for c in left) >= min(c.landmark.query.cutoff for c in right):", "if False:", "tests/test_learning.py::test_temporal_boundary_rejected"),
     ("cli-format-option-ignored", "cli.py", "getattr(args, name) is not None and args.format != fmt", "False", "tests/test_interfaces.py::test_cli_rejects_an_option_its_format_would_ignore"),
     ("cli-fhir-source-default-lost", "cli.py", 'source_id="fhir-r4" if args.source_id is None else args.source_id', "source_id=args.source_id", "tests/test_interfaces.py::test_cli_fhir_import_matches_the_adapter"),
+    ("ridge-name-limit-unchecked", "learning/fitting.py", "            if len(name) > 96:", "            if False:", "tests/test_feature_name_limits.py::test_fit_rejects_a_ridge_penalty_too_long_for_a_candidate_name"),
 ]
 
 

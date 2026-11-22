@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- `fit` raises `InputError("ridge_penalty_too_large")` instead of `ValidationError`
+  (`schema_validation_failed` in the CLI) when a ridge penalty has 82 digits or more, which makes
+  its candidate name longer than 96 characters. The `ValidationError` carried the name, and so the
+  penalty. Errors that `fit` raised before reaching that candidate, such as the exact-arithmetic
+  budgets for a penalty of over a thousand digits, keep their precedence, and penalties of up to 81
+  digits fit as before.
+
 - `quiet-cycle run` and `quiet-cycle import` reject, with `option_not_for_format`, an option that
   the chosen `--format` does not use: `--mapping` outside `csv`, and `--subject-map`,
   `--imported-at`, `--source-id` and `--utc-offset-minutes` outside `fhir-r4`. Such options used to
