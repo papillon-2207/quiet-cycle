@@ -31,10 +31,12 @@ print(len(built.cases), built.rejected)
 `dataset` and `queries` are caller-supplied typed objects. For an executable full
 example use `examples/train_multifactor.py` with the included synthetic records.
 
-Each feature snapshot uses its original query cutoff. Labels use a separate later
-snapshot. Only a confirmed next onset confirming continuity with the anchor is a regression label,
-and a missing report is never read as no onset. Every other case is returned with a reason (keep it:
-dropping it gives a misleading complete-case benchmark). In order, with reports at the labels cutoff:
+Each feature snapshot uses its original query cutoff. Labels use a separate later snapshot, read on
+the latest local date of the labels cutoff (at +14:00, or at UTC past 2200-12-31), so that every
+visible event counts on the date of its own offset. Only a confirmed next onset confirming
+continuity with the anchor is a regression label, and a missing report is never read as no onset.
+Every other case is returned with a reason (keep it: dropping it gives a misleading complete-case
+benchmark). In order, with reports at the labels cutoff:
 
 | Situation | Code |
 | --- | --- |

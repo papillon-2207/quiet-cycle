@@ -45,7 +45,6 @@ MUTATIONS = [
     ("prediction-version-unchecked", "learning/contracts.py", "        if (self.schema_version == \"learning-1.1\") != bool(self.unused_inputs):\n", "        if False:\n", "tests/test_unused_inputs.py::test_version_follows_unused_inputs"),
     ("labels-cutoff-compared-as-text", "learning/landmarks.py", "    labels_cutoff = _labels_cutoff(labels_cutoff)\n    if labels_cutoff <= query.cutoff:", "    raw = labels_cutoff\n    labels_cutoff = _labels_cutoff(labels_cutoff)\n    if labels_cutoff <= query.cutoff or raw <= query.cutoff:", "tests/test_learning.py::test_a_later_instant_written_with_a_negative_offset_is_later"),
     ("labels-cutoff-checked-per-case-only", "learning/landmarks.py", "    # A malformed cutoff is a configuration error for the whole call, not a per-case rejection.\n    labels_cutoff = _labels_cutoff(labels_cutoff)\n", "", "tests/test_learning.py::test_malformed_labels_cutoff_is_an_input_error"),
-    ("labels-domain-error-escapes", "learning/landmarks.py", "    except ValueError:\n        raise InputError(\"label_date_outside_domain\")", "    except KeyError:\n        raise InputError(\"label_date_outside_domain\")", "tests/test_learning.py::test_labels_day_past_the_date_domain_is_an_input_error"),
     ("report-past-onset-accepted", "learning/landmarks.py", "        if any(origin.date < o.date <= report.through for o in onsets):\n", "        if False:\n", "tests/test_outcomes.py::test_each_outcome_row"),
     ("skipped-link-accepted", "learning/landmarks.py", "o.previous_onset_id == anchor.id and o.continuity == \"confirmed\" for o in later[1:]", "False for o in later[1:]", "tests/test_outcomes.py::test_each_outcome_row"),
     ("excluded-onset-labelled", "learning/landmarks.py", "        if end.exclude_from_history:\n", "        if False:\n", "tests/test_outcomes.py::test_each_outcome_row"),
@@ -116,6 +115,12 @@ MUTATIONS = [
     ("cli-format-option-ignored", "cli.py", "getattr(args, name) is not None and args.format != fmt", "False", "tests/test_interfaces.py::test_cli_rejects_an_option_its_format_would_ignore"),
     ("cli-fhir-source-default-lost", "cli.py", 'source_id="fhir-r4" if args.source_id is None else args.source_id', "source_id=args.source_id", "tests/test_interfaces.py::test_cli_fhir_import_matches_the_adapter"),
     ("ridge-name-limit-unchecked", "learning/fitting.py", "            if len(name) > 96:", "            if False:", "tests/test_feature_name_limits.py::test_fit_rejects_a_ridge_penalty_too_long_for_a_candidate_name"),
+    ("label-day-in-utc", "learning/contracts.py", 'self.outcome_date + "T00:00:00+14:00"', 'self.outcome_date + "T00:00:00+00:00"', "tests/test_outcomes.py::test_a_label_keeps_the_offset_of_its_onset"),
+    ("label-day-start-excluded", "learning/contracts.py", "datetime.fromisoformat(self.outcome_known_at) < ", "datetime.fromisoformat(self.outcome_known_at) <= ", "tests/test_outcomes.py::test_a_case_known_before_its_outcome_date_began_anywhere_is_invalid"),
+    ("labels-day-at-query-offset", "learning/landmarks.py", "offset, label_day = 840, local_day(labels_cutoff, 840)", "offset, label_day = query.utc_offset_minutes, local_day(labels_cutoff, query.utc_offset_minutes)", "tests/test_outcomes.py::test_labels_read_each_event_on_its_own_date"),
+    ("labels-day-short-of-the-largest-offset", "learning/landmarks.py", "offset, label_day = 840, local_day(labels_cutoff, 840)", "offset, label_day = 839, local_day(labels_cutoff, 839)", "tests/test_outcomes.py::test_labels_read_an_event_recorded_at_the_largest_offset"),
+    ("labels-domain-fallback-to-query", "learning/landmarks.py", "offset, label_day = 0, local_day(labels_cutoff, 0)", "offset, label_day = query.utc_offset_minutes, local_day(labels_cutoff, query.utc_offset_minutes)", "tests/test_outcomes.py::test_labels_read_near_the_end_of_the_date_domain"),
+    ("labels-domain-error-escapes", "learning/landmarks.py", "    except ValueError:\n        offset, label_day = 0,", "    except KeyError:\n        offset, label_day = 0,", "tests/test_learning.py::test_labels_day_past_the_date_domain_is_the_utc_day"),
 ]
 
 

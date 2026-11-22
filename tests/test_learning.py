@@ -252,15 +252,15 @@ def test_a_later_instant_written_with_a_negative_offset_is_later(experiment):
         label_landmark(data, landmark, labels_cutoff="2025-01-21T11:00:00-05:00", data_kind="synthetic", cohort="test")
 
 
-def test_labels_day_past_the_date_domain_is_an_input_error(experiment):
-    # At +14:00, 2200-12-31T10:00Z is local 2201-01-01, outside the supported civil-date domain.
+def test_labels_day_past_the_date_domain_is_the_utc_day(experiment):
+    # At +14:00, 2200-12-31T10:00Z is local 2201-01-01, outside the domain; the UTC day 2200-12-31 is used.
     from quietcycle import Query
     req, _, _, _ = experiment
     data, q = subject_fixture("late", "2200-11-20", 3)
     late = Query.model_validate({**q.model_dump(), "cutoff": "2200-12-10T23:00:00+14:00", "utc_offset_minutes": 840})
     landmark = make_landmark(data, late, req.spec)
-    with pytest.raises(InputError, match="label_date_outside_domain"):
-        label_landmark(data, landmark, labels_cutoff="2200-12-31T10:00:00Z", data_kind="synthetic", cohort="test")
+    case = label_landmark(data, landmark, labels_cutoff="2200-12-31T10:00:00Z", data_kind="synthetic", cohort="test")
+    assert case.outcome_date == "2200-12-18"
 
 
 def test_malformed_labels_cutoff_is_an_input_error(experiment):
