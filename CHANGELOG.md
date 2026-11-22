@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- `SECURITY.md` gives the private route for vulnerability reports, GitHub's private vulnerability
+  reporting, instead of asking for one to be set up before the repository is public.
+  `docs/RELEASING.md` says that the repository is public but not published to PyPI.
+
 - Every CI job runs `twine check --strict` and the synthetic learning benchmark, and fails if the
   benchmark changes `evidence/`. The Linux jobs also run the selected mutations. These used to run
   only in the local release checks.

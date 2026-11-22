@@ -1,8 +1,9 @@
 # Release procedure
 
-This repository has not been published to PyPI or an owned public repository.
-Check name ownership, contributor attribution, a private reporting channel, and
-actual repository URLs before publication. Do not upload under a guessed owner.
+This repository is public at <https://github.com/papillon-2207/quiet-cycle> but has not been
+published to PyPI. Before publishing, check name ownership, contributor attribution and actual
+repository URLs, and that private vulnerability reporting is still enabled. Do not upload under a
+guessed owner.
 
 1. Update version, model/contract identifiers when needed, and the changelog.
 2. Install the development extras in a clean environment. Run unit/property/
