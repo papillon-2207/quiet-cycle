@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- Labels read each event on the date of its own offset (`docs/CONTRACT.md`), not the query's. A next
+  onset recorded on its own date in a different offset, after travel or a summer-time change, was
+  rejected as `label_available_before_event`; and any event dated after the labels day at the
+  query's offset, but visible at the labels cutoff, rejected the case as `event_after_query_date`,
+  even when it came after the outcome. The labels snapshot is now read on the local day at +14:00,
+  or on the UTC day when that is past 2200-12-31, so `label_landmark` no longer reports
+  `label_date_outside_domain`; and a `LabelledCase` is invalid only when its outcome date had not
+  begun in any offset by `outcome_known_at`. `build_cases`, `label_landmark` and
+  `landmark_attempts` now label these cases, so a fit on such data can change; 0.4.0 rejects the
+  new cases. `dataset_inventory` still reads its labels day at `utc_offset_minutes`, and
+  `landmark_attempts` still rejects a labels cutoff whose day at that offset is past 2200-12-31.
+
 - `SECURITY.md` gives the private route for vulnerability reports, GitHub's private vulnerability
   reporting, instead of asking for one to be set up before the repository is public.
   `docs/RELEASING.md` says that the repository is public but not published to PyPI.

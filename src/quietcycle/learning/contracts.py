@@ -5,12 +5,13 @@ subject hashes and small-sample coefficients are not anonymization.
 """
 from __future__ import annotations
 
+from datetime import datetime
 from fractions import Fraction
 from typing import Annotated, Literal, Self
 
 from pydantic import BeforeValidator, Field, StrictBool, StrictInt, StringConstraints, model_validator
 
-from ..dates import day_difference, local_day
+from ..dates import day_difference
 from ..models import CivilDate, Identifier, Instant, Model, Query, Rational, Unit, _tuple, array_bounds
 from ..units import DEFAULT_RULES
 
@@ -160,7 +161,9 @@ class LabelledCase(Model):
         q = self.landmark.query
         if self.outcome_date < q.as_of or self.outcome_known_at <= q.cutoff:
             raise ValueError("outcome_not_future_to_prediction")
-        if self.outcome_date > local_day(self.outcome_known_at, q.utc_offset_minutes):
+        # The onset's date is in its own offset, which a case does not keep. Reject only a date that
+        # had not begun anywhere, even at +14:00, when the outcome became known.
+        if datetime.fromisoformat(self.outcome_known_at) < datetime.fromisoformat(self.outcome_date + "T00:00:00+14:00"):
             raise ValueError("label_available_before_event")
         return self
 

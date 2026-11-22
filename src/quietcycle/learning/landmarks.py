@@ -181,12 +181,14 @@ def _classify_outcome(dataset: CycleDataset, *, query: Query, anchor_id: str, an
     labels_cutoff = _labels_cutoff(labels_cutoff)
     if labels_cutoff <= query.cutoff:
         raise InputError("label_cutoff_not_later")
+    # Read the labels on the latest local day, so that no visible event, dated in its own offset, is
+    # after it: at +14:00, or at UTC when that is past the domain and so the UTC day is its last.
     try:
-        label_day = local_day(labels_cutoff, query.utc_offset_minutes)
+        offset, label_day = 840, local_day(labels_cutoff, 840)
     except ValueError:
-        raise InputError("label_date_outside_domain") from None
+        offset, label_day = 0, local_day(labels_cutoff, 0)
     label_q = Query(subject_id=query.subject_id, as_of=label_day,
-                    cutoff=labels_cutoff, utc_offset_minutes=query.utc_offset_minutes, context=query.context)
+                    cutoff=labels_cutoff, utc_offset_minutes=offset, context=query.context)
     events = snapshot(dataset, label_q).events
     onsets = sorted((e for e in events if isinstance(e, Onset)), key=lambda o: (o.date, o.id))
     anchor = next((o for o in onsets if o.id == anchor_id), None)

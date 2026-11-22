@@ -6,11 +6,14 @@ Labels are read at 2025-04-01 unless a test says otherwise.
 """
 from __future__ import annotations
 
+from typing import Self
+
 import pytest
+from pydantic import ValidationError, model_validator
 
 from quietcycle import CycleContext, CycleDataset, InputError, NoOnset, Onset, Query
 from quietcycle.dates import add_days
-from quietcycle.learning import LandmarkSpec, build_cases, label_landmark, make_landmark
+from quietcycle.learning import LabelledCase, LandmarkSpec, build_cases, label_landmark, landmarks, make_landmark
 
 AS_OF, LABELS = "2025-01-21", "2025-04-01T00:00:00Z"
 
@@ -182,10 +185,81 @@ def test_an_outcome_already_visible_at_the_cutoff_is_rejected():
                        data_kind="synthetic", cohort="c")
 
 
-def test_label_validation_failures_are_input_errors():
-    # At -12:00 the outcome recorded 2025-01-30 08:00Z is local 2025-01-29, before its date.
+@pytest.mark.parametrize("recorded, offset, query_offset", [
+    # Recorded on its own date, which at the query's offset is still the day before.
+    ("2025-01-30T07:59:00+08:00", 480, 0),  # after travel east
+    ("2025-01-30T00:30:00+02:00", 120, 60),  # after a one-hour change, as with summer time
+    ("2025-01-30T08:00:00Z", 0, -720),
+])
+def test_a_label_keeps_the_offset_of_its_onset(recorded, offset, query_offset):
+    later = onset(5, "2025-01-30", recorded=recorded, utc_offset_minutes=offset)
+    built = build_cases(CycleDataset(events=tuple(history()) + (later,)), (query(query_offset),), spec=LandmarkSpec(),
+                        labels_cutoff=LABELS, data_kind="synthetic", cohort="c")
+    assert not built.rejected and [c.outcome_date for c in built.cases] == ["2025-01-30"]
+
+
+def test_labels_read_each_event_on_its_own_date():
+    # At labels cutoffs that are still 2025-01-29 at the query's offset 0, an onset dated 2025-01-30
+    # at +08:00 is visible. It is the outcome, or a later onset that does not change the outcome.
+    def labelled(*later, labels):
+        built = build_cases(CycleDataset(events=tuple(history()) + later), (query(),), spec=LandmarkSpec(),
+                            labels_cutoff=labels, data_kind="synthetic", cohort="c")
+        return [c.outcome_date for c in built.cases], built.rejected
+    east = onset(5, "2025-01-30", recorded="2025-01-30T07:59:00+08:00", utc_offset_minutes=480)
+    assert labelled(east, labels="2025-01-29T23:59:30Z") == (["2025-01-30"], ())
+    next_one = onset(6, "2025-02-27", previous="o5", recorded="2025-02-27T07:00:00+08:00", utc_offset_minutes=480)
+    assert labelled(onset(5, "2025-01-30"), next_one, labels="2025-02-26T23:30:00Z") == (["2025-01-30"], ())
+
+
+def test_labels_read_an_event_recorded_at_the_largest_offset():
+    # Recorded at 00:00+14:00 on its date; 30 seconds later it is still the day before at +13:59.
+    late = onset(5, "2025-01-30", recorded="2025-01-30T00:00:00+14:00", utc_offset_minutes=840)
+    built = build_cases(CycleDataset(events=tuple(history()) + (late,)), (query(),), spec=LandmarkSpec(),
+                        labels_cutoff="2025-01-29T10:00:30Z", data_kind="synthetic", cohort="c")
+    assert [c.outcome_date for c in built.cases] == ["2025-01-30"] and not built.rejected
+
+
+@pytest.mark.parametrize("query_offset, labels", [(0, "2200-12-31T12:00:00Z"), (-720, "2200-12-31T11:00:00Z"),
+                                                  (60, "2200-12-31T23:30:00Z")])
+def test_labels_read_near_the_end_of_the_date_domain(query_offset, labels):
+    # Past 2200-12-31T10:00Z, +14:00 is in 2201, so the labels are read on the UTC day, 2200-12-31,
+    # where an onset recorded on that date at offset 0 is visible.
+    events: list = [onset(j, add_days("2200-11-01", -(4 - j) * 28), previous=f"o{j - 1}" if j else None) for j in range(5)]
+    events += [report("landmark-report", "2200-11-20", anchor="o4"), onset(5, "2200-11-30"),
+               onset(6, "2200-12-31", previous="o5", recorded="2200-12-31T09:00:00Z")]
+    cutoff = instant_at("2200-11-21T12:00:00", query_offset)
+    late = Query(subject_id="p", as_of="2200-11-21", cutoff=cutoff, utc_offset_minutes=query_offset,
+                 context=CycleContext(mode="natural-cycle"))
+    built = build_cases(CycleDataset(events=tuple(events)), (late,), spec=LandmarkSpec(),
+                        labels_cutoff=labels, data_kind="synthetic", cohort="c")
+    assert [c.outcome_date for c in built.cases] == ["2200-11-30"] and not built.rejected
+
+
+def instant_at(local: str, offset: int) -> str:
+    sign = "-" if offset < 0 else "+"
+    return f"{local}{sign}{abs(offset) // 60:02d}:{abs(offset) % 60:02d}"
+
+
+def test_a_case_known_before_its_outcome_date_began_anywhere_is_invalid():
+    case = dict(landmark=make_landmark(CycleDataset(events=tuple(history())), query(), LandmarkSpec()),
+                outcome_date="2025-01-30", data_kind="synthetic", cohort="c")
+    # 2025-01-30 begins first at +14:00, the largest offset: at 2025-01-29T10:00Z.
+    assert LabelledCase(**case, outcome_known_at="2025-01-29T10:00:00Z").outcome_known_at == "2025-01-29T10:00:00.000Z"
+    with pytest.raises(ValidationError, match="label_available_before_event"):
+        LabelledCase(**case, outcome_known_at="2025-01-29T09:59:59.999Z")
+
+
+def test_label_validation_failures_are_input_errors(monkeypatch):
+    # label_landmark settles every case that LabelledCase would reject before building it, so a
+    # stricter case class stands in for a check that it could reach.
+    class Stricter(LabelledCase):
+        @model_validator(mode="after")
+        def stricter(self) -> Self:
+            raise ValueError("label_available_before_event")
+
+    monkeypatch.setattr(landmarks, "LabelledCase", Stricter)
     data = CycleDataset(events=tuple(history()) + (onset(5, "2025-01-30"),))
-    landmark = make_landmark(data, query(-720), LandmarkSpec())
+    landmark = make_landmark(data, query(), LandmarkSpec())
     with pytest.raises(InputError, match="label_available_before_event") as raised:
         label_landmark(data, landmark, labels_cutoff=LABELS, data_kind="synthetic", cohort="c")
     assert raised.value.__cause__ is None and raised.value.__suppress_context__
