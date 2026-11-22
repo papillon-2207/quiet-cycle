@@ -75,6 +75,15 @@ def test_attempts_follow_what_was_known_at_each_query():
                                   "outcomes": {"anchor-revised-after-prediction": 1}}]
 
 
+def test_a_later_revision_does_not_hide_an_outcome_known_at_a_query():
+    # p5, dated on the elapsed-20 day after p4 (05-13), is visible at that day's query; it is the
+    # outcome of p4, already known. Its revision 2 with the same date comes later.
+    events = subject_p() + [onset("p", 5, "2025-05-13")]
+    revised = onset("p", 5, "2025-05-13", revision=2, recorded="2025-05-20T08:00:00Z")
+    assert attempts(*events)[0]["outcomes"]["outcome-already-known-at-landmark"] == 1
+    assert attempts(*events, revised)[0]["outcomes"] == attempts(*events)[0]["outcomes"]
+
+
 def test_each_attempt_is_counted_once_with_its_own_code():
     # u: two onsets on 01-01 are one attempt, rejected, with no single anchor for an outcome.
     # v: a +14:00 bleeding report dated 01-22 is visible at the 01-21 query, so only that day fails;

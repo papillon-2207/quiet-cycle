@@ -11,7 +11,7 @@ from typing import Self
 import pytest
 from pydantic import ValidationError, model_validator
 
-from quietcycle import CycleContext, CycleDataset, InputError, NoOnset, Onset, Query
+from quietcycle import CycleContext, CycleDataset, InputError, NoOnset, Onset, Query, Tombstone
 from quietcycle.dates import add_days
 from quietcycle.learning import LabelledCase, LandmarkSpec, build_cases, label_landmark, landmarks, make_landmark
 
@@ -247,6 +247,25 @@ def test_a_case_known_before_its_outcome_date_began_anywhere_is_invalid():
     assert LabelledCase(**case, outcome_known_at="2025-01-29T10:00:00Z").outcome_known_at == "2025-01-29T10:00:00.000Z"
     with pytest.raises(ValidationError, match="label_available_before_event"):
         LabelledCase(**case, outcome_known_at="2025-01-29T09:59:59.999Z")
+
+
+def test_an_outcome_known_at_the_cutoff_is_the_version_its_snapshot_held():
+    seen = onset(5, AS_OF, certainty="uncertain", recorded=AS_OF + "T08:00:00Z")
+    revised = onset(5, AS_OF, revision=2, recorded="2025-02-01T08:00:00Z")
+    # o5 was visible before the cutoff with the date it still has; its revision 2 came later.
+    assert known_at_landmark(seen, revised) == "outcome-already-known-at-landmark"
+    # So was it when the anchor gets a later revision that keeps its date.
+    anchor = onset(4, "2025-01-01", previous="o3", revision=2, recorded="2025-02-01T08:00:00Z")
+    assert known_at_landmark(seen, revised, anchor) == "outcome-already-known-at-landmark"
+    # At the cutoff the snapshot held another date, or a deletion, or another subject's o5.
+    moved = onset(5, "2025-01-15", revision=2, recorded=AS_OF + "T09:00:00Z")
+    deleted = Tombstone(subject_id="p", id="o5", revision=2, target_kind="onset", recorded_at=AS_OF + "T09:00:00Z",
+                        utc_offset_minutes=0)
+    again = onset(5, AS_OF, revision=3, recorded="2025-02-01T08:00:00Z")
+    assert known_at_landmark(seen, moved, again) == "exact"
+    assert known_at_landmark(seen, deleted, again) == "exact"
+    other = onset(5, AS_OF, recorded=AS_OF + "T08:00:00Z", subject_id="q", previous=None)
+    assert known_at_landmark(other, revised) == "exact"
 
 
 def test_label_validation_failures_are_input_errors(monkeypatch):

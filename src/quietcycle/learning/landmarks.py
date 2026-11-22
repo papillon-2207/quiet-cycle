@@ -166,6 +166,14 @@ def make_landmark(dataset: CycleDataset, query: Query, spec: LandmarkSpec) -> La
         raise _input_error(exc, "invalid_landmark") from None
 
 
+def _held_at(dataset: CycleDataset, onset: Onset, cutoff: str) -> bool:
+    """Whether a snapshot at cutoff held this onset with its current date, as `snapshot` selects it."""
+    versions = [e for e in dataset.events
+                if e.subject_id == onset.subject_id and e.id == onset.id and e.available_at <= cutoff]
+    held = max(versions, key=lambda e: e.revision, default=None)
+    return isinstance(held, Onset) and held.date == onset.date
+
+
 def _labels_cutoff(labels_cutoff: str) -> str:
     try:
         return instant(labels_cutoff)
@@ -216,7 +224,7 @@ def _classify_outcome(dataset: CycleDataset, *, query: Query, anchor_id: str, an
         if (end.continuity == "confirmed" and end.previous_onset_id != anchor.id) or any(
                 o.previous_onset_id == anchor.id and o.continuity == "confirmed" for o in later[1:]):
             return "conflicting-label-continuity", None, None
-        if max(anchor.available_at, end.available_at) <= query.cutoff:
+        if _held_at(dataset, anchor, query.cutoff) and _held_at(dataset, end, query.cutoff):
             return "outcome-already-known-at-landmark", None, None
         if end.exclude_from_history:
             return "label-excluded-from-history", None, None

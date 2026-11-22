@@ -45,7 +45,7 @@ benchmark). In order, with reports at the labels cutoff:
 | The next onset is before the landmark day | `retrospective-label-before-landmark` |
 | A no-onset report that could cover a day from the anchor to the next onset breaks the `make_landmark` rules: no confirmed origin, or reaching a later onset | `invalid-no-onset-report`, `conflicting-no-onset-report` |
 | The next onset confirms continuity with another onset, or a later onset confirms it with the anchor | `conflicting-label-continuity` |
-| The outcome was already known at the landmark cutoff | `outcome-already-known-at-landmark` |
+| A snapshot at the landmark cutoff held the anchor and the next onset, each with its current date, even if revised later | `outcome-already-known-at-landmark` |
 | The next onset is excluded from history | `label-excluded-from-history` |
 | The next onset is confirmed and linked to the anchor | regression label |
 | The next onset is confirmed but continuity is not, or it is uncertain and a confirmed onset follows | `outcome-interval-censored` |
