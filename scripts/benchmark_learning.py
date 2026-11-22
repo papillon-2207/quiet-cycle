@@ -24,6 +24,6 @@ for regime in ("signal", "noise", "drift"):
 output = {"scope": "synthetic-software-experiment-not-clinical-evidence", "scenarios": reports}
 path = ROOT / "evidence" / "learning-benchmark.json"
 path.parent.mkdir(exist_ok=True)
-path.write_text(json.dumps(json.loads(canonical_json(output)), indent=2, sort_keys=True)+"\n")
+path.write_text(json.dumps(json.loads(canonical_json(output)), indent=2, sort_keys=True)+"\n", encoding="utf-8")
 for regime, report in reports.items():
     print(regime, report["selected_candidate"], "MAE", report["mae_days"], "baseline", report["baseline_mae_same_estimated_cases"])
