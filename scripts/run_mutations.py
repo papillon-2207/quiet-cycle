@@ -113,6 +113,8 @@ MUTATIONS = [
     ("overflowing-query-dropped", "learning/eligibility.py", "                    query_cutoff = cutoff  # its UTC instant is past the domain, so after the labels cutoff\n", "                    continue\n", "tests/test_attempts.py::test_boundaries_of_what_a_query_can_see"),
     ("negative-offset-sign-lost", "learning/eligibility.py", "{abs(utc_offset_minutes) // 60:02d}", "{utc_offset_minutes // 60:02d}", "tests/test_attempts.py::test_boundaries_of_what_a_query_can_see"),
     ("training-time-leak", "learning/fitting.py", "if max(c.outcome_known_at for c in left) >= min(c.landmark.query.cutoff for c in right):", "if False:", "tests/test_learning.py::test_temporal_boundary_rejected"),
+    ("cli-format-option-ignored", "cli.py", "getattr(args, name) is not None and args.format != fmt", "False", "tests/test_interfaces.py::test_cli_rejects_an_option_its_format_would_ignore"),
+    ("cli-fhir-source-default-lost", "cli.py", 'source_id="fhir-r4" if args.source_id is None else args.source_id', "source_id=args.source_id", "tests/test_interfaces.py::test_cli_fhir_import_matches_the_adapter"),
 ]
 
 

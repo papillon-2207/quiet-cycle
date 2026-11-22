@@ -24,7 +24,14 @@ def _read(path: str) -> str:
     return text
 
 
+# Each option applies to one format; with any other it would be silently ignored.
+FORMAT_OPTIONS = {"mapping": "csv", "subject_map": "fhir-r4", "imported_at": "fhir-r4", "source_id": "fhir-r4",
+                  "utc_offset_minutes": "fhir-r4"}
+
+
 def _dataset(args: argparse.Namespace) -> CycleDataset:
+    if any(getattr(args, name) is not None and args.format != fmt for name, fmt in FORMAT_OPTIONS.items()):
+        raise InputError("option_not_for_format")
     text = _read(args.input)
     if args.format == "json":
         return from_json(text)
@@ -41,7 +48,8 @@ def _dataset(args: argparse.Namespace) -> CycleDataset:
     if not isinstance(subjects, dict):
         raise InputError("invalid_subject_map")
     return FHIRObservationAdapter(subject_map=subjects, imported_at=args.imported_at,
-                                  utc_offset_minutes=args.utc_offset_minutes, source_id=args.source_id).loads(text)
+                                  utc_offset_minutes=args.utc_offset_minutes,
+                                  source_id="fhir-r4" if args.source_id is None else args.source_id).loads(text)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -57,10 +65,10 @@ def main(argv: list[str] | None = None) -> int:
         command.add_argument("input", help="Dataset path, or - for stdin")
         command.add_argument("--format", choices=("json", "jsonl", "csv", "fhir-r4"), required=True)
         command.add_argument("--mapping", help="CSV column_map/defaults JSON file")
-        command.add_argument("--subject-map", help="FHIR patient-reference to local-pseudonym JSON file")
-        command.add_argument("--imported-at")
-        command.add_argument("--source-id", default="fhir-r4", help="FHIR source namespace")
-        command.add_argument("--utc-offset-minutes", type=int)
+        command.add_argument("--subject-map", help="FHIR, required: patient-reference to local-pseudonym JSON file")
+        command.add_argument("--imported-at", help="FHIR, required: when this system obtained the export")
+        command.add_argument("--source-id", help="FHIR: source namespace (default fhir-r4)")
+        command.add_argument("--utc-offset-minutes", type=int, help="FHIR, required: UTC offset of the imported events")
         command.add_argument("-o", "--output")
         if name == "run":
             command.add_argument("--query", required=True)

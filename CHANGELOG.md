@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- `quiet-cycle run` and `quiet-cycle import` reject, with `option_not_for_format`, an option that
+  the chosen `--format` does not use: `--mapping` outside `csv`, and `--subject-map`,
+  `--imported-at`, `--source-id` and `--utc-offset-minutes` outside `fhir-r4`. Such options used to
+  be ignored, so `--imported-at` given with `json`, `jsonl` or `csv` was not applied to the events.
+  For those formats, set `imported_at` in the records or in the CSV mapping's `defaults`.
+
 - A learned forecast abstains with `feature_name_too_long` instead of raising `ValidationError`
   when an `untrained-feature.` or `clipped.` issue for a long symptom name would exceed 96
   characters, and `fit` raises `InputError("feature_name_too_long")` instead of `ValidationError`

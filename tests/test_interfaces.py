@@ -226,3 +226,51 @@ def test_unit_registry_signature_separates_features(sample):
     b = DefaultFeatureBuilder(UnitRegistry({("lab_value", "{score}"): UnitRule("{score}", Fraction(2))}))
     assert a.builder_id != b.builder_id
     assert CyclePipeline(feature_builder=a).run(sample.dataset, sample.query).feature_builder_id == a.builder_id
+
+
+FHIR_OPTIONS = ["--subject-map", "examples/fhir-subject-map.json", "--imported-at", "2025-07-02T12:00:00Z",
+                "--utc-offset-minutes", "0"]
+
+
+@pytest.mark.parametrize("command", [
+    ["import", "examples/events.jsonl", "--format", "jsonl", "--imported-at", "2025-07-02T12:00:00Z"],
+    ["import", "examples/events.csv", "--format", "csv", "--imported-at", "2025-07-02T12:00:00Z"],
+    ["import", "examples/dataset.json", "--format", "json", "--subject-map", "examples/fhir-subject-map.json"],
+    ["import", "examples/events.jsonl", "--format", "jsonl", "--source-id", "fhir-r4"],
+    ["run", "examples/events.csv", "--format", "csv", "--query", "examples/query.json", "--utc-offset-minutes", "0"],
+    ["import", "examples/events.jsonl", "--format", "jsonl", "--mapping", "examples/query.json"],
+    ["import", "examples/fhir-observation.json", "--format", "fhir-r4", *FHIR_OPTIONS, "--mapping", "examples/query.json"],
+])
+def test_cli_rejects_an_option_its_format_would_ignore(command, monkeypatch, capsys):
+    from quietcycle.cli import main
+    monkeypatch.chdir(ROOT)
+    assert main(command[:-2]) == 0
+    capsys.readouterr()
+    assert main(command) == 2
+    out = capsys.readouterr()
+    assert not out.out and json.loads(out.err) == {"error": {"code": "option_not_for_format"}}
+
+
+def test_cli_fhir_import_matches_the_adapter(monkeypatch, capsys):
+    from quietcycle.cli import main
+    monkeypatch.chdir(ROOT)
+    adapter = FHIRObservationAdapter(subject_map={"Patient/example": "demo"}, imported_at="2025-07-02T12:00:00Z",
+                                     utc_offset_minutes=0)
+    assert main(["import", "examples/fhir-observation.json", "--format", "fhir-r4", *FHIR_OPTIONS]) == 0
+    assert capsys.readouterr().out.strip() == canonical_json(adapter.load("examples/fhir-observation.json"))
+    assert main(["import", "examples/fhir-observation.json", "--format", "fhir-r4", *FHIR_OPTIONS[:2]]) == 2
+    assert json.loads(capsys.readouterr().err) == {"error": {"code": "fhir_import_options_required"}}
+    named = FHIRObservationAdapter(subject_map={"Patient/example": "demo"}, imported_at="2025-07-02T12:00:00Z",
+                                   utc_offset_minutes=0, source_id="other-server")
+    assert main(["import", "examples/fhir-observation.json", "--format", "fhir-r4", *FHIR_OPTIONS,
+                 "--source-id", "other-server"]) == 0
+    assert capsys.readouterr().out.strip() == canonical_json(named.load("examples/fhir-observation.json"))
+
+
+def test_cli_csv_import_reads_its_mapping(monkeypatch, capsys, tmp_path):
+    from quietcycle.cli import main
+    monkeypatch.chdir(ROOT)
+    settings = {"defaults": {"imported_at": "2025-07-02T12:00:00Z"}}
+    (tmp_path / "mapping.json").write_text(json.dumps(settings), encoding="utf-8")
+    assert main(["import", "examples/events.csv", "--format", "csv", "--mapping", str(tmp_path / "mapping.json")]) == 0
+    assert capsys.readouterr().out.strip() == canonical_json(CSVAdapter(**settings).load("examples/events.csv"))
