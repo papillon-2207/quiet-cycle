@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- CI also runs every check on Python 3.11 with the lowest versions that `pyproject.toml` allows
+  for the package and its extras, pinned in `constraints-lowest.txt`.
+
+- The lower bounds in the `dev` extra rise to pytest-cov 7 and build 1.2.1. With pytest-cov 6,
+  `pytest --cov` on this test suite ends with an internal error after the tests pass. Build 1.2.0
+  was yanked from PyPI.
+
 ## 0.4.1 (2026-11-22)
 
 - `outcome-already-known-at-landmark` asks whether a snapshot at the landmark cutoff held the anchor

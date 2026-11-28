@@ -12,11 +12,19 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python: ['3.11', '3.12', '3.13', '3.14']
+        deps: [contracts]
+        # Every entry sets deps, which names the constraints file. Because deps is also a matrix key,
+        # the lowest entry becomes a job of its own and does not join the Ubuntu 3.11 job.
         include:
           - os: windows-latest
             python: '3.13'
+            deps: contracts
           - os: macos-latest
             python: '3.13'
+            deps: contracts
+          - os: ubuntu-latest
+            python: '3.11'
+            deps: lowest
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1, resolved 2026-11-15
@@ -24,7 +32,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - id: install
-        run: python -m pip install -c constraints-contracts.txt -e ".[dev,api,reference]"
+        run: python -m pip install -c constraints-${{ matrix.deps }}.txt -e ".[dev,api,reference]"
       # After a successful install, each check runs even if an earlier check fails.
       - if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: python -m pytest --fail-on-skip --cov=quietcycle --cov-report=term

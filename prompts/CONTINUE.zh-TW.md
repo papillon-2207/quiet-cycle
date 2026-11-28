@@ -4,8 +4,9 @@
 docs/TEST_REPORT.md、docs/REVIEW.md，再查看 learning/ 程式。不要建立前端。
 
 先重跑已存在的檢查。將通過、失敗、環境阻擋分列，不可把 CI 設定檔當成 CI 成功。
-靜態型別、Ruff、標準 build 與 CI 矩陣已執行（見 docs/TEST_REPORT.md）；仍未測試宣告的相依下限，
-也只在 Python 3.13 上跑過 Windows 與 macOS。不能弱化規則換取通過。
+靜態型別、Ruff、標準 build 與 CI 矩陣已執行（見 docs/TEST_REPORT.md）。CI 的 lowest 工作在 Python 3.11
+以 constraints-lowest.txt 安裝宣告的相依下限並跑全部檢查，結果還沒寫進 TEST_REPORT；setuptools 的下限
+沒有測。Windows 與 macOS 只在 Python 3.13 上跑過。不能弱化規則換取通過。
 
 模型面：使用獲授權、具正確知識時間的觀察資料，事先固定目標、預測時點、分割與評估。
 保留右設限與所有不合格案例的數量；不能只報容易預測的子集。新資料集的校準和測試

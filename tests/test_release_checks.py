@@ -3,9 +3,11 @@ from __future__ import annotations
 
 import ast
 import os
+import re
 import shutil
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -107,3 +109,15 @@ def test_scripts_name_the_encoding_of_every_text_file_they_open():
                 continue
             unnamed.append(f"{path.name}:{node.lineno}")
     assert unnamed == []
+
+
+def test_lowest_constraints_pin_the_lower_bound_of_every_declared_dependency():
+    # CI installs constraints-lowest.txt on Python 3.11. Without this test, the lower bound of a
+    # requirement added to pyproject.toml, or a bound lowered there, would go untested in that job.
+    project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
+    declared = [*project["dependencies"], *(r for extra in project["optional-dependencies"].values() for r in extra)]
+    bounds = [re.fullmatch(r"([A-Za-z0-9._-]+)>=([0-9.]+),<[0-9.]+", r) for r in declared]
+    assert all(bounds), declared
+    lines = (ROOT / "constraints-lowest.txt").read_text(encoding="utf-8").splitlines()
+    pins = sorted(tuple(line.split("==")) for line in lines if line and not line.startswith("#"))
+    assert pins == sorted({m.groups() for m in bounds if m})
