@@ -1,4 +1,4 @@
-include constraints-contracts.txt constraints-tested.txt llms.txt
+include constraints-contracts.txt constraints-lowest.txt constraints-tested.txt llms.txt
 include LICENSE NOTICE README.md README.zh-TW.md CHANGELOG.md CONTRIBUTING.md SECURITY.md AGENTS.md CLAUDE.md CITATION.cff
 recursive-include src/quietcycle *.py *.typed *.json
 recursive-include tests *.py *.js *.mjs *.json LICENSE
