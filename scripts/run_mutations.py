@@ -147,6 +147,14 @@ MUTATIONS = [
     ("shrunk-window-from-day-one", "learning/survival.py", "_risk_counts(personal, first_day, first_day + len(population) - 1)", "_risk_counts(personal, 1, len(population))", "tests/test_survival.py::test_life_tables_count_only_the_days_inside_their_window"),
     ("onset-on-first-window-day-dropped", "learning/survival.py", "if c.onset and first_day <= c.last_day <= last_day:", "if c.onset and first_day < c.last_day <= last_day:", "tests/test_survival.py::test_life_tables_count_only_the_days_inside_their_window"),
     ("onset-after-window-counted", "learning/survival.py", "        if c.onset and first_day <= c.last_day <= last_day:\n            onsets[c.last_day - first_day] += 1\n", "        if c.onset and first_day <= c.last_day:\n            onsets[min(c.last_day, last_day) - first_day] += 1\n", "tests/test_survival.py::test_life_tables_count_only_the_days_inside_their_window"),
+    ("censored-residual-dropped", "learning/scoring.py", "    return inside + (residual if upper is None else 0)\n", "    return inside\n", "tests/test_scoring.py::test_the_probability_of_what_the_labels_allow"),
+    ("residual-split-allowed", "learning/scoring.py", "    if residual and (lower - 1 if upper is None else upper) > last:\n", "    if False:\n", "tests/test_scoring.py::test_bounds_that_split_the_residual_are_refused"),
+    ("outcome-lower-bound-ignored", "learning/scoring.py", "if lower <= p.cycle_length and (upper", "if (upper", "tests/test_scoring.py::test_the_probability_of_what_the_labels_allow"),
+    ("log-score-through-float", "learning/scoring.py", "    return math.log(probability.denominator) - math.log(probability.numerator)\n", "    return -math.log(float(probability))\n", "tests/test_scoring.py::test_a_tiny_probability_still_has_a_finite_score"),
+    ("zero-residual-refused", "learning/scoring.py", "    if residual and (lower - 1", "    if (lower - 1", "tests/test_scoring.py::test_a_forecast_without_residual_mass_scores_any_later_outcome"),
+    ("outcome-before-forecast-scored", "learning/scoring.py", "    if upper is not None and upper < forecast.elapsed_day:\n", "    if False:\n", "tests/test_scoring.py::test_an_outcome_before_the_forecast_day_contradicts_it"),
+    ("near-one-by-subtraction", "learning/scoring.py", "        return -math.log1p(-float(1 - probability))", "        return math.log(probability.denominator) - math.log(probability.numerator)", "tests/test_scoring.py::test_a_probability_near_one_keeps_its_small_score"),
+    ("subnormal-through-integer-logs", "learning/scoring.py", "    if probability >= Fraction(2) ** -1022:\n", "    if probability >= Fraction(2) ** -1074:\n", "tests/test_scoring.py::test_a_subnormal_probability_keeps_its_score"),
 ]
 
 
