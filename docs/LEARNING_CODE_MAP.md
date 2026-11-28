@@ -12,6 +12,8 @@
   checks, exact contributions, point rounding and interval output.
 - `learning/evaluation.py`: test attempts, abstentions, errors, coverage, widths;
   no refitting and no test labels passed into prediction.
+- `learning/survival.py`: exact daily forecast from an elapsed day with its residual mass kept,
+  conditioning on a later day, pooled and shrunk life-table hazards; no model uses it yet.
 - `cli.py`: fit / forecast / evaluate from versioned JSON.
 - `api.py`: model optionally bound at startup, same pipeline; no train endpoint.
 - `tests/test_learning.py`: learning, leakage, mathematical, schema and interface
