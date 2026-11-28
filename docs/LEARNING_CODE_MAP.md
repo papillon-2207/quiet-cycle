@@ -13,9 +13,11 @@
 - `learning/evaluation.py`: test attempts, abstentions, errors, coverage, widths;
   no refitting and no test labels passed into prediction.
 - `learning/survival.py`: exact daily forecast from an elapsed day with its residual mass kept,
-  conditioning on a later day, pooled and shrunk life-table hazards; no model uses it yet.
+  conditioning on a later day, pooled and shrunk life-table hazards.
 - `learning/scoring.py`: exact probability of a labelled outcome's bounds under a daily forecast,
   and its log score as a float; nothing calls it yet.
+- `learning/life_table.py`: pooled life table from complete cycle lengths and a forecast that
+  shrinks it toward the person's clean landmark history; a comparator, exact arithmetic.
 - `cli.py`: fit / forecast / evaluate from versioned JSON.
 - `api.py`: model optionally bound at startup, same pipeline; no train endpoint.
 - `tests/test_learning.py`: learning, leakage, mathematical, schema and interface
