@@ -8,7 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from fractions import Fraction
 from hashlib import sha256
-from typing import Literal
+from typing import Literal, cast
 
 from pydantic import TypeAdapter, ValidationError
 
@@ -21,6 +21,9 @@ from ..units import UnitRegistry, UnitRule
 from ..serialization import canonical_json, parse_model
 from .contracts import FeatureValue, LabelledCase, Landmark, LandmarkSpec
 from .exact import median
+
+Bounds = tuple[int, int | None]  # lower and upper cycle length; upper None: no upper bound
+UsableOutcome = Literal["exact", "outcome-interval-censored", "outcome-right-censored"]
 
 
 def spec_digest(spec: LandmarkSpec) -> str:
@@ -182,9 +185,11 @@ def _labels_cutoff(labels_cutoff: str) -> str:
 
 
 def _classify_outcome(dataset: CycleDataset, *, query: Query, anchor_id: str, anchor_date: str,
-                      labels_cutoff: str) -> tuple[str, Onset | None, str | None]:
-    """("exact", next onset, when both were known) or (code, None, None), from reports visible at
-    labels_cutoff only. No report is never read as no onset."""
+                      labels_cutoff: str) -> tuple[str, Onset | None, str | None, Bounds | None]:
+    """("exact", next onset, when both were known, bounds) or (code, None, None, bounds), from reports
+    visible at labels_cutoff only. No report is never read as no onset. Bounds are the lower and upper
+    cycle length the labels allow, the upper None when nothing bounds it; they are None for any outcome
+    other than exact, right-censored or interval-censored."""
     # Normalized instants share one fixed-width UTC spelling, so text order is time order.
     labels_cutoff = _labels_cutoff(labels_cutoff)
     if labels_cutoff <= query.cutoff:
@@ -202,16 +207,20 @@ def _classify_outcome(dataset: CycleDataset, *, query: Query, anchor_id: str, an
     anchor = next((o for o in onsets if o.id == anchor_id), None)
     if (anchor is None or anchor.date != anchor_date or anchor.certainty != "confirmed" or anchor.exclude_from_history
             or [o.date for o in onsets].count(anchor_date) != 1):
-        return "anchor-revised-after-prediction", None, None
+        return "anchor-revised-after-prediction", None, None, None
     later = [o for o in onsets if o.date > anchor.date]
     reports = [e for e in events if isinstance(e, NoOnset)]
-    covered = max((r.through for r in reports if r.anchor_id == anchor.id), default=None)
+    # A report ending before the anchor says nothing about this cycle.
+    covered = max((r.through for r in reports if r.anchor_id == anchor.id and r.through >= anchor.date), default=None)
+    # Only a report visible at labels_cutoff bounds the outcome below: one through day c gives L >= c + 1.
+    # The landmark's own report counts only if it still stands.
+    shortest = day_difference(covered, anchor.date) + 1 if covered is not None else 1
     if later:
         end = later[0]
         if sum(o.date == end.date for o in onsets) != 1:
-            return "conflicting-label", None, None
+            return "conflicting-label", None, None, None
         if end.date < query.as_of:
-            return "retrospective-label-before-landmark", None, None
+            return "retrospective-label-before-landmark", None, None, None
     # Only a report that could cover a day from the anchor to the next onset bears on this outcome.
     by_id, horizon = {o.id: o for o in onsets}, later[0].date if later else "9999-12-31"
     relevant = [r for r in reports if r.through >= anchor.date and (
@@ -219,28 +228,30 @@ def _classify_outcome(dataset: CycleDataset, *, query: Query, anchor_id: str, an
     try:
         _check_reports(onsets, relevant)
     except InputError as exc:
-        return exc.code, None, None
+        return exc.code, None, None, None
     if later:
         if (end.continuity == "confirmed" and end.previous_onset_id != anchor.id) or any(
                 o.previous_onset_id == anchor.id and o.continuity == "confirmed" for o in later[1:]):
-            return "conflicting-label-continuity", None, None
+            return "conflicting-label-continuity", None, None, None
         if _held_at(dataset, anchor, query.cutoff) and _held_at(dataset, end, query.cutoff):
-            return "outcome-already-known-at-landmark", None, None
+            return "outcome-already-known-at-landmark", None, None, None
         if end.exclude_from_history:
-            return "label-excluded-from-history", None, None
+            return "label-excluded-from-history", None, None, None
         if end.certainty == "confirmed":
             # A confirmed link to another onset was rejected above, so this link is to the anchor.
             if end.continuity == "confirmed":
-                return "exact", end, max(anchor.available_at, end.available_at)
+                length = day_difference(end.date, anchor.date)
+                return "exact", end, max(anchor.available_at, end.available_at), (length, length)
             # A real onset, but an unrecorded one may lie between the last report and it.
-            return "outcome-interval-censored", None, None
-        if any(o.certainty == "confirmed" for o in later[1:]):
+            return "outcome-interval-censored", None, None, (shortest, day_difference(end.date, anchor.date))
+        bound = next((o for o in later[1:] if o.certainty == "confirmed"), None)
+        if bound is not None:
             # The doubtful onset may not be real, but a confirmed one bounds the outcome.
-            return "outcome-interval-censored", None, None
+            return "outcome-interval-censored", None, None, (shortest, day_difference(bound.date, anchor.date))
     # No usable next onset: only an explicit report after the landmark censors the outcome.
     if covered is not None and covered >= query.as_of:
-        return "outcome-right-censored", None, None
-    return "outcome-not-observed", None, None
+        return "outcome-right-censored", None, None, (shortest, None)
+    return "outcome-not-observed", None, None, None
 
 
 def label_landmark(dataset: CycleDataset, landmark: Landmark, *, labels_cutoff: str,
@@ -249,8 +260,8 @@ def label_landmark(dataset: CycleDataset, landmark: Landmark, *, labels_cutoff: 
     landmark = parse_model(Landmark, landmark)
     _labels_cutoff(labels_cutoff)  # a bad cutoff is reported before bad case metadata
     _check_case_metadata(data_kind, cohort)
-    code, end, known_at = _classify_outcome(dataset, query=landmark.query, anchor_id=landmark.anchor_id,
-                                            anchor_date=landmark.anchor_date, labels_cutoff=labels_cutoff)
+    code, end, known_at, _ = _classify_outcome(dataset, query=landmark.query, anchor_id=landmark.anchor_id,
+                                               anchor_date=landmark.anchor_date, labels_cutoff=labels_cutoff)
     if end is None or known_at is None:
         raise InputError(code)
     try:
@@ -258,6 +269,24 @@ def label_landmark(dataset: CycleDataset, landmark: Landmark, *, labels_cutoff: 
                             data_kind=data_kind, cohort=cohort)
     except ValidationError as exc:
         raise _input_error(exc, "invalid_labelled_case") from None
+
+
+@dataclass(frozen=True)
+class OutcomeBounds:
+    code: UsableOutcome
+    lower_length: int
+    upper_length: int | None  # None: no upper bound
+
+
+def outcome_bounds(dataset: CycleDataset, landmark: Landmark, *, labels_cutoff: str) -> OutcomeBounds:
+    """The cycle lengths the labels allow for this landmark's outcome. Any other outcome raises its code."""
+    dataset = parse_model(CycleDataset, dataset)
+    landmark = parse_model(Landmark, landmark)
+    code, _, _, bounds = _classify_outcome(dataset, query=landmark.query, anchor_id=landmark.anchor_id,
+                                           anchor_date=landmark.anchor_date, labels_cutoff=labels_cutoff)
+    if bounds is None:
+        raise InputError(code)
+    return OutcomeBounds(cast(UsableOutcome, code), *bounds)  # only these three codes carry bounds
 
 
 @dataclass(frozen=True)
