@@ -13,6 +13,11 @@
   upper bound for `outcome-interval-censored`. Only no-onset reports still visible at the labels
   cutoff raise the lower bound. Any other outcome raises its code. Existing codes and outputs do not
   change.
+- `quietcycle.learning.life_table` fits a pooled life table from complete cycle lengths
+  (`life-table-shrinkage-v1`, exact arithmetic) and forecasts from the landmark day with those
+  hazards shrunk toward the person's clean history, the same history a landmark selects. It is a
+  comparator for an event-time benchmark, not a model of anything but cycle length. Its training
+  lengths carry no dates, and leaving out cycles still open makes long cycles look rarer.
 - `quietcycle.learning.scoring` scores a daily forecast against an outcome given as a lower and an
   optional upper cycle length, so that right-censored and interval-censored outcomes count. The
   probability is exact; the log score is a float, accurate also for probabilities near 0 and near 1.
@@ -21,7 +26,7 @@
 - `quietcycle.learning.survival` holds an exact daily forecast of the cycle length from an elapsed
   day on: the mass of each day starting today, and a residual mass that is never renormalized. It
   also builds a pooled life table, with a Jeffreys prior on each day's hazard, and personal hazards
-  shrunk toward it. No model uses them yet.
+  shrunk toward it.
 
 ## 0.4.1 (2026-11-22)
 

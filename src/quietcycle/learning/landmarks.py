@@ -14,7 +14,7 @@ from pydantic import TypeAdapter, ValidationError
 
 from ..dates import add_days, day_difference, instant, local_day
 from ..errors import InputError
-from ..features import DefaultFeatureBuilder
+from ..features import DefaultFeatureBuilder, Features, Interval
 from ..ledger import snapshot
 from ..models import Bleeding, Checkin, CycleDataset, Event, Identifier, Measurement, NoOnset, Onset, Query, Rational, Symptom
 from ..units import UnitRegistry, UnitRule
@@ -76,6 +76,11 @@ def _unit_registry(spec: LandmarkSpec) -> UnitRegistry:
                          for r in spec.unit_rules if not r.same_as_builtin()})
 
 
+def _recent(features: Features, spec: LandmarkSpec) -> list[Interval]:
+    # A suffix only: never skip an unknown interval and call the remainder contiguous.
+    return [i for i in features.intervals if not i.changed][-spec.max_history:]
+
+
 def make_landmark(dataset: CycleDataset, query: Query, spec: LandmarkSpec) -> Landmark:
     dataset = parse_model(CycleDataset, dataset)
     query = parse_model(Query, query)
@@ -99,8 +104,7 @@ def make_landmark(dataset: CycleDataset, query: Query, spec: LandmarkSpec) -> La
     reports = [r.through for r in features.no_onset if r.anchor_id == anchor.id]
     if not reports or max(reports) != add_days(query.as_of, -1):
         raise InputError("onset-status-unconfirmed")
-    # A suffix only: never skip an unknown interval and call the remainder contiguous.
-    recent = [i for i in features.intervals if not i.changed][-spec.max_history:]
+    recent = _recent(features, spec)
     if len(recent) < spec.min_history or any(not i.known or i.excluded or i.changed for i in recent):
         raise InputError("insufficient-clean-history")
     lengths = [Fraction(i.length) for i in recent]

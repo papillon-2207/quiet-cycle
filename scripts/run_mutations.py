@@ -155,6 +155,14 @@ MUTATIONS = [
     ("outcome-before-forecast-scored", "learning/scoring.py", "    if upper is not None and upper < forecast.elapsed_day:\n", "    if False:\n", "tests/test_scoring.py::test_an_outcome_before_the_forecast_day_contradicts_it"),
     ("near-one-by-subtraction", "learning/scoring.py", "        return -math.log1p(-float(1 - probability))", "        return math.log(probability.denominator) - math.log(probability.numerator)", "tests/test_scoring.py::test_a_probability_near_one_keeps_its_small_score"),
     ("subnormal-through-integer-logs", "learning/scoring.py", "    if probability >= Fraction(2) ** -1022:\n", "    if probability >= Fraction(2) ** -1074:\n", "tests/test_scoring.py::test_a_subnormal_probability_keeps_its_score"),
+    ("life-table-personal-ignored", "learning/life_table.py", "    personal = _cycles(history_lengths(dataset, query, model.spec), len(model.hazards))\n", "    personal = ()\n", "tests/test_life_table.py::test_a_forecast_shrinks_the_pooled_hazards_toward_the_person"),
+    ("life-table-starts-a-day-late", "learning/life_table.py", "    return from_hazards(elapsed, shrunk[elapsed - 1:])\n", "    return from_hazards(elapsed, shrunk[elapsed:])\n", "tests/test_life_table.py::test_a_forecast_shrinks_the_pooled_hazards_toward_the_person"),
+    ("life-table-horizon-unchecked", "learning/life_table.py", "    if horizon < spec.elapsed_day:\n", "    if False:\n", "tests/test_life_table.py::test_the_horizon_reaches_the_landmark_day"),
+    ("long-cycle-counted-as-onset", "learning/life_table.py", "onset=n <= horizon)", "onset=True)", "tests/test_life_table.py::test_a_cycle_longer_than_the_horizon_is_at_risk_through_it_without_an_onset"),
+    ("digest-without-spec", "learning/life_table.py", "{\"spec\": spec, \"strength\"", "{\"strength\"", "tests/test_life_table.py::test_the_training_digest_covers_everything_that_shapes_the_model"),
+    ("life-table-model-unchecked", "learning/life_table.py", "        if any(not 0 < h.as_fraction() < 1 for h in self.hazards):\n", "        if False:\n", "tests/test_life_table.py::test_an_inconsistent_model_is_refused"),
+    ("digest-without-horizon", "learning/life_table.py", ", \"horizon\": horizon})", "})", "tests/test_life_table.py::test_the_training_digest_covers_everything_that_shapes_the_model"),
+    ("zero-hazard-allowed", "learning/life_table.py", "if any(not 0 < h.as_fraction() < 1 for h in self.hazards):", "if any(not 0 <= h.as_fraction() < 1 for h in self.hazards):", "tests/test_life_table.py::test_an_inconsistent_model_is_refused"),
 ]
 
 
