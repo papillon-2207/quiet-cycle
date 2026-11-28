@@ -282,3 +282,42 @@ def test_label_validation_failures_are_input_errors(monkeypatch):
     with pytest.raises(InputError, match="label_available_before_event") as raised:
         label_landmark(data, landmark, labels_cutoff=LABELS, data_kind="synthetic", cohort="c")
     assert raised.value.__cause__ is None and raised.value.__suppress_context__
+
+
+def bounds(*later) -> tuple:
+    data = CycleDataset(events=tuple(history()) + later)
+    found = landmarks.outcome_bounds(data, make_landmark(data, query(), LandmarkSpec()), labels_cutoff=LABELS)
+    return found.code, found.lower_length, found.upper_length
+
+
+# Lengths count days from the anchor, 2025-01-01. The landmark report runs through day 19.
+@pytest.mark.parametrize("later,expected", [
+    ((onset(5, "2025-01-30"),), ("exact", 29, 29)),
+    # An unrecorded onset may lie after the last report and before 02-27, day 57.
+    ((onset(5, "2025-02-27", previous=None),), ("outcome-interval-censored", 20, 57)),
+    ((onset(5, "2025-01-30", certainty="uncertain"), onset(6, "2025-02-27", previous="o5")),
+     ("outcome-interval-censored", 20, 57)),
+    ((onset(5, "2025-02-27", previous=None), report("later", "2025-02-05")), ("outcome-interval-censored", 36, 57)),
+    ((report("through-as-of", AS_OF),), ("outcome-right-censored", 21, None)),
+    ((report("follow-up", "2025-02-10"),), ("outcome-right-censored", 41, None)),
+    ((onset(5, "2025-01-30", certainty="uncertain"), report("before-doubt", "2025-01-25")), ("outcome-right-censored", 25, None)),
+    # The landmark report, revised later to end on 01-05, no longer holds L >= 20 at the labels cutoff.
+    ((onset(5, "2025-02-27", previous=None),
+      NoOnset(subject_id="p", id="landmark-report", anchor_id="o4", through="2025-01-05", revision=2,
+              recorded_at="2025-02-01T08:00:00Z", utc_offset_minutes=0)), ("outcome-interval-censored", 5, 57)),
+    # A report revised to end before the anchor, or deleted, bounds nothing: L >= 1 only.
+    ((onset(5, "2025-02-27", previous=None),
+      NoOnset(subject_id="p", id="landmark-report", anchor_id="o4", through="2024-12-20", revision=2,
+              recorded_at="2025-02-01T08:00:00Z", utc_offset_minutes=0)), ("outcome-interval-censored", 1, 57)),
+    ((onset(5, "2025-02-27", previous=None),
+      Tombstone(subject_id="p", id="landmark-report", revision=2, target_kind="no-onset",
+                recorded_at="2025-02-01T08:00:00Z", utc_offset_minutes=0)), ("outcome-interval-censored", 1, 57)),
+])
+def test_bounds_of_each_usable_outcome(later, expected):
+    assert bounds(*later) == expected
+
+
+@pytest.mark.parametrize("later,code", [((), "outcome-not-observed"), ((onset(5, "2025-01-30", previous="o3"),), "conflicting-label-continuity")])
+def test_an_outcome_without_bounds_is_reported_by_its_code(later, code):
+    with pytest.raises(InputError, match=code):
+        bounds(*later)

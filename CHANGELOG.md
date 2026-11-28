@@ -8,6 +8,11 @@
 - The lower bounds in the `dev` extra rise to pytest-cov 7 and build 1.2.1. With pytest-cov 6,
   `pytest --cov` on this test suite ends with an internal error after the tests pass. Build 1.2.0
   was yanked from PyPI.
+- `learning.landmarks.outcome_bounds` gives the cycle lengths the labels allow for a landmark's
+  outcome: one length for `exact`, a lower bound for `outcome-right-censored`, and a lower and an
+  upper bound for `outcome-interval-censored`. Only no-onset reports still visible at the labels
+  cutoff raise the lower bound. Any other outcome raises its code. Existing codes and outputs do not
+  change.
 
 ## 0.4.1 (2026-11-22)
 
